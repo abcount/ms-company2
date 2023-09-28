@@ -36,14 +36,14 @@ class CompanyBl @Autowired constructor(
 
     }
 
-    fun factoryCompany(companyDto: CompanyDto, formatDate: String): CompanyEntity {
+    fun factoryCompany(companyDto: CompanyDto, formatDate: String, image: MultipartFile): CompanyEntity {
         val companyEntity = CompanyEntity()
         companyEntity.companyName = companyDto.enterpriseName
         companyEntity.diccCategory = "enabled"
         companyEntity.nit = companyDto.nit
         companyEntity.address = companyDto.enterpriseLocation
         //TODO: convertir a Base64 o guardar en un Bucket y asignar el valor
-        companyEntity.logoUuid = convertMultipartFileToByteArray(companyDto.logo64b)
+        companyEntity.logoUuid = convertMultipartFileToByteArray(image)
         companyEntity.contactEmail = companyDto.contactMail
         companyEntity.contactName = companyDto.contactName
         companyEntity.openingDate = LocalDate.parse(companyDto.openingDate, DateTimeFormatter.ofPattern(formatDate))

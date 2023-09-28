@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.AccountEntity
+import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
@@ -26,5 +27,8 @@ interface AccountDao {
     @Insert("INSERT INTO account (company_id, account_account_id, code_account, name_account, clasificator, \"level\", report, status, money_rub)" +
             " VALUES (#{companyId}, #{accountAccountId}, #{codeAccount}, #{nameAccount}, #{clasificator}, #{level}, #{report}, #{status}, #{moneyRub})")
     fun create(accountEntity: AccountEntity)
+
+    @Delete("DELETE FROM account WHERE account_id = #{accountId}")
+    fun delete(accountId: Int)
 
 }

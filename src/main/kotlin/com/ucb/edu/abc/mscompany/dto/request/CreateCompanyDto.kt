@@ -39,7 +39,6 @@ data class CompanyDto(
         var dicCategory: String,
         var nit: String,
         var enterpriseLocation: String,
-        var logo64b: MultipartFile,
         var contactMail: String,
         var contactName: String,
         var openingDate: String,

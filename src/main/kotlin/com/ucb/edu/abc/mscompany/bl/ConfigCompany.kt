@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 
 @Service
@@ -18,9 +19,9 @@ class ConfigCompany @Autowired constructor(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun createCompany(createCompanyDto: CreateCompanyDto, tokenAuth: String): Int {
+    fun createCompany(createCompanyDto: CreateCompanyDto, tokenAuth: String, image: MultipartFile): Int {
         //Crear la compañia y devolver los datos de compañia
-        val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "dd-MM-yyyy")
+        val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "dd-MM-yyyy", image)
         val companyId = companyBl.create(companyEntity)
 
         //Crear Sucursales y areas
