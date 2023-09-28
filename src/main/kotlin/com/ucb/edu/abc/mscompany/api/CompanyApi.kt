@@ -25,31 +25,37 @@ class CompanyApi @Autowired constructor(
 ){
     val objectMapper = jacksonObjectMapper()
     @PostMapping("/company")
-    fun handleFileUpload(request: HttpServletRequest): ResponseEntity<String> {
+    fun handleFileUpload(request: HttpServletRequest): ResponseDto<String> {
         val multipartRequest = request as? MultipartHttpServletRequest
-                ?: return ResponseEntity.badRequest().body("Request no es MultipartHttpServletRequest")
+                ?: return ResponseDto("No se ha recibido un archivo","",false,"")
 
         val jsonStr = multipartRequest.getParameter("datos")
+        val response = ResponseDto<String>("", "", false, "")
+
         if (jsonStr == null) {
-            return ResponseEntity.badRequest().body("No se ha recibido JSON en el parámetro 'datos'")
+            return ResponseDto("No se ha recibido un archivo","",false,"")
         }
 
         val createCompanyDto: CreateCompanyDto
         try {
             createCompanyDto = objectMapper.readValue(jsonStr)
         } catch (e: Exception) {
-            return ResponseEntity.badRequest().body("Error al convertir JSON a CreateCompanyDto: ${e.message}")
+            return ResponseDto("No se ha recibido un archivo","",false,"")
         }
 
         println("DTO recibido: $createCompanyDto")
 
         val file = multipartRequest.getFile("image")
         if (file == null) {
-            return ResponseEntity.badRequest().body("No se ha recibido el archivo en el parámetro 'image'")
+            return ResponseDto("No se ha recibido un archivo","",false,"")
         }
 
         val companyId = configCompany.createCompany(createCompanyDto,"", file)
-        return ResponseEntity.ok("Se ha creado la compañia con ID: $companyId")
+        response.data = "Se ha creado la compañia con el id: $companyId"
+        response.message = "Se ha creado la compañia con el id: $companyId"
+        response.success = true
+        response.errors = ""
+        return response
     }
 
 }

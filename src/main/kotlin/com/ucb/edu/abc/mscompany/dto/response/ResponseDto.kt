@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 data class ResponseDto <T>(
-        val data: T?,
-        val message: String?,
-        val success: Boolean,
-        val errors: String?
+        var data: T?,
+        var message: String?,
+        var success: Boolean,
+        var errors: String?
+
 )
