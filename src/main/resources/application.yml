@@ -4,10 +4,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/account
+    url: jdbc:postgresql://54.71.239.115:5432/abcount
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: 1234
+    password: sucha1234
   sql:
     init:
       mode: always

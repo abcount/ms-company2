@@ -21,7 +21,7 @@ class ConfigCompany @Autowired constructor(
 
     fun createCompany(createCompanyDto: CreateCompanyDto, tokenAuth: String, image: MultipartFile): Int {
         //Crear la compañia y devolver los datos de compañia
-        val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "dd-MM-yyyy", image)
+        val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "MM-dd-yyyy", image)
         val companyId = companyBl.create(companyEntity)
 
         //Crear Sucursales y areas
