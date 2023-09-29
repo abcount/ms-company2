@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.bl
 import com.ucb.edu.abc.mscompany.dao.CompanyDao
 import com.ucb.edu.abc.mscompany.dto.request.CompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
+import com.ucb.edu.abc.mscompany.dto.request.EnterpriseDto
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
@@ -56,6 +57,41 @@ class CompanyBl @Autowired constructor(
         } catch (e: IOException) {
             e.printStackTrace()
             return null
+        }
+    }
+
+    fun getCompanyById(companyId: Int): EnterpriseDto {
+        try {
+            val companyEntity = companyDao.getCompanyById(companyId)
+            return EnterpriseDto(
+                    companyEntity.companyName,
+                    companyEntity.diccCategory,
+                    companyEntity.nit,
+                    companyEntity.address,
+                    companyEntity.logoUuid,
+                    companyEntity.contactEmail,
+                    companyEntity.contactName
+            )
+
+        } catch (e: PersistenceException) {
+            throw PostgresException("Ocurrio un error al obtener la compañia con el id: $companyId", e.message.toString())
+        }
+    }
+
+    fun updateCompany(enterpriseDto: EnterpriseDto, companyId: Int){
+        try {
+            var companyEntity = companyDao.getCompanyById(companyId)
+
+            companyEntity.companyName = enterpriseDto.companyName
+            companyEntity.diccCategory = enterpriseDto.diccCategory
+            companyEntity.nit = enterpriseDto.nit
+            companyEntity.address = enterpriseDto.address
+            companyEntity.logoUuid = enterpriseDto.logoUuid
+            companyEntity.contactEmail = enterpriseDto.contactEmail
+            companyEntity.contactName = enterpriseDto.contactName
+            companyDao.updateCompany(companyEntity)
+        } catch (e: PersistenceException) {
+            throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
     }
 }

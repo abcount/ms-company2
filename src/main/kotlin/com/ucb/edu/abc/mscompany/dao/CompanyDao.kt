@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
 
 @Mapper
@@ -21,4 +22,15 @@ interface CompanyDao {
 
     @Select("SELECT * FROM company WHERE company_id = #{companyId}")
     fun getCompanyById(companyId: Int): CompanyEntity
+
+    @Update(
+            "UPDATE company SET company_name = #{companyName}, dicc_category = #{diccCategory}, " +
+                    "nit = #{nit}, address = #{address}, logo_uuid = #{logoUuid}, " +
+                    "contact_email = #{contactEmail}, contact_name = #{contactName} " +
+                    "WHERE company_id = #{companyId}"
+    )
+    fun updateCompany(company: CompanyEntity)
+
+
+
 }
