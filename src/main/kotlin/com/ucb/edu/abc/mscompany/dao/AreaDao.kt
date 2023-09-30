@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
 
 @Mapper
@@ -18,8 +19,11 @@ interface AreaDao {
     @Select("SELECT * FROM area WHERE area_id = #{areaId}")
     fun getAreaById(areaId: Int): AreaEntity
 
-    @Select("SELECT * FROM area WHERE company_id = #{companyId}")
+    @Select("SELECT * FROM area WHERE company_id = #{companyId} and status = 'true'")
     fun getAreasByCompanyId(companyId: Int): List<AreaEntity>
+
+    @Update("UPDATE area SET status = 'false' WHERE area_id = #{areaId}")
+    fun updateStatus(areaId: Int)
 
 
 }

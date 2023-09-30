@@ -24,7 +24,7 @@ interface SubsidiaryDao {
             "address = #{address} WHERE subsidiary_id = #{subsidiaryId}")
     fun update(subsidiary: SubsidiaryEntity): Int
 
-    @Select("SELECT * FROM subsidiary WHERE company_id = #{companyId}")
+    @Select("SELECT * FROM subsidiary WHERE company_id = #{companyId} ")
     fun getSubsidiariesByCompanyId(companyId: Int): List<SubsidiaryEntity>
 
 

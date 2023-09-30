@@ -1,1 +1,9 @@
 GET http://localhost:8080/config/enterprise/11/subsidiary
+###
+POST http://localhost:8080/config/enterprise/11/subsidiary
+Content-Type: application/json
+
+{
+    "areas": [22],
+    "subsidiaries": []
+}

@@ -34,3 +34,11 @@ data class AreaDto (
 )
 
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DeleteAreasDto (
+        var areas: List<Int>,
+        var subsidiaries: List<Int>
+)
