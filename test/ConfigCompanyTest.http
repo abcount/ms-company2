@@ -93,4 +93,4 @@ Content-Type: multipart/form-data;
 
 #######################
 
-GET http://localhost:8080/config/enterprise/9
+GET http://localhost:8080/config/enterprise/8

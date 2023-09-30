@@ -1,7 +1,13 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.SubsidiaryDao
+import com.ucb.edu.abc.mscompany.dao.AreaDao
+
+import com.ucb.edu.abc.mscompany.dto.request.SubsidiaryConfigDto
 import com.ucb.edu.abc.mscompany.dto.request.SubsidiaryDto
+import com.ucb.edu.abc.mscompany.dto.request.AddSubsidiaryDto
+import com.ucb.edu.abc.mscompany.dto.request.AreaDto
+
 import com.ucb.edu.abc.mscompany.entity.SubsidiaryEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
@@ -12,7 +18,8 @@ import java.sql.SQLException
 
 @Service
 class SubsidiaryBl @Autowired constructor(
-    private val subsidiaryDao: SubsidiaryDao
+    private val subsidiaryDao: SubsidiaryDao,
+    private val AreaDao: AreaDao
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -52,6 +59,27 @@ class SubsidiaryBl @Autowired constructor(
         subsidiaryEntity.address = subsidiaryDto.address
         logger.info("Se creara la sucursal: ${subsidiaryEntity.toString()}")
         return subsidiaryEntity
+    }
+
+
+
+
+    // NO olvidar el campo editable xd
+    fun getSubsidiaryandAreas(companyId: Int):SubsidiaryConfigDto{
+        try {
+            var areas = AreaDao.getAreasByCompanyId(companyId);
+            var subsidiaries= subsidiaryDao.getSubsidiariesByCompanyId(companyId);
+            //var areasList = areas.map { it.areaId, it.areaName ?: ""}
+            var areasList = areas.map {
+                AreaDto( it.areaId ,it.areaName ?: "")
+            }
+            var subsidiariesList = subsidiaries.map {
+                AddSubsidiaryDto( it.subsidiaryId ,it.subsidiaryName ?: "", it.address ?: "")
+            }
+            return SubsidiaryConfigDto(subsidiariesList, areasList)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
+        }
     }
 
 }
