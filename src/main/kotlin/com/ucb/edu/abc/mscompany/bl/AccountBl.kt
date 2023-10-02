@@ -5,6 +5,7 @@ import com.ucb.edu.abc.mscompany.dto.request.AccountDto
 import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
+import org.apache.ibatis.exceptions.PersistenceException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,6 +65,20 @@ class AccountBl @Autowired constructor(
         accountEntity.moneyRub = accountDto.moneyRub
         accountEntity.accountAccountId = null
         return accountEntity
+    }
+
+
+
+    fun getAccountPlan(companyId: Int) : List<AccountEntity> {
+        try {
+            var accountPlan: List<AccountEntity> = accountDao.getAccountPlanByCompanyId(companyId)
+            println(accountPlan)
+            return accountPlan
+
+        } catch (e: PersistenceException) {
+            throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
+        }
+
     }
 
 

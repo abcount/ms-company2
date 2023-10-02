@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dao.CompanyDao
 import com.ucb.edu.abc.mscompany.dto.request.CompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.EnterpriseDto
+import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
@@ -94,4 +95,6 @@ class CompanyBl @Autowired constructor(
             throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
     }
+
+
 }
