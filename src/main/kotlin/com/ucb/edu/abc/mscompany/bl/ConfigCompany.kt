@@ -47,6 +47,9 @@ class ConfigCompany @Autowired constructor(
             }
         }
 
+        // create permissions for founder, high level permissions
+        // userService.createPermission(tokenAuth, listOfAreasSubsidiaryIds, companyId, 'FOUNDER')
+
         //Crear lista de cambios de moneda
         createCompanyDto.currencyConfig.currencyList.forEachIndexed() { index, element ->
             if(element != null){
