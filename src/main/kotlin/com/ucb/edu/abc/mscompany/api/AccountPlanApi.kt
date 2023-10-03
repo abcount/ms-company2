@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.AccountBl
+import com.ucb.edu.abc.mscompany.dto.request.AccountablePlanDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +17,7 @@ class AccountPlanApi @Autowired constructor(
 ){
 
     @GetMapping("/{companyId}")
-    fun getAccountPlan(@PathVariable companyId: Int): ResponseDto<List<AccountEntity>> {
+    fun getAccountPlan(@PathVariable companyId: Int): ResponseDto<List<AccountablePlanDto>> {
         println("DTO recibido: $companyId")
         val accountPlan = accountBl.getAccountPlan(companyId)
         return ResponseDto(accountPlan, "Request exitoso", true, "", )
