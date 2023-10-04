@@ -60,11 +60,15 @@ class AccessPersonBl @Autowired constructor(
         logger.info("#createAccessPersonWithDataKeycloak Creating user requesting keycloak ")
         val userKc = keycloakBl.getUserInfoFromKeycloak(userUuidFromToken)
         val accessPersonEntity = AccessPersonEntity()
-        accessPersonEntity.email = userKc.email;
+        accessPersonEntity.email = userKc.email!!;
         accessPersonEntity.username = userKc.username;
-        if( !userKc.attributes["birthday"].isNullOrEmpty()){
-            accessPersonEntity.birthday = LocalDate.parse(userKc.attributes["birthday"]!![0], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        if (userKc.attributes != null){
+            if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
+                accessPersonEntity.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            }
         }
+
         accessPersonEntity.userUuid = userKc.id
         accessPersonEntity.diccCategory = "CREATED"
         accessPersonEntity.dateCreation = LocalDate.now()

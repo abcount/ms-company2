@@ -8,13 +8,14 @@ import java.time.LocalDate
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-data class RoleEntity(
-    var roleId: Int = 0,
+data class GroupEntity(
+    var groupId: Int = 0,
     var name: String = "",
-    var description: String = "",
-    var diccCategory: String? = null,
-    var status : Boolean ? = null,
+    var description: String= "",
+    var diccCategory: String? = "",
+    var status : Boolean ? = false,
     var dateCreated: LocalDate = LocalDate.now(),
-    var commonId :Int = 0
+    var commonId :Int = 0 // FIXME this will be company ID
 ) {
+
 }

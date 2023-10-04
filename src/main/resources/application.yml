@@ -1,16 +1,53 @@
 server:
-  port: 8080
+  port: 8082
 
 
 spring:
   datasource:
-    url: jdbc:postgresql://54.71.239.115:5432/abcount
+    url: jdbc:postgresql://localhost:5432/dev_env_abcount2
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: sucha1234
+    password: secret
   sql:
     init:
       mode: always
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+custom-config:
+  master-access-key: abcount
+  master-secret-key: sucha1234
+keycloak:
+  config:
+    import: optional:file:.env[.properties]
+  realm: abcount
+  auth-server-url: https://mihouodie.com
+  autodetect-bearer-only: true
+  ssl-required: none
+  resource: backend
+  credentials:
+    secret: KQotk9NbUnrNWfnYdzX8XAe5N7eiqtxD
+  use-resource-role-mappings: false
+  security-constraints:
+    - auth-roles:
+        - USER
+      security-collections:
+        - name: SOME USER SERVICE
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+          patterns:
+            - /apia/v1/user/*
+    - auth-roles:
+        - ADMIN
+      security-collections:
+        - name: SOME ADMIN SERVICE
+          methods:
+            - PUT
+            - GET
+            - POST
+          patterns:
+            - /apia/v1/admin/*

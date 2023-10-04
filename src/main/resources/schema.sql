@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS group_entity (
                                             name varchar(255) NOT NULL,
     description varchar(500) NOT NULL,
     dicc_category varchar(255) NOT NULL,
-    status int NOT NULL,
+    status boolean NOT NULL,
     date_created date NOT NULL,
     common_id int NULL
     );
@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS role_common (
 
 -- Table: role_entity
 CREATE TABLE IF NOT EXISTS role_entity (
-                                           role_id int NOT NULL,
+                                           role_id serial NOT NULL,
                                            name varchar(200) NOT NULL,
     description varchar(500) NOT NULL,
     dicc_category varchar(255) NOT NULL,

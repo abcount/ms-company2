@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
+import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -15,6 +16,8 @@ class ConfigCompany @Autowired constructor(
         private val areaSubsidiaryBl: AreaSubsidiaryBl,
         private val exchangeMoneyBl: ExchangeMoneyBl,
         private val accountBl: AccountBl,
+    private val userBl: UserBl,
+    private val permissionBl: PermissionBl
 ){
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -48,7 +51,7 @@ class ConfigCompany @Autowired constructor(
         }
 
         // create permissions for founder, high level permissions
-        // userService.createPermission(tokenAuth, listOfAreasSubsidiaryIds, companyId, 'FOUNDER')
+        permissionBl.createPermissionsForCompany(tokenAuth, listOfAreasSubsidiary, companyId, GroupCategory.FOUNDER)
 
         //Crear lista de cambios de moneda
         createCompanyDto.currencyConfig.currencyList.forEachIndexed() { index, element ->
@@ -65,5 +68,6 @@ class ConfigCompany @Autowired constructor(
         accountBl.createAccountPlan(createCompanyDto.accountablePlan, companyId)
         return companyId
     }
+
 
 }

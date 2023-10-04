@@ -8,4 +8,7 @@ data class UserEntity (
     var diccCategory: String? = null,
     var dateCreated: LocalDate? =  null,
 ){
+    override fun toString(): String {
+        return "UserEntity(userId=$userId, accessPersonId=$accessPersonId, diccCategory=$diccCategory, dateCreated=$dateCreated)"
+    }
 }

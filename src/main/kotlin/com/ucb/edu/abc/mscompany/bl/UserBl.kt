@@ -36,28 +36,7 @@ class UserBl @Autowired constructor(
     }
 
 
-    // create permissions
-    /**
-     * create permission for any type
-     * @param type  for user type in company
-     * @param companyId  company id where user must be associated
-     * @param tokenAuth is token string from header to get access person uuid{
-     * @param listOfAreasSubsidiaryIds array where is stores all id of area subsidiary to insert into permissions
-     */
-    fun createPermission(tokenAuth: String, listOfAreasSubsidiaryIds : MutableList<Int>, companyId: Int, type: String){
-        if (type == "FOUNDER"){
-            val accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(tokenAuth)
-                ?: throw Exception("Access Person Service NOt founded")
-            val userEntity = createUserByAccessEntity(accessPersonEntity, "FOUNDER")
-                ?: throw Exception(" Couldn't create user from access person entity")
 
-
-        }
-
-
-
-    }
-    private fun createPermissionWithUser(userEntity: UserEntity, listOfAreasSubsidiaryIds: MutableList<Int>)
 
     fun createUserByAccessEntity(accessPersonEntity: AccessPersonEntity, category: String):UserEntity? {
         val userEntity = UserEntity()
@@ -69,10 +48,17 @@ class UserBl @Autowired constructor(
 
     }
 
+    fun createUserByToken(token: String, category: String?): UserEntity? {
+        val accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
+            ?: throw Exception("NOt found")
+        val catFinal  = category?:""
+        return createUserByAccessEntity(accessPersonEntity, catFinal)
+    }
+
 
     fun getUserById(id:Int):UserEntity?{
         try{
-            return userRepository.findById(id)
+            return userDao.findById(id)
                 .orElseThrow { UserNotFoundException("User Not Found Exception") }
         }catch (ex: UserNotFoundException){
             return null

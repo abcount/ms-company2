@@ -25,7 +25,7 @@ class RoleBl @Autowired constructor(
                 diccCategory = category,
                 dateCreated = LocalDate.now(),
                 status = true,
-                commomId = 0
+                commonId = 0
             )
             roleDao.createRole(roleEntity);
             return roleEntity

@@ -25,7 +25,7 @@ class CompanyApi @Autowired constructor(
 ){
     val objectMapper = jacksonObjectMapper()
     @PostMapping("/company")
-    fun handleFileUpload(request: HttpServletRequest): ResponseDto<String> {
+    fun handleFileUpload(request: HttpServletRequest, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
         val multipartRequest = request as? MultipartHttpServletRequest
                 ?: return ResponseDto("No se ha recibido un archivo","",false,"")
 
@@ -49,8 +49,9 @@ class CompanyApi @Autowired constructor(
         if (file == null) {
             return ResponseDto("No se ha recibido un archivo","",false,"")
         }
-
-        val companyId = configCompany.createCompany(createCompanyDto,"", file)
+        //val token = ""// token in header, if not use please uncomment this line
+        val token = headers["authorization"]!!.substring(7)
+        val companyId = configCompany.createCompany(createCompanyDto,token, file)
         response.data = "Se ha creado la compañia con el id: $companyId"
         response.message = "Se ha creado la compañia con el id: $companyId"
         response.success = true
