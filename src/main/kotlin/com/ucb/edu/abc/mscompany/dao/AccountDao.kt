@@ -30,7 +30,7 @@ interface AccountDao {
     fun create(accountEntity: AccountEntity)
 
     @Select("SELECT * FROM account WHERE company_id = #{companyId}")
-    fun getAccountPlanByCompanyId(companyId: Int): List<AccountEntity>
+    fun getAccountPlanByCompanyId(companyId: Int): MutableList<AccountEntity>
 
     @Delete("DELETE FROM account WHERE account_id = #{accountId}")
     fun delete(accountId: Int)
