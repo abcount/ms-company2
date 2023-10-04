@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.GroupDao
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
+import com.ucb.edu.abc.mscompany.entity.TestEntity
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.exception.AbcGroupNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,12 +70,14 @@ class GroupBl @Autowired constructor(
 
     fun createGroupRole(roleId: Int, groupId: Int): Int? {
         try{
+            // really helpful doc > https://stackoverflow.com/questions/59668117/how-to-properly-use-the-param-annotation-of-mybatis/59811574#59811574
+
             val paramId = 0
             val map = HashMap<String, Any>()
             map["roleId"] = roleId
             map["groupId"] = groupId
             map["paramId"] = 0
-            map["objectz"] =
+            map["objectz"] = TestEntity(roleId, groupId)
             val grId = groupDao.createRoleGroup(map)
 //            if(grId.isPresent){
 //                return grId.get()

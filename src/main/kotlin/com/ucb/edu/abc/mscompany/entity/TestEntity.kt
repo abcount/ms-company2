@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 data class TestEntity (
-    var param1: Int,
-    var param2: Int
+    var roleId: Int,
+    var groupId: Int
 ) {
 }
