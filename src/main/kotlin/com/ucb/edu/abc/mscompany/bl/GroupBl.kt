@@ -72,18 +72,18 @@ class GroupBl @Autowired constructor(
         try{
             // really helpful doc > https://stackoverflow.com/questions/59668117/how-to-properly-use-the-param-annotation-of-mybatis/59811574#59811574
 
-            val paramId = 0
+
             val map = HashMap<String, Any>()
             map["roleId"] = roleId
             map["groupId"] = groupId
             map["paramId"] = 0
             map["objectz"] = TestEntity(roleId, groupId)
-            val grId = groupDao.createRoleGroup(map)
+            val grId = groupDao.createRoleGroup(TestEntity(roleId, groupId), map)
 //            if(grId.isPresent){
 //                return grId.get()
 //            }
 
-            return grId
+            return map["paramId"] as Int?
 
         }catch (ex: Exception){
             return null

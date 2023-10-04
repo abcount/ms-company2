@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.RoleEntity
+import com.ucb.edu.abc.mscompany.entity.TestEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
@@ -30,9 +31,9 @@ interface GroupDao {
 
 
     @Insert("INSERT INTO group_role (role_id, group_id, status, date_created) " +
-            " VALUES (#{objectz.roleId}, #{objectz.groupId}, true, now() )  ;")
-    @Options(useGeneratedKeys = true, keyProperty = "paramId")
-    fun createRoleGroup(vals: HashMap<String, Any>): Int?
+            " VALUES (#{entidad.roleId}, #{entidad.groupId}, true, now() )  ;")
+    @Options(useGeneratedKeys = true, keyProperty = "valz.paramId")
+    fun createRoleGroup(@Param("entidad") entity: TestEntity, @Param("valz") vals: HashMap<String, Any>): Int?
     // this f*** piece of code doesn't work with mybatis, great font: https://kamalmeet.com/java/returning-auto-generated-id-in-spring-mybatis/
 
 
