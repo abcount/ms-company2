@@ -15,8 +15,11 @@ import java.sql.SQLException
 @Service
 class SubsidiaryBl @Autowired constructor(
     private val subsidiaryDao: SubsidiaryDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private var areaBl: AreaBl,
+    private var areaSubsidiaryBl: AreaSubsidiaryBl
 ) {
+
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -60,7 +63,6 @@ class SubsidiaryBl @Autowired constructor(
 
 
 
-    // NO olvidar el campo editable xd
     fun getSubsidiaryandAreas(companyId: Int):SubsidiaryConfigDto{
         try {
             var areas = areaDao.getAreasByCompanyId(companyId);
@@ -82,11 +84,44 @@ class SubsidiaryBl @Autowired constructor(
     fun deleteSubsidiary(deleteAreasDto: DeleteAreasDto ){
         try {
             val areasToDelete = deleteAreasDto.areas
-            for (areaId in areasToDelete) {
+            /*for (areaId in areasToDelete) {
                 areaDao.updateStatus(areaId)
-            }
+            }*/
+            deleteAreasDto.areas.forEach { areaId ->
+                areaDao.updateStatus(areaId)}
             //falta el de subisiares
 
+        }catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
+        }
+    }
+
+    fun newSubsidiaries(companyId: Int, newSubsidiariesDto: SubsidiaryConfigDto){
+        try {
+            newSubsidiariesDto.subsidiaries.forEach { subsidiary -> subsidiaryDao.create(factorynewSubsidiaries( companyId,subsidiary)) }
+            newSubsidiariesDto.areas.forEach { area -> areaDao.create(areaBl.factoryArea( area.areaName,companyId,null)) }
+            // crear para area subsidiary
+            //newSubsidiariesDto.areas.forEach { area -> areaDao.create(areaBl.factoryArea( area.areaName,companyId,null))}
+
+
+
+
+        }catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
+        }
+    }
+
+
+    // esta funcion se debe a que el nuevo json de agregar nuevas sucursales es distinto, areas y suscursales, vienen en el mismo json
+    // pero distintos arreglos xd
+    fun factorynewSubsidiaries(companyId: Int, addSubsidiaryDto: AddSubsidiaryDto): SubsidiaryEntity{
+
+        try {
+            val subsidiaryEntity = SubsidiaryEntity()
+            subsidiaryEntity.companyId = companyId
+            subsidiaryEntity.subsidiaryName = addSubsidiaryDto.subsidiaryName
+            subsidiaryEntity.address = addSubsidiaryDto.address
+            return subsidiaryEntity
         }catch (e: Exception) {
             throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
         }

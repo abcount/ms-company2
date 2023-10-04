@@ -19,7 +19,15 @@ class AreaSubsidiaryBl @Autowired constructor(
     fun create(areaSubsidiaryEntity: AreaSubsidiaryEntity): Int {
         try{
             logger.info("Creando area-sucursal")
+            println("****************************************")
+            println(areaSubsidiaryEntity.areaSubsidiaryId)
+            println("****************************************")
+
             areaSubsidiaryDao.create(areaSubsidiaryEntity)
+            println("-----------------------------------------")
+            println(areaSubsidiaryEntity.areaSubsidiaryId)
+            println("-----------------------------------------")
+
             return areaSubsidiaryEntity.areaSubsidiaryId
         } catch (e: Exception){
             throw PostgresException("Ocurrio un error al crear la area-sucursal: ${areaSubsidiaryEntity.toString()}", e.message.toString())

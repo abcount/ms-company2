@@ -22,7 +22,6 @@ class EnterpriseApi @Autowired constructor(
 
     @PutMapping("/{companyId}")
     fun updateEnterprise(@RequestBody enterpriseDto: EnterpriseDto,@PathVariable companyId: Int ): ResponseDto<String>{
-            System.out.println("DTO recibido: $enterpriseDto")
             companyBl.updateCompany(enterpriseDto, companyId)
             return ResponseDto(
                     "",

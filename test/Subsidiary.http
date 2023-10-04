@@ -1,9 +1,27 @@
-GET http://localhost:8080/config/enterprise/11/subsidiary
+GET http://localhost:8080/config/enterprise/10/subsidiary
 ###
-POST http://localhost:8080/config/enterprise/11/subsidiary
+PUT http://localhost:8080/config/enterprise/11/subsidiary
 Content-Type: application/json
 
 {
-    "areas": [22],
+    "areas": [23],
     "subsidiaries": []
+}
+###
+POST http://localhost:8080/config/enterprise/10/subsidiary
+Content-Type: application/json
+
+{
+    "areas": [
+      {
+        "areaName": "xd"
+      }
+    ],
+    "subsidiaries": [
+        {
+            "address": "xd",
+            "subsidiaryName": "dx "
+        }
+
+    ]
 }

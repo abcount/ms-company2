@@ -43,7 +43,6 @@ class CompanyApi @Autowired constructor(
             return ResponseDto("No se ha recibido un archivo","",false,"")
         }
 
-        println("DTO recibido: $createCompanyDto")
 
         val file = multipartRequest.getFile("image")
         if (file == null) {
