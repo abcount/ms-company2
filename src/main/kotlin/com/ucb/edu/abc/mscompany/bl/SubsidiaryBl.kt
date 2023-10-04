@@ -72,7 +72,7 @@ class SubsidiaryBl @Autowired constructor(
                 AreaDto( it.areaId ,it.areaName ?: "")
             }
             var subsidiariesList = subsidiaries.map {
-                AddSubsidiaryDto( it.subsidiaryId ,it.subsidiaryName ?: "", it.address ?: "")
+                AddSubsidiaryDto( it.subsidiaryId ,it.address ?: "", it.subsidiaryName ?: "")
             }
             return SubsidiaryConfigDto(subsidiariesList, areasList)
         } catch (e: Exception) {
