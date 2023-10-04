@@ -69,10 +69,17 @@ class GroupBl @Autowired constructor(
 
     fun createGroupRole(roleId: Int, groupId: Int): Int? {
         try{
-            val grId = groupDao.createRoleGroup(roleId, groupId)
+            val paramId = 0
+            val map = HashMap<String, Any>()
+            map["roleId"] = roleId
+            map["groupId"] = groupId
+            map["paramId"] = 0
+            map["objectz"] =
+            val grId = groupDao.createRoleGroup(map)
 //            if(grId.isPresent){
 //                return grId.get()
 //            }
+
             return grId
 
         }catch (ex: Exception){
