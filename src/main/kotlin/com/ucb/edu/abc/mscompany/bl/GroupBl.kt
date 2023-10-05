@@ -46,13 +46,18 @@ class GroupBl @Autowired constructor(
             if (category == GroupCategory.FOUNDER){
                 var hasGroupFounder = getGroupId(GroupCategory.FOUNDER, companyId)
                 if (hasGroupFounder == null){
-                    val groupEntity =   createGroup(category, companyId, description, name) ?: throw Exception("Couldnt create")
+                    val groupEntity =  createGroup(category, companyId, description, name) ?: throw Exception("Couldnt create")
                     hasGroupFounder = groupEntity.groupId
                 }
                 // create association of roles and group
-                val roleEntity = roleBl.getRole("***")
-                    ?: roleBl.createRole("***", "this is role is for founders", GroupCategory.FOUNDER.name )
-                    ?: throw Exception("ERROR")
+                var roleEntity = roleBl.getRole("***");
+                if (roleEntity == null){
+                    roleEntity = roleBl.createRole("***", "this is role is for founders", GroupCategory.FOUNDER.name );
+                }
+                if (roleEntity == null){
+                    throw Exception("No se pudo crear el role expecifico")
+                }
+
                 createGroupRole(roleEntity.roleId, hasGroupFounder)
                     ?: throw Exception("Error")
                 // end of creation
@@ -72,18 +77,10 @@ class GroupBl @Autowired constructor(
         try{
             // really helpful doc > https://stackoverflow.com/questions/59668117/how-to-properly-use-the-param-annotation-of-mybatis/59811574#59811574
 
-
             val map = HashMap<String, Any>()
-            map["roleId"] = roleId
-            map["groupId"] = groupId
-            map["paramId"] = 0
-            map["objectz"] = TestEntity(roleId, groupId)
+            map["group_role_id"] = 0
             val grId = groupDao.createRoleGroup(TestEntity(roleId, groupId), map)
-//            if(grId.isPresent){
-//                return grId.get()
-//            }
-
-            return map["paramId"] as Int?
+            return map["group_role_id"] as Int?
 
         }catch (ex: Exception){
             return null

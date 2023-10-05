@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS abc_permission (
   area_subsidiary_id int NOT NULL,
   user_id int NOT NULL,
   status boolean NOT NULL,
-  dic_category int NOT NULL
+  dic_category varchar(100) NOT NULL
 );
 
 -- Table: abc_user

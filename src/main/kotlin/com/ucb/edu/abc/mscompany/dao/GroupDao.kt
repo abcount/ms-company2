@@ -32,8 +32,8 @@ interface GroupDao {
 
     @Insert("INSERT INTO group_role (role_id, group_id, status, date_created) " +
             " VALUES (#{entidad.roleId}, #{entidad.groupId}, true, now() )  ;")
-    @Options(useGeneratedKeys = true, keyProperty = "valz.paramId")
-    fun createRoleGroup(@Param("entidad") entity: TestEntity, @Param("valz") vals: HashMap<String, Any>): Int?
+    @Options(useGeneratedKeys = true, keyProperty = "map.group_role_id")
+    fun createRoleGroup(@Param("entidad") entity: TestEntity, @Param("map") vals: HashMap<String, Any>): Int?
     // this f*** piece of code doesn't work with mybatis, great font: https://kamalmeet.com/java/returning-auto-generated-id-in-spring-mybatis/
 
 

@@ -14,15 +14,7 @@ class PermissionBl @Autowired constructor(
 
 ){
 
-    // FIXME bad request
-    fun createNewPermission(permissionEntity: PermissionEntity): Int? {
-        val permissionId = permissionDao.createPermission(
-            areaSubId = permissionEntity.areaSubsidiaryId!!,
-            userId = permissionEntity.userId!!,
-            dicCategory = ""
-        ).orElseThrow { Exception("Couldnt create permission") }
-        return permissionId
-    }
+
 
 
     // create permissions
@@ -54,22 +46,40 @@ class PermissionBl @Autowired constructor(
                 val permissionId = createPermissionsOnDb(areaSubId =  areaSubId, userId = userEntity.userId)
 
                 // create relationship between abc_permission and group
-                val groupPermission = createGroupPermissionOnDB(permissionId = permissionId, groupId = groupId)
+                val groupPermission = createGroupPermissionOnDB(permissionId = permissionId!!, groupId = groupId)
                     ?: throw Exception("Couldn't create GROUP PERMISSION")
             }
 
         }
     }
-    fun createPermissionsOnDb(areaSubId: Int, userId: Int): Int{
-        val permissionId = permissionDao.createPermission(areaSubId = areaSubId, userId= userId, dicCategory = "NEW")
-            .orElseThrow { Exception("Couldn't create PERMISSION #PermissionBl.createPermissionsOnBd") }
-        return permissionId
+    fun createPermissionsOnDb(areaSubId: Int, userId: Int): Int? {
+        try{
+            val map = HashMap<String, Any>()
+            map["abc_permission_id"] = 0
+            permissionDao.createPermission(areaSubId = areaSubId, userId= userId, dicCategory = "NEW", map = map)
+            if (map["abc_permission_id"] == 0){
+                throw Exception("Couldn't create PERMISSION #PermissionBl.createPermissionsOnBd")
+            }
+
+            return (map["abc_permission_id"] as Int?)!!
+        }catch (ex: Exception){
+            return null
+        }
     }
 
     fun createGroupPermissionOnDB(permissionId: Int, groupId: Int): Int?{
-        val groupAccessEntityId = permissionDao.createGroupPermission(groupId = groupId, permissionId = permissionId)
-            .orElseThrow { Exception("Couldn't create PERMISSION #PermissionBl.createGroupPermissionOnDB") }
-        return groupAccessEntityId
+        try{
+            val map = HashMap<String, Int>()
+            map["group_access_entity_id"] = 0
+
+            permissionDao.createGroupPermission(groupId = groupId, permissionId = permissionId, map);
+            if (map["group_access_entity_id"] == 0){
+                throw Exception("Couldn't create PERMISSION #PermissionBl.createGroupPermissionOnDB")
+            }
+            return map["group_access_entity_id"]!!
+        }catch (ex: Exception){
+            return null
+        }
     }
 
 
