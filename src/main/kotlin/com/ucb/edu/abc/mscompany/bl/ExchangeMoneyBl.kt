@@ -26,6 +26,16 @@ class ExchangeMoneyBl @Autowired constructor(
         }
     }
 
+    fun getAllCurrenciesByCompanyId(companyId: Int): List<ExchangeMoneyEntity>{
+        try {
+            logger.info("Obteniendo todos los tipos de cambio por compañia")
+            return exchangeMoneyDao.getAllCurrenciesByCompanyId(companyId)
+        } catch (e: Exception){
+            //TODO: Lanzar un error 404
+            throw PostgresException("Ocurrio un error al obtener los tipos de cambio por compañia: ${companyId}", e.message.toString())
+        }
+    }
+
     fun factoryExchangeMoney(companyId: Int, name: String, abbreviation: String, isPrincipal:Boolean): ExchangeMoneyEntity{
         var exchangeMoneyEntity = ExchangeMoneyEntity()
         exchangeMoneyEntity.companyId = companyId

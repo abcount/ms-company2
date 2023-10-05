@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.AccountDao
 import com.ucb.edu.abc.mscompany.dto.request.AccountDto
+import com.ucb.edu.abc.mscompany.dto.request.AccountablePlanDto
 import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
@@ -69,16 +70,51 @@ class AccountBl @Autowired constructor(
 
 
 
-    fun getAccountPlan(companyId: Int) : List<AccountEntity> {
+    fun getAccountPlan(companyId: Int) : List<AccountablePlanDto> {
         try {
-            var accountPlan: List<AccountEntity> = accountDao.getAccountPlanByCompanyId(companyId)
+            var accountPlan: MutableList<AccountEntity> = accountDao.getAccountPlanByCompanyId(companyId)
             println(accountPlan)
-            return accountPlan
+            return organizeAccountablePlan(accountPlan, mutableListOf<AccountablePlanDto>())
 
         } catch (e: PersistenceException) {
             throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
+    }
 
+    fun organizeAccountablePlan(accountPlan: MutableList<AccountEntity>, accountablePlanDto: MutableList<AccountablePlanDto>): List<AccountablePlanDto> {
+        for (i in 0 until accountPlan.size ){
+            if (accountPlan[i].level == 0){
+                accountablePlanDto.add(setAccountIntoAccountablePlanDto(accountPlan[i], AccountablePlanDto()))
+            }
+        }
+        var accountablePlanDto = accountablePlanTree(accountPlan, accountablePlanDto) as MutableList<AccountablePlanDto>
+      return accountablePlanDto
+    }
+
+    fun accountablePlanTree(accountPlan: MutableList<AccountEntity>, accountablePlanDto: MutableList<AccountablePlanDto>): List<AccountablePlanDto> {
+        for (i in 0 until accountablePlanDto.size ){
+            for (j in 0 until accountPlan.size ){
+                if (accountPlan[j].accountAccountId == accountablePlanDto[i].accountId){
+                    accountablePlanDto[i].childrenAccounts.add(setAccountIntoAccountablePlanDto(accountPlan[j], AccountablePlanDto()))
+                }
+            }
+            if (accountablePlanDto[i].childrenAccounts.isNotEmpty()){
+                accountablePlanTree(accountPlan, accountablePlanDto[i].childrenAccounts)
+            }
+        }
+      return accountablePlanDto
+    }
+
+    fun setAccountIntoAccountablePlanDto(account: AccountEntity, accountablePlanDto: AccountablePlanDto): AccountablePlanDto {
+        accountablePlanDto.accountId = account.accountId
+        accountablePlanDto.accountCode = account.codeAccount
+        accountablePlanDto.nameAccount = account.nameAccount
+        accountablePlanDto.moneyRub = account.moneyRub
+        accountablePlanDto.report = account.report
+        accountablePlanDto.clasificator = account.clasificator
+        accountablePlanDto.level = account.level
+        accountablePlanDto.editable = true //TODO need to develop a function that verifies if the account is editable or not
+        return accountablePlanDto
     }
 
 

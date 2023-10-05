@@ -8,12 +8,7 @@ import com.ucb.edu.abc.mscompany.dto.request.DeleteAreasDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 
 @RestController
@@ -28,12 +23,21 @@ class SubsidiaryApi @Autowired constructor(
         return ResponseDto(subsidiaryConfigDto, "Request exitoso", true, "", )
     }
 
-    @PostMapping("/{companyId}/subsidiary")
+    @PutMapping("/{companyId}/subsidiary")
     fun deleteSubsidiary(@PathVariable companyId: Int, @RequestBody deleteDto: DeleteAreasDto): ResponseDto<SubsidiaryConfigDto> {
         subsidiaryBl.deleteSubsidiary(deleteDto)
         val subsidiaryConfig= getSubsidiariesAndAreas(companyId)
         return ResponseDto(subsidiaryConfig.data, "Request exitoso", true, "", )
     }
+
+
+    @PostMapping("/{companyId}/subsidiary")
+    fun newSubsidiary(@PathVariable companyId: Int, @RequestBody subsidiaryConfigDto: SubsidiaryConfigDto): ResponseDto<SubsidiaryConfigDto> {
+        subsidiaryBl.newSubsidiaries(companyId,subsidiaryConfigDto)
+        val subsidiaryConfig= getSubsidiariesAndAreas(companyId)
+        return ResponseDto(subsidiaryConfig.data, "Request exitoso", true, "", )
+    }
+
 
 
 }
