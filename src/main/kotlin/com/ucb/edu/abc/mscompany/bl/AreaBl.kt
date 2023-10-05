@@ -18,7 +18,7 @@ class AreaBl @Autowired constructor(
 
     fun create(areaEntity: AreaEntity): Int{
         try{
-            logger.info("Creando area")
+            logger.info("Creando area"+ areaEntity.areaId)
             areaDao.create(areaEntity)
             return areaEntity.areaId
         } catch (e: Exception){

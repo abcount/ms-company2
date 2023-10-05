@@ -83,8 +83,12 @@ Content-Type: multipart/form-data;
 
 #######################
 
+<<<<<<< HEAD
 GET http://localhost:8080/config/enterprise/8
 
 #######################
 
 GET http://localhost:8080/config/enterprise/currency/8
+=======
+GET http://localhost:8080/config/enterprise/10
+>>>>>>> 36a6281fe5a2ef4f60637ddcd451384602d0f826
