@@ -12,5 +12,4 @@ data class ResponseDto <T>(
         var message: String?,
         var success: Boolean,
         var errors: String?
-
 )

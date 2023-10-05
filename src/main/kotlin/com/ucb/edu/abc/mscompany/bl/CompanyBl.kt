@@ -38,6 +38,16 @@ class CompanyBl @Autowired constructor(
 
     }
 
+    fun get(companyId: Int): CompanyEntity{
+        try{
+            logger.info("Obteniendo compañia")
+            return companyDao.getCompanyById(companyId)
+        } catch (e: Exception){
+            //TODO: lanzar error 404
+            throw PostgresException("Ocurrio un error al obtener la compañia con el id: $companyId", e.message.toString())
+        }
+    }
+
     fun factoryCompany(companyDto: CompanyDto, formatDate: String, image: MultipartFile): CompanyEntity {
         val companyEntity = CompanyEntity()
         companyEntity.companyName = companyDto.enterpriseName

@@ -7,9 +7,13 @@ Content-Type: multipart/form-data;
     "dicCategory": "Technology",
     "nit": "167242123132",
     "enterpriseLocation": "Av. Ejemplo",
-    "contactMail": "example@gmail.com",
-    "contactName": "Name Of Contact",
-    "logo64b": "hjdahjsidhjaohdioaho88221jiubiudbuibui4vjihugufydtdtyddytdytdtdytdytdytdytdtydytdtybiu",
+    "emailRepresentative": "example@gmail.com",
+    "nameRepresentative": "Name Of Contact",
+    "ciRepresentative": "123456789",
+    "numberRepresentative": "123456789",
+    "numberRegistration": "123456789",
+    "numberEmployee": "100",
+    "openingDate": "09-11-2023",
     "subsidiaries": [
       {
         "name": "example name",
@@ -21,25 +25,11 @@ Content-Type: multipart/form-data;
         "address": "address example 2",
         "areas": ["area12", "area22", "area32"]
       }
-    ],
-    "openingDate": "09-11-2023"
+    ]
+
 
   },
-  "currencyConfig": {
-    "principalCurrency": 0,
-    "currencyList": [
-      {
-        "moneyName": "Dolares",
-        "abbreviationName": "USD",
-        "currency": 0
-      },
-      {
-        "moneyName": "Crypto Moneda",
-        "abbreviationName": "CM",
-        "currency": 0
-      }
-    ]
-  },
+  "currencyConfig": [1,2,3,4],
   "accountablePlan": [
     {
       "accountCode": "1",
@@ -94,3 +84,7 @@ Content-Type: multipart/form-data;
 #######################
 
 GET http://localhost:8080/config/enterprise/8
+
+#######################
+
+GET http://localhost:8080/config/enterprise/currency/8
