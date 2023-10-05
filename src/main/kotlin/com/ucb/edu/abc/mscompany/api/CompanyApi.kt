@@ -44,6 +44,7 @@ class CompanyApi @Autowired constructor(
         }
 
 
+
         val file = multipartRequest.getFile("image")
         if (file == null) {
             return ResponseDto("No se ha recibido un archivo","",false,"")

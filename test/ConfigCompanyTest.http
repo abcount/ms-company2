@@ -3,87 +3,112 @@ Content-Type: multipart/form-data;
 
 {
   "enterprise": {
-    "enterpriseName": "Example Name",
-    "dicCategory": "Technology",
-    "nit": "167242123132",
-    "enterpriseLocation": "Av. Ejemplo",
-    "emailRepresentative": "example@gmail.com",
-    "nameRepresentative": "Name Of Contact",
-    "ciRepresentative": "123456789",
-    "numberRepresentative": "123456789",
-    "numberRegistration": "123456789",
-    "numberEmployee": "100",
-    "openingDate": "09-11-2023",
+    "enterpriseName": "pollos copacabana",
+    "dicCategory": "",
+    "nit": "23123",
+    "enterpriseLocation": "plaza avaroa",
+    "emailRepresentative": "hola@gmail.com",
+    "nameRepresentative": "alejandro flores",
+    "ciRepresentative": "12345",
+    "numberRepresentative": "77574554",
+    "numberRegistration": "234352323",
+    "numberEmployee": "234234324",
+    "rubro": "alimentos",
+    "openingDate": "10-05-2023",
     "subsidiaries": [
       {
-        "name": "example name",
-        "address": "address example",
-        "areas": ["area1", "area2", "area3"]
+        "name": "la paz",
+        "address": "obrajes",
+        "areas": [
+          "mkt",
+          "asd"
+        ]
       },
       {
-        "name": "example name 2",
-        "address": "address example 2",
-        "areas": ["area12", "area22", "area32"]
+        "name": "lp",
+        "address": "ss",
+        "areas": [
+          "mkt",
+          "asd"
+        ]
       }
     ]
-
-
   },
-  "currencyConfig": [1,2,3,4],
+  "currencyConfig": {
+    "principalCurrency": 0,
+    "currencyList": [
+      {
+        "moneyName": "Bolivianos",
+        "abbreviationName": "BOB",
+        "currency": 0
+      },
+      {
+        "moneyName": "dolar ",
+        "abbreviationName": "usd",
+        "currency": 0
+      }
+    ]
+  },
   "accountablePlan": [
     {
-      "accountCode": "1",
-      "nameAccount": "Pasivo",
+      "accountCode": 1,
+      "nameAccount": "Activo",
       "moneyRub": true,
-      "report": true,
-      "classificator": true,
-      "level": 1,
+      "report": false,
+      "classificator": false,
+      "level": 0,
       "childrenAccounts": [
         {
-          "accountCode": "11",
-          "nameAccount": "Pasivo Corriente",
-          "moneyRub": true,
-          "report": true,
-          "classificator": true,
-          "level": 2,
-          "childrenAccounts": [
-            {
-              "accountCode": "111",
-              "nameAccount": "Pasivo Corriente Secundario Hijo",
-              "moneyRub": true,
-              "report": true,
-              "classificator": false,
-              "level": 3,
-              "childrenAccounts": []
-            }
-          ]
-        },
-        {
-          "accountCode": "12",
-          "nameAccount": "Pasivo Corriente Fijo",
-          "moneyRub": true,
-          "report": true,
+          "level": 1,
+          "accountCode": 11,
+          "nameAccount": "aa",
+          "moneyRub": false,
+          "report": false,
           "classificator": false,
-          "level": 2,
           "childrenAccounts": []
         }
       ]
     },
     {
-      "accountCode": "2",
-      "nameAccount": "Activo",
+      "accountCode": 2,
+      "nameAccount": "Pasivo",
       "moneyRub": true,
-      "report": true,
-      "classificator": true,
-      "level": 1,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 3,
+      "nameAccount": "Patrimoinio",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 4,
+      "nameAccount": "Ingresos",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 5,
+      "nameAccount": "Egresos",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
       "childrenAccounts": []
     }
   ]
 }
-
 #######################
 
-<<<<<<< HEAD
 GET http://localhost:8080/config/enterprise/8
 
 #######################

@@ -14,10 +14,19 @@ interface CompanyDao {
 
     @Options(useGeneratedKeys = true, keyProperty = "companyId")
     @Insert(
-            "INSERT INTO company (company_name, dicc_category, nit, address, logo_uuid, " +
-                    "opening_date, deadline, contact_email, contact_name) VALUES (#{companyName}, " +
-                    "#{diccCategory}, #{nit}, #{address}, #{logoUuid}, #{openingDate}, now(), " +
-                    "#{contactEmail}, #{contactName})")
+            """
+            INSERT INTO company (
+                company_name, dicc_category, nit, address, logo_uuid, 
+                opening_date, email_representative, number_representative, legal_representative,
+                ci_representative, number_registration, number_employee, rubro
+            ) 
+            VALUES (
+                #{companyName}, #{diccCategory}, #{nit}, #{address}, #{logoUuid}, #{openingDate}, 
+                #{emailRepresentative}, #{numberRepresentative}, #{legalRepresentative},
+                #{ciRepresentative}, #{numberRegistration}, #{numberEmployee}, #{rubro}
+            )
+            """
+    )
     fun create(company: CompanyEntity)
 
     @Select("SELECT * FROM company WHERE company_id = #{companyId}")
