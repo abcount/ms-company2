@@ -1,5 +1,5 @@
 -- DROP TABLES
-
+/*
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 
-
+*/
 -- tables
 -- Table: abc_permission
 CREATE TABLE IF NOT EXISTS abc_permission (
@@ -399,3 +399,5 @@ CREATE TABLE IF NOT EXISTS transaction_type (
                                   description varchar(255)  NOT NULL,
                                   CONSTRAINT transaction_type_pk PRIMARY KEY (transaction_type_id)
 );
+
+CREATE EXTENSION IF NOT EXISTS unaccent;

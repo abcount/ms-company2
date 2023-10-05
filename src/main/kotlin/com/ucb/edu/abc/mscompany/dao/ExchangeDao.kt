@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component
 @Component
 interface ExchangeDao {
 
-    @Select("SELECT * FROM exchange WHERE money_name LIKE '%' || #{name} || '%' OR money_iso LIKE '%' ||#{name} || '%'")
+    @Select("SELECT * " +
+            "FROM exchange " +
+            "WHERE unaccent(LOWER(money_name)) LIKE '%' || unaccent(LOWER(#{name})) || '%'" +
+            "   OR unaccent(LOWER(money_iso)) LIKE '%' || unaccent(LOWER(#{name})) || '%'" +
+            "   OR unaccent(LOWER(country)) LIKE '%' || unaccent(LOWER(#{name})) || '%'")
     fun getExchangeByNameOrIso(name: String): List<ExchangeEntity>
 
     @Select("SELECT * FROM exchange")
