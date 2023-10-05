@@ -16,16 +16,20 @@ data class CompanyEntity (
         var address: String,
         var logoUuid: ByteArray?,
         var openingDate: LocalDate,
-        var deadline: String,
-        var contactEmail: String,
-        var contactName: String,
+        var emailRepresentative: String,
+        var numberRepresentative: String,
+        var legalRepresentative: String,
+        var ciRepresentative: String,
+        var numberRegistration: String,
+        var numberEmployee: String,
+        var rubro: String
+
 ){
-    constructor(): this(0,"","","","",null, LocalDate.now(),"","","")
+    constructor(): this(0,"","","","",null, LocalDate.now(),"","","","","","","")
 
     override fun toString(): String {
-        return "CompanyEntity(companyId=$companyId, companyName='$companyName', diccCategory='$diccCategory', nit='$nit', address='$address', logoUuid='$logoUuid', openingDate=$openingDate, deadline='$deadline', contactEmail='$contactEmail', contactName='$contactName')"
+        return "CompanyEntity(companyId=$companyId, companyName='$companyName', diccCategory='$diccCategory', nit='$nit', address='$address', logoUuid=${logoUuid?.contentToString()}, openingDate=$openingDate, emailRepresentative='$emailRepresentative', numberRepresentative='$numberRepresentative', legalRepresentative='$legalRepresentative', ciRepresentative='$ciRepresentative', numberRegistration='$numberRegistration', numberEmployee='$numberEmployee', rubro='$rubro')"
     }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

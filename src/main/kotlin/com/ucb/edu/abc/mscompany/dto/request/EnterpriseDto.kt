@@ -18,8 +18,16 @@ data class EnterpriseDto(
         var nit: String,
         var address: String,
         var logoUuid: ByteArray?,
-        var contactEmail: String,
-        var contactName: String,
+        var openingDate: String,
+        var emailRepresentative: String,
+        var numberRepresentative: String,
+        var legalRepresentative: String,
+        var ciRepresentative: String,
+        var numberRegistration: String,
+        var numberEmployee: String,
+        var rubro: String,
+
+
 ){
 }
 

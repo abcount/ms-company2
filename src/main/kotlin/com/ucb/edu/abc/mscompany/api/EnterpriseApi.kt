@@ -17,26 +17,26 @@ class EnterpriseApi @Autowired constructor(
         private val companyBl: CompanyBl,
         private val exchangeMoneyBl: ExchangeMoneyBl
 ) {
+    /*
+        @GetMapping("/{companyId}")
+        fun getEnterprise(@PathVariable companyId: Int): ResponseDto<EnterpriseDto> {
+                val enterpriseDto = companyBl.getCompanyById(companyId)
+                return ResponseDto(enterpriseDto, "Request exitoso", true, "", )
+        }
 
-    @GetMapping("/{companyId}")
-    fun getEnterprise(@PathVariable companyId: Int): ResponseDto<EnterpriseDto> {
-            val enterpriseDto = companyBl.getCompanyById(companyId)
-            return ResponseDto(enterpriseDto, "Request exitoso", true, "", )
-    }
 
-
-    @PutMapping("/{companyId}")
-    fun updateEnterprise(@RequestBody enterpriseDto: EnterpriseDto,@PathVariable companyId: Int ): ResponseDto<String>{
-            System.out.println("DTO recibido: $enterpriseDto")
-            companyBl.updateCompany(enterpriseDto, companyId)
-            return ResponseDto(
-                    "",
-                    "Request exitoso",
-                    true,
-                    "",
-            )
-    }
-
+        @PutMapping("/{companyId}")
+        fun updateEnterprise(@RequestBody enterpriseDto: EnterpriseDto,@PathVariable companyId: Int ): ResponseDto<String>{
+                System.out.println("DTO recibido: $enterpriseDto")
+                companyBl.updateCompany(enterpriseDto, companyId)
+                return ResponseDto(
+                        "",
+                        "Request exitoso",
+                        true,
+                        "",
+                )
+        }
+    */
     @GetMapping("/currency/{companyId}")
     fun getCurrencyConfig(@PathVariable companyId: Int): ResponseEntity<ResponseDto<EnterpriseCurrencyDto>> {
             val currency = exchangeMoneyBl.getAllCurrenciesByCompanyId(companyId).map { Currency( it.abbreviationName, it.moneyName) }
