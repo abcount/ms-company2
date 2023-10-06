@@ -1,0 +1,86 @@
+{
+  "enterprise": {
+    "enterpriseName": "ss",
+    "dicCategory": "",
+    "nit": "ss",
+    "enterpriseLocation": "ss",
+    "emailRepresentative": "ss@mial.com",
+    "nameRepresentative": "ss",
+    "ciRepresentative": "ss",
+    "numberRepresentative": "12312",
+    "numberRegistration": "ss",
+    "numberEmployee": "d",
+    "rubro": "asd",
+    "openingDate": "10-06-2023",
+    "subsidiaries": [
+      {
+        "name": "hola",
+        "address": "ss",
+        "areas": [
+          "mkt",
+          "disneo"
+        ]
+      }
+    ]
+  },
+  "currencyConfig": {
+    "currencyList": []
+  },
+  "accountablePlan": [
+    {
+      "accountCode": 1,
+      "nameAccount": "Activo",
+      "moneyRub": true,
+      "report": false,
+      "classificator": true,
+      "level": 0,
+      "childrenAccounts": [
+        {
+          "accountCode": 11,
+          "nameAccount": "Activo2",
+          "moneyRub": true,
+          "report": false,
+          "classificator": false,
+          "level": 1,
+          "childrenAccounts": []
+        }
+      ]
+    },
+    {
+      "accountCode": 2,
+      "nameAccount": "Pasivo",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 3,
+      "nameAccount": "Patrimoinio",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 4,
+      "nameAccount": "Ingresos",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    },
+    {
+      "accountCode": 5,
+      "nameAccount": "Egresos",
+      "moneyRub": true,
+      "report": false,
+      "classificator": false,
+      "level": 0,
+      "childrenAccounts": []
+    }
+  ]
+}

@@ -62,7 +62,7 @@ interface CompanyDao {
         and perm.status = true 
         and acp.user_uuid = #{accessPersonUuid}
         and us.status = true
-        group by c.company_id, c.company_name, us.t_user_id;
+        group by c.company_id, c.company_name, us.user_id;
     """)
     fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
 

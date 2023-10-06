@@ -31,8 +31,8 @@ interface UserDao {
 
     // must include status
     @Options(useGeneratedKeys = true, keyProperty = "userId")
-    @Insert("INSERT INTO abc_user (access_person_id, dicc_category, date_created )" +
-            " VALUES (#{accessPersonId}, #{diccCategory}, #{dateCreated} );")
+    @Insert("INSERT INTO abc_user (access_person_id, dicc_category, date_created, status )" +
+            " VALUES (#{accessPersonId}, #{diccCategory}, #{dateCreated} , #{status});")
     fun save(userEntity: UserEntity)
 
 
