@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.CompanyIdAndUserId
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
@@ -30,6 +31,34 @@ interface CompanyDao {
                     "WHERE company_id = #{companyId}"
     )
     fun updateCompany(company: CompanyEntity)
+
+    @Select("""
+        select c.company_id , c.company_name , us.user_id
+        from 
+            company c,
+            subsidiary sub, 
+            area_subsidiary arsub, 
+            abc_permission perm,
+            area ar,
+            abc_user us,
+            access_person acp
+        where 
+            c.company_id = ar.company_id
+        and	sub.company_id = c.company_id
+        and	arsub.area_id = ar.area_id
+        and	sub.subsidiary_id = arsub.subsidiary_id 
+        and	arsub.area_subsidiary_id = perm.area_subsidiary_id
+        and perm.user_id = us.user_id
+        and acp.access_person_id = us.access_person_id
+        and perm.status = true 
+        and acp.user_uuid = #{accessPersonUuid}
+        and us.status = true
+        group by c.company_id, c.company_name, us.t_user_id;
+    """)
+    fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
+
+    @Select("SELECT logo_uuid FROM company WHERE company_id = #{companyId}")
+    fun getImageById(companyId: Int): ByteArray
 
 
 

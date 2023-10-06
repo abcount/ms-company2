@@ -43,6 +43,7 @@ class UserBl @Autowired constructor(
         userEntity.dateCreated = LocalDate.now()
         userEntity.accessPersonId = accessPersonEntity.accessPersonId.toInt()
         userEntity.diccCategory = category
+        userEntity.status = true
         userDao.save(userEntity);
         return  userEntity
 
@@ -65,4 +66,6 @@ class UserBl @Autowired constructor(
         }
 
     }
+
+
 }

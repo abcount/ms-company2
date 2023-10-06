@@ -1,27 +1,32 @@
 package com.ucb.edu.abc.mscompany.bl
 
+
 import com.ucb.edu.abc.mscompany.dao.CompanyDao
+import com.ucb.edu.abc.mscompany.dao.FileDao
 import com.ucb.edu.abc.mscompany.dto.request.CompanyDto
-import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.EnterpriseDto
-import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
+import org.apache.tomcat.util.codec.binary.Base64
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+
 import java.io.IOException
-import java.sql.SQLException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+
+
 
 @Service
 class CompanyBl @Autowired constructor(
         private val companyDao: CompanyDao,
+    private val userBl: UserBl,
+    private val fileDao: FileDao
 ) {
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
@@ -104,6 +109,35 @@ class CompanyBl @Autowired constructor(
         } catch (e: PersistenceException) {
             throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
+    }
+
+    fun getCompaniesByAccessPerson(token: String){
+        val accessPersonEntity = userBl.getUserInformationByToken(token)
+            ?: throw Exception("Null accessPersonEntity");
+        val listOfCompanies = companyDao.getCompanyByUserId(accessPersonEntity.userUuid)
+    }
+    fun getImageOfCompany(id: Int): ByteArray? {
+        var string =  companyDao.getCompanyById(id)
+        return string.logoUuid
+    }
+// font > https://stackoverflow.com/questions/69088235/how-to-insert-multipartfile-photo-into-db-as-base64-string-in-java-spring-boot-a
+    fun saveThisFileWithId(companyId: Int, image: MultipartFile, category: String) {
+        var bites = Base64.encodeBase64(image.bytes)
+        val fileEntity = FileEntity(
+            imageContent = bites,
+            ownerId = companyId,
+            categoryOwner = category,
+        )
+        fileDao.createImage(fileEntity)
+    }
+
+    fun getImageOfCompany2(id: Int): String {
+        var string =  fileDao.getImageByIdAndCategory(categoryOwner ="COMPANY-PROFILE-IMAGE", ownerId = id)
+        println(string.length)
+        println("This wouldbe an image 15 ${string.substring(0, 15)}")
+        println("This. wouldbe an image -15 ${string.substring(string.length - 16, string.length)}" )
+
+        return string
     }
 
 

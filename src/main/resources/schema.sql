@@ -1,5 +1,5 @@
 -- DROP TABLES
-/*
+
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -33,8 +33,8 @@ DROP TABLE IF EXISTS subsidiary;
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
+DROP TABLE IF EXISTS images_for_all;
 
-*/
 
 -- Table: abc_permission
 CREATE TABLE IF NOT EXISTS abc_permission (
@@ -43,6 +43,14 @@ CREATE TABLE IF NOT EXISTS abc_permission (
   user_id int NOT NULL,
   status boolean NOT NULL,
   dic_category varchar(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS images_for_all(
+    image_content bytea NOT NULL,
+    owner_id int NOT NULL,
+    category_owner varchar(100),
+    extension_file varchar(100),
+    uuid_file varchar(100)
 );
 
 -- Table: abc_user

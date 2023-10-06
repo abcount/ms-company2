@@ -6,6 +6,7 @@ data class UserEntity (
     var userId: Int = 0,
     var accessPersonId: Int = 0,
     var diccCategory: String? = null,
+    var status: Boolean = false,
     var dateCreated: LocalDate? =  null,
 ){
     override fun toString(): String {

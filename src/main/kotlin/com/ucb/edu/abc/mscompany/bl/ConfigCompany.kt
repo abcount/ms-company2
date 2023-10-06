@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import org.apache.tomcat.util.codec.binary.Base64
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -26,6 +27,9 @@ class ConfigCompany @Autowired constructor(
         //Crear la compañia y devolver los datos de compañia
         val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "MM-dd-yyyy", image)
         val companyId = companyBl.create(companyEntity)
+        
+        // update Alan: convert file into Base 64 and save into new table 
+        companyBl.saveThisFileWithId(companyId, image, "COMPANY-PROFILE-IMAGE")
 
         //Crear Sucursales y areas
         var listOfAreasSubsidiary = mutableListOf<Int>()
@@ -68,6 +72,8 @@ class ConfigCompany @Autowired constructor(
         accountBl.createAccountPlan(createCompanyDto.accountablePlan, companyId)
         return companyId
     }
+
+
 
 
 }
