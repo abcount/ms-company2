@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.entity.AreaSubsidiaryEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
+import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Component
 
 @Mapper
@@ -15,5 +16,7 @@ interface AreaSubsidiaryDao {
             " VALUES (#{subsidiaryId}, #{areaId}, #{diccCategory}, now())")
     fun create(areaSubsidiaryEntity: AreaSubsidiaryEntity)
 
+    @Select("SELECT * FROM area_subsidiary WHERE area_id = #{areaId} AND subsidiary_id = #{subsidiaryId}")
+    fun findByAreaAndSubsidiary(areaId: Int, subsidiaryId: Int): AreaSubsidiaryEntity?
 
 }

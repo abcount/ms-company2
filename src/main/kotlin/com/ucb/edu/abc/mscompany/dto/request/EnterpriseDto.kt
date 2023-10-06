@@ -14,18 +14,16 @@ import org.springframework.web.multipart.MultipartFile
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EnterpriseDto(
         var companyName: String,
-        var diccCategory: String,
         var nit: String,
         var address: String,
         var logoUuid: ByteArray?,
-        var openingDate: String,
         var emailRepresentative: String,
         var numberRepresentative: String,
         var legalRepresentative: String,
         var ciRepresentative: String,
         var numberRegistration: String,
         var numberEmployee: String,
-        var rubro: String,
+        var rubro: String
 
 
 ){

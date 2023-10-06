@@ -15,6 +15,7 @@ import org.apache.ibatis.exceptions.PersistenceException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -30,6 +31,9 @@ class CompanyBl @Autowired constructor(
     private val userBl: UserBl,
     private val fileDao: FileDao
 ) {
+    @Value("\${server.port}")
+    lateinit var port: String
+
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
 
@@ -84,13 +88,12 @@ class CompanyBl @Autowired constructor(
         }
     }
 
-    /*
+
     fun getCompanyById(companyId: Int): EnterpriseDto {
         try {
             val companyEntity = companyDao.getCompanyById(companyId)
             return EnterpriseDto(
                     companyEntity.companyName,
-                    companyEntity.diccCategory,
                     companyEntity.nit,
                     companyEntity.address,
                     companyEntity.logoUuid,
@@ -102,29 +105,32 @@ class CompanyBl @Autowired constructor(
                     companyEntity.numberEmployee,
                     companyEntity.rubro
             )
-
         } catch (e: PersistenceException) {
             throw PostgresException("Ocurrio un error al obtener la compañia con el id: $companyId", e.message.toString())
         }
     }
 
-    fun updateCompany(enterpriseDto: EnterpriseDto, companyId: Int){
+    fun updateCompany(enterpriseDto: EnterpriseDto, companyId: Int, image: MultipartFile){
         try {
             var companyEntity = companyDao.getCompanyById(companyId)
-
             companyEntity.companyName = enterpriseDto.companyName
-            companyEntity.diccCategory = enterpriseDto.diccCategory
             companyEntity.nit = enterpriseDto.nit
             companyEntity.address = enterpriseDto.address
-            companyEntity.logoUuid = enterpriseDto.logoUuid
-            companyEntity.contactEmail = enterpriseDto.contactEmail
-            companyEntity.contactName = enterpriseDto.contactName
+            companyEntity.logoUuid = convertMultipartFileToByteArray(image)
+            println("logo: ${companyEntity.logoUuid}")
+            companyEntity.emailRepresentative = enterpriseDto.emailRepresentative
+            companyEntity.numberRepresentative = enterpriseDto.numberRepresentative
+            companyEntity.legalRepresentative = enterpriseDto.legalRepresentative
+            companyEntity.ciRepresentative = enterpriseDto.ciRepresentative
+            companyEntity.numberRegistration = enterpriseDto.numberRegistration
+            companyEntity.numberEmployee = enterpriseDto.numberEmployee
+            companyEntity.rubro = enterpriseDto.rubro
             companyDao.updateCompany(companyEntity)
         } catch (e: PersistenceException) {
             throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
-    }*/
-
+    }
+// fixme its burned
     fun getCompaniesByAccessPerson(token: String): List<CompanyListDto> {
         val accessPersonEntity = userBl.getUserInformationByToken(token)
             ?: throw Exception("Null accessPersonEntity");
@@ -133,7 +139,7 @@ class CompanyBl @Autowired constructor(
             CompanyListDto(
                 companyId = item.companyId,
                 companyName = item.companyName,
-                urlIconImage = "http://localhost:8082/image/company/${item.companyId}",
+                urlIconImage = "http://localhost:$port/image/company/${item.companyId}",
                 userId = item.userId)
         }
         return listDtoCompanies
