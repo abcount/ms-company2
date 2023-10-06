@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.SubsidiaryDao
 import com.ucb.edu.abc.mscompany.dao.AreaDao
+import com.ucb.edu.abc.mscompany.dao.AreaSubsidiaryDao
 import com.ucb.edu.abc.mscompany.dto.request.*
 
 import com.ucb.edu.abc.mscompany.entity.SubsidiaryEntity
@@ -16,8 +17,9 @@ import java.sql.SQLException
 class SubsidiaryBl @Autowired constructor(
     private val subsidiaryDao: SubsidiaryDao,
     private val areaDao: AreaDao,
+    private val areaSubsidiaryDao: AreaSubsidiaryDao,
     private var areaBl: AreaBl,
-    private var areaSubsidiaryBl: AreaSubsidiaryBl
+    private var areaSubsidiaryBl: AreaSubsidiaryBl,
 ) {
 
 
@@ -42,14 +44,6 @@ class SubsidiaryBl @Autowired constructor(
         }
     }
 
-    fun getAllByCompanyId(companyId: Int): List<SubsidiaryEntity>{
-        try {
-            logger.info("Obteniendo sucursales")
-            return subsidiaryDao.getSubsidiariesByCompanyId(companyId)
-        } catch (e: Exception) {
-            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: $companyId", e.message.toString())
-        }
-    }
 
     fun factorySubsidiary(subsidiaryDto: SubsidiaryDto, companyId: Int): SubsidiaryEntity{
         val subsidiaryEntity = SubsidiaryEntity()
@@ -96,20 +90,40 @@ class SubsidiaryBl @Autowired constructor(
         }
     }
 
-    fun newSubsidiaries(companyId: Int, newSubsidiariesDto: SubsidiaryConfigDto){
+    fun newSubsidiaries(companyId: Int, newSubsidiariesDto: SubsidiaryConfigDto) {
         try {
-            newSubsidiariesDto.subsidiaries.forEach { subsidiary -> subsidiaryDao.create(factorynewSubsidiaries( companyId,subsidiary)) }
-            newSubsidiariesDto.areas.forEach { area -> areaDao.create(areaBl.factoryArea( area.areaName,companyId,null)) }
-            // crear para area subsidiary
-            //newSubsidiariesDto.areas.forEach { area -> areaDao.create(areaBl.factoryArea( area.areaName,companyId,null))}
+            val allSubsidiaries = subsidiaryDao.getSubsidiariesByCompanyId(companyId).map { it.subsidiaryId }.toMutableList()
+            val allAreas = areaDao.getAreasByCompanyId(companyId).map { it.areaId }.toMutableList()
 
+            // Crear nueva sucursal
+            newSubsidiariesDto.subsidiaries.forEach { subsidiary ->
+                val id = create(factorynewSubsidiaries(companyId, subsidiary))
+                allSubsidiaries.add(id)
+            }
 
+            // crear nueva area
+            newSubsidiariesDto.areas.forEach { area ->
+                val id = areaBl.create(areaBl.factoryArea(area.areaName, companyId, null))
+                allAreas.add(id)
+            }
 
+            // Para cada sucursal asegurarse de que tenga todas las áreas.
+            allSubsidiaries.forEach { subsidiaryId ->
+                allAreas.forEach { areaId ->
+                    // Verificar si ya existe en la BD
+                    val existing = areaSubsidiaryDao.findByAreaAndSubsidiary(areaId, subsidiaryId)
+                    if (existing == null) {
+                        areaSubsidiaryBl.create(areaSubsidiaryBl.factoryAreaSubsidiary(areaId, subsidiaryId, "enable"))
+                    }
+                }
+            }
 
-        }catch (e: Exception) {
-            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: $companyId", e.message.toString())
         }
     }
+
+
 
 
     // esta funcion se debe a que el nuevo json de agregar nuevas sucursales es distinto, areas y suscursales, vienen en el mismo json
@@ -126,5 +140,7 @@ class SubsidiaryBl @Autowired constructor(
             throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: ", e.message.toString())
         }
     }
+
+
 
 }

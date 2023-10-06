@@ -3,51 +3,31 @@ Content-Type: multipart/form-data;
 
 {
   "enterprise": {
-    "enterpriseName": "pollos copacabana",
+    "enterpriseName": "ss",
     "dicCategory": "",
-    "nit": "23123",
-    "enterpriseLocation": "plaza avaroa",
-    "emailRepresentative": "hola@gmail.com",
-    "nameRepresentative": "alejandro flores",
-    "ciRepresentative": "12345",
-    "numberRepresentative": "77574554",
-    "numberRegistration": "234352323",
-    "numberEmployee": "234234324",
-    "rubro": "alimentos",
-    "openingDate": "10-05-2023",
+    "nit": "ss",
+    "enterpriseLocation": "ss",
+    "emailRepresentative": "ss@mial.com",
+    "nameRepresentative": "ss",
+    "ciRepresentative": "ss",
+    "numberRepresentative": "12312",
+    "numberRegistration": "ss",
+    "numberEmployee": "d",
+    "rubro": "asd",
+    "openingDate": "10-06-2023",
     "subsidiaries": [
       {
-        "name": "la paz",
-        "address": "obrajes",
-        "areas": [
-          "mkt",
-          "asd"
-        ]
-      },
-      {
-        "name": "lp",
+        "name": "hola",
         "address": "ss",
         "areas": [
           "mkt",
-          "asd"
+          "disneo"
         ]
       }
     ]
   },
   "currencyConfig": {
-    "principalCurrency": 0,
-    "currencyList": [
-      {
-        "moneyName": "Bolivianos",
-        "abbreviationName": "BOB",
-        "currency": 0
-      },
-      {
-        "moneyName": "dolar ",
-        "abbreviationName": "usd",
-        "currency": 0
-      }
-    ]
+    "currencyList": []
   },
   "accountablePlan": [
     {
@@ -57,17 +37,7 @@ Content-Type: multipart/form-data;
       "report": false,
       "classificator": false,
       "level": 0,
-      "childrenAccounts": [
-        {
-          "level": 1,
-          "accountCode": 11,
-          "nameAccount": "aa",
-          "moneyRub": false,
-          "report": false,
-          "classificator": false,
-          "childrenAccounts": []
-        }
-      ]
+      "childrenAccounts": []
     },
     {
       "accountCode": 2,
@@ -109,11 +79,8 @@ Content-Type: multipart/form-data;
 }
 #######################
 
-GET http://localhost:8080/config/enterprise/8
+GET http://localhost:8080/config/enterprise/3
 
 #######################
 
 GET http://localhost:8080/config/enterprise/currency/8
-=======
-GET http://localhost:8080/config/enterprise/10
->>>>>>> 36a6281fe5a2ef4f60637ddcd451384602d0f826

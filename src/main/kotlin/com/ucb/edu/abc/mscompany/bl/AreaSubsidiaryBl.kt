@@ -17,22 +17,16 @@ class AreaSubsidiaryBl @Autowired constructor(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun create(areaSubsidiaryEntity: AreaSubsidiaryEntity): Int {
-        try{
+        try {
             logger.info("Creando area-sucursal")
-            println("****************************************")
-            println(areaSubsidiaryEntity.areaSubsidiaryId)
-            println("****************************************")
-
             areaSubsidiaryDao.create(areaSubsidiaryEntity)
-            println("-----------------------------------------")
-            println(areaSubsidiaryEntity.areaSubsidiaryId)
-            println("-----------------------------------------")
-
             return areaSubsidiaryEntity.areaSubsidiaryId
-        } catch (e: Exception){
-            throw PostgresException("Ocurrio un error al crear la area-sucursal: ${areaSubsidiaryEntity.toString()}", e.message.toString())
+        } catch (e: PersistenceException) {
+            logger.error("Error al crear area-sucursal", e)
+            return 0
         }
     }
+
 
     fun factoryAreaSubsidiary(areaId:Int, subsidiaryId: Int, diccCategory: String): AreaSubsidiaryEntity{
         val areaSubsidiaryEntity = AreaSubsidiaryEntity()
@@ -41,5 +35,7 @@ class AreaSubsidiaryBl @Autowired constructor(
         areaSubsidiaryEntity.diccCategory = diccCategory
         return areaSubsidiaryEntity
     }
+
+
 
 }

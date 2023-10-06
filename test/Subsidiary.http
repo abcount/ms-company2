@@ -8,20 +8,14 @@ Content-Type: application/json
     "subsidiaries": []
 }
 ###
-POST http://localhost:8080/config/enterprise/10/subsidiary
+POST http://localhost:8080/config/enterprise/1/subsidiary
 Content-Type: application/json
 
 {
     "areas": [
       {
-        "areaName": "xd"
+        "areaName": "xd1"
       }
     ],
-    "subsidiaries": [
-        {
-            "address": "xd",
-            "subsidiaryName": "dx "
-        }
-
-    ]
+    "subsidiaries": []
 }

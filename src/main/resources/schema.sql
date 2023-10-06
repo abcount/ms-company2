@@ -1,5 +1,5 @@
 -- DROP TABLES
-/*
+
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 
-*/
+
 -- tables
 -- Table: abc_permission
 CREATE TABLE IF NOT EXISTS abc_permission (
