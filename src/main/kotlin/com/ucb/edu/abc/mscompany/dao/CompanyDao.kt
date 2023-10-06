@@ -57,8 +57,7 @@ interface CompanyDao {
     """)
     fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
 
-    @Select("SELECT logo_uuid FROM company WHERE company_id = #{companyId}")
-    fun getImageById(companyId: Int): ByteArray
+
 
 
 
