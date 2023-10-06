@@ -37,6 +37,7 @@ class CompanyBl @Autowired constructor(
     fun create(companyEntity: CompanyEntity): Int {
         try{
             logger.info("Creando compañia")
+
             companyDao.create(companyEntity)
             return companyEntity.companyId
         } catch (e: Exception){
@@ -63,8 +64,13 @@ class CompanyBl @Autowired constructor(
         companyEntity.address = companyDto.enterpriseLocation
         //TODO: convertir a Base64 o guardar en un Bucket y asignar el valor
         companyEntity.logoUuid = convertMultipartFileToByteArray(image)
-        companyEntity.contactEmail = companyDto.contactMail
-        companyEntity.contactName = companyDto.contactName
+        companyEntity.emailRepresentative = companyDto.emailRepresentative
+        companyEntity.numberRepresentative = companyDto.numberRepresentative
+        companyEntity.legalRepresentative = companyDto.nameRepresentative
+        companyEntity.ciRepresentative = companyDto.ciRepresentative
+        companyEntity.numberRegistration = companyDto.numberRegistration
+        companyEntity.numberEmployee = companyDto.numberEmployee
+        companyEntity.rubro = companyDto.rubro
         companyEntity.openingDate = LocalDate.parse(companyDto.openingDate, DateTimeFormatter.ofPattern(formatDate))
         return companyEntity
     }
@@ -78,6 +84,7 @@ class CompanyBl @Autowired constructor(
         }
     }
 
+    /*
     fun getCompanyById(companyId: Int): EnterpriseDto {
         try {
             val companyEntity = companyDao.getCompanyById(companyId)
@@ -87,8 +94,13 @@ class CompanyBl @Autowired constructor(
                     companyEntity.nit,
                     companyEntity.address,
                     companyEntity.logoUuid,
-                    companyEntity.contactEmail,
-                    companyEntity.contactName
+                    companyEntity.emailRepresentative,
+                    companyEntity.numberRepresentative,
+                    companyEntity.legalRepresentative,
+                    companyEntity.ciRepresentative,
+                    companyEntity.numberRegistration,
+                    companyEntity.numberEmployee,
+                    companyEntity.rubro
             )
 
         } catch (e: PersistenceException) {
@@ -111,7 +123,7 @@ class CompanyBl @Autowired constructor(
         } catch (e: PersistenceException) {
             throw PostgresException("Ocurrio un error al actualizar la compañia ", e.message.toString())
         }
-    }
+    }*/
 
     fun getCompaniesByAccessPerson(token: String): List<CompanyListDto> {
         val accessPersonEntity = userBl.getUserInformationByToken(token)

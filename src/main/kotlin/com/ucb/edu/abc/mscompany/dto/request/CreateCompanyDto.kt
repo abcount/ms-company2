@@ -39,8 +39,13 @@ data class CompanyDto(
         var dicCategory: String,
         var nit: String,
         var enterpriseLocation: String,
-        var contactMail: String,
-        var contactName: String,
+        var emailRepresentative: String,
+        var nameRepresentative: String,
+        var ciRepresentative: String,
+        var numberRepresentative: String,
+        var numberRegistration: String,
+        var numberEmployee: String,
+        var rubro: String,
         var openingDate: String,
         var subsidiaries: List<SubsidiaryDto?>
 )

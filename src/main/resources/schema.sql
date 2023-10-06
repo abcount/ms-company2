@@ -441,11 +441,12 @@ CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 
 -- Table: transaction_type
 CREATE TABLE IF NOT EXISTS transaction_type (
-transaction_type_id serial NOT NULL,
-company_id int NOT NULL,
-type varchar(50) NOT NULL,
-description varchar(255) NOT NULL,
-CONSTRAINT transaction_type_pk PRIMARY KEY (transaction_type_id)
+                                  transaction_type_id serial  NOT NULL,
+                                  company_id int  NOT NULL,
+                                  type varchar(50)  NOT NULL,
+                                  description varchar(255)  NOT NULL,
+                                  CONSTRAINT transaction_type_pk PRIMARY KEY (transaction_type_id)
 );
 
+CREATE EXTENSION IF NOT EXISTS unaccent;
 
