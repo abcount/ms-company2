@@ -27,7 +27,7 @@ interface ExchangeDao {
     @Select("SELECT * FROM exchange WHERE exchange_id = #{exchangeId}")
     fun getExchangeById(exchangeId: Int): ExchangeEntity
 
-    @Select("SELECT * FROM exchange WHERE money_iso = 'BOB' and money_name = 'BOLIVIANO' limit 1")
+    @Select("SELECT * FROM exchange WHERE money_iso = 'BOL' and money_name = 'BOLIVIANO' limit 1")
     fun getBoliviano(): ExchangeEntity
 
     @Select("SELECT * FROM exchange WHERE exchange_id IN (#{exchangeIds})")
