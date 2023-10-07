@@ -424,17 +424,16 @@ CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 
 -- Table: transaction_account
 CREATE TABLE IF NOT EXISTS transaction_account (
-transaction_account_id serial NOT NULL,
-user_id int NOT NULL,
-entity_id int NOT NULL,
-transaction_id int NOT NULL,
-account_id int NOT NULL,
-auxiliary_account_id int NULL,
-glosa_detail varchar(500) NULL,
-"check" varchar(20) NULL,
-reference varchar(80) NULL,
-due_date date NULL,
-company_company_id int NOT NULL,
+transaction_account_id serial  NOT NULL,
+user_id int  NOT NULL,
+entity_id int  NOT NULL,
+transaction_id int  NOT NULL,
+account_id int  NOT NULL,
+auxiliary_account_id int  NULL,
+glosa_detail varchar(500)  NULL,
+document_number varchar(20)  NULL,
+due_date date  NULL,
+company_id int  NOT NULL,
 CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 );
 

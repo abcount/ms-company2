@@ -17,5 +17,49 @@ Content-Type: application/json
         "areaName": "xd1"
       }
     ],
-    "subsidiaries": []
+    "subsidiaries": [
+      {
+        "subsidiaryName": "xd1",
+        "address": "xd1"
+      }
+
+    ]
+}
+
+###
+POST http://localhost:8080/transactional/voucher/1
+Content-Type: application/json
+
+{
+  "companyId": 1,
+  "userId": 1001,
+  "subsidiaryId": 2,
+  "currencyId": 1,
+  "transactionTypeId": 1,
+  "areaId": 2,
+  "transactionNumber": 1,
+  "voucherDate": "2023-10-31",
+  "glosaGeneral": "Descripción general de la transacción",
+  "transactions": [
+    {
+      "accountCode": 1,
+      "entityId": 200,
+      "auxiliaryId": 3001,
+      "amountDebit": 500,
+      "amountCredit": 0,
+      "glosaDetail": "Detalle de la glosa para esta cuenta",
+      "documentCode": "CHK001"
+    },
+    {
+      "accountCode": 1,
+      "entityId": 200,
+      "auxiliaryId": 3001,
+      "amountDebit": 500,
+      "amountCredit": 0,
+      "glosaDetail": "Detalle de la glosa para esta cuenta",
+      "documentCode": "CHK001"
+    }
+  ],
+  "totalDebit": 1000,
+  "totalCredit": 1000
 }
