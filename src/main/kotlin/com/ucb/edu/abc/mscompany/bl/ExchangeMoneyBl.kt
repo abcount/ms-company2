@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeMoneyDao
+import com.ucb.edu.abc.mscompany.entity.ExchangeEntity
 import com.ucb.edu.abc.mscompany.entity.ExchangeMoneyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
@@ -36,11 +37,11 @@ class ExchangeMoneyBl @Autowired constructor(
         }
     }
 
-    fun factoryExchangeMoney(companyId: Int, name: String, abbreviation: String, isPrincipal:Boolean): ExchangeMoneyEntity{
+    fun factoryExchangeMoney(exchangeEntity: ExchangeEntity, companyId: Int, isPrincipal: Boolean): ExchangeMoneyEntity{
         var exchangeMoneyEntity = ExchangeMoneyEntity()
         exchangeMoneyEntity.companyId = companyId
-        exchangeMoneyEntity.moneyName = name
-        exchangeMoneyEntity.abbreviationName = abbreviation
+        exchangeMoneyEntity.moneyName = exchangeEntity.moneyName + " - " + exchangeEntity.country
+        exchangeMoneyEntity.abbreviationName = exchangeEntity.moneyIso
         exchangeMoneyEntity.isPrincipal = isPrincipal
         return exchangeMoneyEntity
     }

@@ -19,5 +19,29 @@ class ExchangeBl @Autowired constructor(
         }
     }
 
+    fun getById(exchangeId: Int): ExchangeEntity{
+        try{
+            return exchangeDao.getExchangeById(exchangeId)
+        } catch (e: Exception){
+            throw PostgresException("Error al obtener el tipo de cambio por id: $exchangeId", e.message.toString())
+        }
+    }
+
+    fun getByArrayId(exchangeIdList: List<Int>): List<ExchangeEntity>{
+        try{
+            return exchangeDao.getExchangesByArrayId(exchangeIdList)
+        } catch (e: Exception){
+            throw PostgresException("Error al obtener el tipo de cambio por id: $exchangeIdList", e.message.toString())
+        }
+    }
+
+    fun getBoliviano(): ExchangeEntity{
+        try{
+            return exchangeDao.getBoliviano()
+        } catch (e: Exception){
+            throw PostgresException("Error al obtener el tipo de cambio", e.message.toString())
+        }
+    }
+
 
 }
