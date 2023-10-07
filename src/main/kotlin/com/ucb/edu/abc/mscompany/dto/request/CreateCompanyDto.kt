@@ -55,19 +55,9 @@ data class CompanyDto(
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CurrencyConfigDto (
-        var principalCurrency: Int,
-        var currencyList: List<CurrencyDto>
+        var currencyList: List<Int>
 )
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class CurrencyDto (
-        var moneyName: String,
-        var abbreviationName: String,
-        var currency: Double,
-)
 
 @Data
 @AllArgsConstructor
