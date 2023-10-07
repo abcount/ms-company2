@@ -1,8 +1,12 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.UserDao
+import com.ucb.edu.abc.mscompany.dto.response.Employee
+import com.ucb.edu.abc.mscompany.dto.response.Invitation
+import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.UserEntity
+import com.ucb.edu.abc.mscompany.enums.InvitationState
 import com.ucb.edu.abc.mscompany.exception.UserNotFoundException
 import lombok.AllArgsConstructor
 import lombok.NoArgsConstructor
@@ -67,5 +71,30 @@ class UserBl @Autowired constructor(
 
     }
 
-
+    fun getUserInformationByCompanyId(companyId: Int): UsersAndInvitation{
+        val usersAndInvitation = UsersAndInvitation(
+            mutableListOf(),
+            mutableListOf()
+        )
+        val userInfoList = userDao.getUserInfoByCompanyId(companyId)
+            ?: throw Exception("Null list for user by companyId")
+        usersAndInvitation.employee = userInfoList.map { item ->
+            Employee(employeeId = item.userId,
+                name = "${item.firstName} ${item.lastName}",
+                email = item.email,
+                urlProfilePicture = "")
+        }
+        val invitationList =userDao.getInvitationByCompanyByInvitationState(companyId = companyId,  invitationState = InvitationState.PENDING.name)
+            ?: throw Exception("Null list for invitation by companyId")
+        usersAndInvitation.invitation = invitationList.map { item->
+            Invitation(
+                invitationId = item.invitationId,
+                invited = "${item.firstName} ${item.lastName}",
+                invitedId = item.userId,
+                email = item.email,
+                urlProfilePicture = ""
+            )
+        }
+        return usersAndInvitation
+    }
 }

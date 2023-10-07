@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
+import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -22,7 +23,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/ms-company")
 class CompanyApi @Autowired constructor(
         private val configCompany: ConfigCompany,
-    private val companyBl: CompanyBl
+    private val companyBl: CompanyBl,
+    private val userBl: UserBl
 ){
     val objectMapper = jacksonObjectMapper()
     @PostMapping("/company")
@@ -82,6 +84,33 @@ class CompanyApi @Autowired constructor(
                     message = ex.message,
                     success = false,
                     errors = "CODE: nnnn"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+    @RequestMapping(value = ["/companies/{id}/employees"], method = [RequestMethod.GET])
+    fun getUsersAndInvited(@PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
+        try{
+            val invitationAndUsers = userBl.getUserInformationByCompanyId(companyId = id)
+            return ResponseEntity(
+                ResponseDto(
+                    data = invitationAndUsers,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto<List<CompanyListDto>>(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
                 ),
                 HttpStatus.BAD_REQUEST
             )
