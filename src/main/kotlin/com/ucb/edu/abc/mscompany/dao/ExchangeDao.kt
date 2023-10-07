@@ -30,6 +30,14 @@ interface ExchangeDao {
     @Select("SELECT * FROM exchange WHERE money_iso = 'BOL' and money_name = 'BOLIVIANO' limit 1")
     fun getBoliviano(): ExchangeEntity
 
-    @Select("SELECT * FROM exchange WHERE exchange_id IN (#{exchangeIds})")
+    @Select("""
+            <script>
+            SELECT * FROM exchange WHERE exchange_id IN 
+            <foreach collection="exchangeIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            </script>
+        """)
     fun getExchangesByArrayId(exchangeIds: List<Int>): List<ExchangeEntity>
+
 }

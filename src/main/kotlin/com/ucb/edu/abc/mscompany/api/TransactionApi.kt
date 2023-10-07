@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.bl.TransactionBl
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

@@ -23,8 +23,4 @@ data class AccountablePlanDto(
 ) {
     constructor(): this(0,"", "", false, false, false, 0, false, mutableListOf())
 
-
-
-
-    
 }

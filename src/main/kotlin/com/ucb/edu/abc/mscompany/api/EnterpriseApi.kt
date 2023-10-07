@@ -10,17 +10,11 @@ import com.ucb.edu.abc.mscompany.dto.response.EnterpriseCurrencyDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.ExchangeEntity
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import javax.servlet.http.HttpServletRequest
 import com.fasterxml.jackson.module.kotlin.readValue
-
-
-
 
 
 @RestController
@@ -40,33 +34,33 @@ class EnterpriseApi @Autowired constructor(
         }
 
 
-        @PutMapping("/{companyId}")
-        fun updateEnterprise(request: HttpServletRequest, @PathVariable companyId: Int): ResponseDto<String> {
-            val multipartRequest = request as? MultipartHttpServletRequest
-                    ?: return ResponseDto("No se ha recibido un archivo","",false,"")
-            val jsonStr = multipartRequest.getParameter("datos")
-            val file = multipartRequest.getFile("image")
-            val response = ResponseDto<String>("", "", false, "")
-            if (jsonStr == null) {
-                return ResponseDto("No se ha recibido un archivo","",false,"")
-            }
-            if (file == null) {
-                return ResponseDto("No se ha recibido un archivo","",false,"")
-            }
-            val enterpriseDto: EnterpriseDto
-            try {
-                enterpriseDto = objectMapper.readValue(jsonStr)
-            } catch (e: Exception) {
-                return ResponseDto("No se ha recibido un archivo","",false,"")
-            }
-
-            val companyId = companyBl.updateCompany(enterpriseDto, companyId, file)
-            response.data = "Se ha actualizado la compañia con el id: $companyId"
-            response.message = "Se ha actualizado la compañia con el id: $companyId"
-            response.success = true
-            response.errors = ""
-            return response
+    @PutMapping("/{companyId}")
+    fun updateEnterprise(request: HttpServletRequest, @PathVariable companyId: Int): ResponseDto<String> {
+        val multipartRequest = request as? MultipartHttpServletRequest
+                ?: return ResponseDto("No se ha recibido un archivo","",false,"")
+        val jsonStr = multipartRequest.getParameter("datos")
+        val file = multipartRequest.getFile("image")
+        val response = ResponseDto<String>("", "", false, "")
+        if (jsonStr == null) {
+            return ResponseDto("No se ha recibido un archivo","",false,"")
         }
+        if (file == null) {
+            return ResponseDto("No se ha recibido un archivo","",false,"")
+        }
+        val enterpriseDto: EnterpriseDto
+        try {
+            enterpriseDto = objectMapper.readValue(jsonStr)
+        } catch (e: Exception) {
+            return ResponseDto("No se ha recibido un archivo","",false,"")
+        }
+
+        val companyId = companyBl.updateCompany(enterpriseDto, companyId, file)
+        response.data = "Se ha actualizado la compañia con el id: $companyId"
+        response.message = "Se ha actualizado la compañia con el id: $companyId"
+        response.success = true
+        response.errors = ""
+        return response
+    }
 
 
     @GetMapping("/currency/{companyId}")
@@ -98,8 +92,22 @@ class EnterpriseApi @Autowired constructor(
         ))
     }
 
-    /*@PostMapping("/currency/")
-    fun createCurrency()*/
+    @PostMapping("/currency/{companyId}/{exchangeId}")
+    fun createCurrency(@PathVariable companyId: Int, @PathVariable exchangeId: Int): ResponseEntity<ResponseDto<List<Currency>>>{
+        val exchange = exchangeBl.getById(exchangeId)
+        val exchangeEntity = exchangeMoneyBl.factoryExchangeMoney(exchange, companyId, false)
+        exchangeMoneyBl.create(exchangeEntity)
+        val listOfExchangeMoney = exchangeMoneyBl.getAllCurrenciesByCompanyId(companyId).map {
+            Currency( it.abbreviationName, it.moneyName) }
+        val responseDto = ResponseDto<List<Currency>>(
+            listOfExchangeMoney,
+            "Se creo el tipo de cambio con exito",
+            true,
+            ""
+        )
+        return ResponseEntity.ok(responseDto)
+
+    }
 
 
 
