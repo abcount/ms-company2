@@ -67,6 +67,10 @@ interface CompanyDao {
     fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
 
 
+    @Select("SELECT company_name FROM company WHERE company_id = #{companyId}")
+    fun getNameCompany(companyId: Int): String
+
+
 
 
 

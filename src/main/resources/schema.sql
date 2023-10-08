@@ -158,6 +158,7 @@ CREATE TABLE IF NOT EXISTS auxiliary_account (
 auxiliary_account_id serial NOT NULL,
 code_account varchar(15) NOT NULL,
 name_description varchar(150) NOT NULL,
+company_id int NOT NULL,
 CONSTRAINT auxiliary_account_pk PRIMARY KEY (auxiliary_account_id)
 );
 
@@ -264,8 +265,8 @@ CONSTRAINT exchange_pk PRIMARY KEY (exchange_id)
 CREATE TABLE IF NOT EXISTS exchange_money (
 exchange_money_id serial NOT NULL,
 company_id int NOT NULL,
-money_name Varchar(30) NOT NULL,
-abbreviation_name Varchar(5) NOT NULL,
+money_name Varchar(50) NOT NULL,
+abbreviation_name Varchar(10) NOT NULL,
 is_principal boolean NOT NULL,
 CONSTRAINT exchange_money_pk PRIMARY KEY (exchange_money_id)
 );
@@ -419,6 +420,7 @@ glosa_general varchar(255) NOT NULL,
 date timestamp NOT NULL,
 exchange_rate_id int NOT NULL,
 area_subsidiary_id int NOT NULL,
+company_id int NOT NULL,
 CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 );
 

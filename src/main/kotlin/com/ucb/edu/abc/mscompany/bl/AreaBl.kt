@@ -26,6 +26,15 @@ class AreaBl @Autowired constructor(
         }
     }
 
+    fun getAreasByCompanyId(companyId: Int): List<AreaEntity>{
+        try {
+            logger.info("Obteniendo areas por id de compañia")
+            return areaDao.getAreasByCompanyId(companyId)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las areas de la empresa con id: $companyId", e.message.toString())
+        }
+    }
+
     fun factoryArea(name: String, companyId: Int, commonId: Int?): AreaEntity{
         val areaEntity = AreaEntity()
         areaEntity.companyId = companyId

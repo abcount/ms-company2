@@ -35,3 +35,7 @@ Content-Type: application/json
     "totalDebit": 1000,
     "totalCredit":0
 }
+
+####
+
+GET http://localhost:8080/transactional/voucher/1

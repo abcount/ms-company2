@@ -54,6 +54,15 @@ class AccountBl @Autowired constructor(
         return create(account)
     }
 
+    fun getAccountsNonGrouperByCompanyId(companyId: Int): List<AccountEntity>{
+        try {
+            logger.info("Obteniendo cuentas no agrupadoras por id de compañia")
+            return accountDao.getAccountsNonGrouperByCompanyId(companyId)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las cuentas no agrupadoras de la empresa con id: $companyId", e.message.toString())
+        }
+    }
+
     fun factoryAccount(companyId: Int, accountDto: AccountDto): AccountEntity{
         val accountEntity = AccountEntity()
         accountEntity.companyId = companyId

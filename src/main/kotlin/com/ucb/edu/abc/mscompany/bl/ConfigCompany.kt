@@ -65,14 +65,14 @@ class ConfigCompany @Autowired constructor(
         exchangeMoneyBl.create(exchangeBol)
 
         //Se crea la lista recibida
+
         val listExchange = exchangeBl.getByArrayId(createCompanyDto.currencyConfig.currencyList)
         listExchange.forEach() {
-            val exchangeMoneyEntity = exchangeMoneyBl.factoryExchangeMoney(it, companyId, false)
-            exchangeMoneyBl.create(exchangeMoneyEntity)
+            if(it.moneyName!=bol.moneyName){ //Verficar que no exista duplicado de moneda
+                val exchangeMoneyEntity = exchangeMoneyBl.factoryExchangeMoney(it, companyId, false)
+                exchangeMoneyBl.create(exchangeMoneyEntity)
+            }
         }
-
-
-
 
         //Crear plan de cuentas
         accountBl.createAccountPlan(createCompanyDto.accountablePlan, companyId)
