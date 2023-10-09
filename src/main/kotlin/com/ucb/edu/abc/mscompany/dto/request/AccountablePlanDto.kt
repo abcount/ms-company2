@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AccountablePlanDto(
     var accountId: Int,
-    var accountCode: String,
+    var codeAccount: String,
     var nameAccount: String,
     var moneyRub: Boolean,
     var report : Boolean,
-    var clasificator: Boolean,
+    var classificator: Boolean,
     var level: Int,
     var editable: Boolean,
     var childrenAccounts: MutableList<AccountablePlanDto>
