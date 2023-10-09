@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/config/enterprise/account")
+@RequestMapping("/config/enterprise/accountable-plan")
 class AccountPlanApi @Autowired constructor(
     private val accountBl: AccountBl
 ){
