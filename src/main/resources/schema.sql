@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS subsidiary (
 subsidiary_id serial NOT NULL,
 company_id int NOT NULL,
 subsidiary_name varchar(255) NOT NULL,
-address varchar(255) NOT NULL,
+address varchar(255) NULL,
 CONSTRAINT subsidiary_pk PRIMARY KEY (subsidiary_id)
 );
 

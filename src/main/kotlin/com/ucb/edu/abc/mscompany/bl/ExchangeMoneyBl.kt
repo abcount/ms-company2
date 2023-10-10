@@ -12,7 +12,8 @@ import java.text.ParseException
 
 @Service
 class ExchangeMoneyBl @Autowired constructor(
-        private val exchangeMoneyDao: ExchangeMoneyDao
+        private val exchangeMoneyDao: ExchangeMoneyDao,
+        private val exchangeBl: ExchangeBl
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -35,6 +36,15 @@ class ExchangeMoneyBl @Autowired constructor(
             //TODO: Lanzar un error 404
             throw PostgresException("Ocurrio un error al obtener los tipos de cambio por compañia: ${companyId}", e.message.toString())
         }
+    }
+
+    fun createByListExchangeId(listExchangeId: List<Int>, companyId: Int): List<ExchangeMoneyEntity>{
+        for(id in listExchangeId){
+            val exchangeBl = exchangeBl.getById(id)
+            val exchangeMoneyEntity = factoryExchangeMoney(exchangeBl, companyId, false)
+            create(exchangeMoneyEntity)
+        }
+        return getAllCurrenciesByCompanyId(companyId)
     }
 
     fun factoryExchangeMoney(exchangeEntity: ExchangeEntity, companyId: Int, isPrincipal: Boolean): ExchangeMoneyEntity{

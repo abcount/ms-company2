@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import javax.servlet.http.HttpServletRequest
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ucb.edu.abc.mscompany.dto.request.NewCurrenciesDto
 
 
 @RestController
@@ -92,21 +93,18 @@ class EnterpriseApi @Autowired constructor(
         ))
     }
 
-    @PostMapping("/currency/{companyId}/{exchangeId}")
-    fun createCurrency(@PathVariable companyId: Int, @PathVariable exchangeId: Int): ResponseEntity<ResponseDto<List<Currency>>>{
-        val exchange = exchangeBl.getById(exchangeId)
-        val exchangeEntity = exchangeMoneyBl.factoryExchangeMoney(exchange, companyId, false)
-        exchangeMoneyBl.create(exchangeEntity)
-        val listOfExchangeMoney = exchangeMoneyBl.getAllCurrenciesByCompanyId(companyId).map {
-            Currency( it.abbreviationName, it.moneyName) }
+    @PostMapping("/currency/{companyId}")
+    fun createCurrency(@PathVariable companyId: Int, @RequestBody newCurrenciesDto: NewCurrenciesDto): ResponseEntity<ResponseDto<List<Currency>>>{
+        val exchangeMoneyList = exchangeMoneyBl.createByListExchangeId(newCurrenciesDto.currencies, companyId).map{
+            Currency(it.abbreviationName, it.moneyName)
+        }
         val responseDto = ResponseDto<List<Currency>>(
-            listOfExchangeMoney,
-            "Se creo el tipo de cambio con exito",
-            true,
-            ""
+                exchangeMoneyList,
+                "Se crearon los tipos de cambio con exito",
+                true,
+                ""
         )
         return ResponseEntity.ok(responseDto)
-
     }
 
 

@@ -29,6 +29,7 @@ class AccountBl @Autowired constructor(
             accountDao.create(accountEntity)
             return accountEntity.accountId
         } catch (e: Exception) {
+            logger.error("Ocurrio un error al crear la cuenta ${accountEntity.toString()}", e.message.toString())
             throw PostgresException("Ocurrio un error al crear la cuenta ${accountEntity.toString()}", e.message.toString())
         }
     }
@@ -38,6 +39,7 @@ class AccountBl @Autowired constructor(
             logger.info("Eliminando cuenta")
             accountDao.delete(accountId)
         } catch (e: Exception) {
+            logger.error("Ocurrio un error al eliminar la cuenta con id: $accountId", e.message.toString())
             throw PostgresException("Ocurrio un error al eliminar la cuenta con id: $accountId", e.message.toString())
         }
     }
@@ -153,8 +155,9 @@ class AccountBl @Autowired constructor(
     fun isEditable(accountId: Int): Boolean {
         try {
             logger.info("Verificando si la cuenta es editable")
-            return accountDao.isEditable(accountId)
+            return !accountDao.isEditable(accountId)
         } catch (e: Exception) {
+            logger.info("Ocurrio un error al verificar si la cuenta es editable")
             throw PostgresException("Ocurrio un error al verificar si la cuenta es editable", e.message.toString())
         }
     }
@@ -169,7 +172,6 @@ class AccountBl @Autowired constructor(
             val accountEntity = factoryNewAccount(companyId, account)
             create(accountEntity)
         }
-
         //Obtener la lista
         return getAccountPlan(companyId)
     }

@@ -29,7 +29,10 @@ interface AccountDao {
             "AND money_rub = true ")
     fun getAccountsNonGrouperByCompanyId(companyId: Int): List<AccountEntity>
 
-    @Select("SELECT ")
+    @Select("SELECT EXISTS (" +
+            "  SELECT 1 " +
+            "  FROM transaction_account " +
+            "  WHERE account_id = #{accountId} )")
     fun isEditable(accountId: Int): Boolean
 
 

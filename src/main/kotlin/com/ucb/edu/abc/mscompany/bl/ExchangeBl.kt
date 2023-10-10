@@ -43,5 +43,9 @@ class ExchangeBl @Autowired constructor(
         }
     }
 
+    fun createByListExchangeId(listExchangeId: List<Int>, companyId: Int){
+
+    }
+
 
 }

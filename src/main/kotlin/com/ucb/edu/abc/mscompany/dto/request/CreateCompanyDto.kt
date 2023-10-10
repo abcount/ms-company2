@@ -64,6 +64,6 @@ data class CurrencyConfigDto (
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SubsidiaryDto (
         var name: String,
-        var address: String,
+        var address: String?,
         var areas: List<String?>
 )
