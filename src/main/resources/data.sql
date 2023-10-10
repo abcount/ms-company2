@@ -1,9 +1,17 @@
 --Elimina los registros existentes para que no exista duplicados
 TRUNCATE TABLE exchange;
+TRUNCATE TABLE transaction_type
 
 -- Reinicia el contador de la secuencia
 -- Lo hacemos ya que seguimos en un entorno de desarrollo
 SELECT setval('exchange_exchange_id_seq', 1) ;
+SELECT setval('transaction_type_transaction_type_id_seq', 1) ;
+
+INSERT INTO transaction_type (type, description)
+VALUES ('INGRESO', 'Ingreso de dinero'),
+       ('EGRESO', 'Egreso de dinero'),
+       ('APERTURA', 'Apertura de cuenta'),
+       ('CIERRE', 'Cierre de cuenta');
 
 
 INSERT INTO exchange (money_name, money_iso, country)

@@ -29,4 +29,8 @@ interface AccountDao {
             "AND money_rub = true ")
     fun getAccountsNonGrouperByCompanyId(companyId: Int): List<AccountEntity>
 
+    @Select("SELECT ")
+    fun isEditable(accountId: Int): Boolean
+
+
 }

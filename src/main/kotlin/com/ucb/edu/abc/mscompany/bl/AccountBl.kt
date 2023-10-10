@@ -3,6 +3,8 @@ package com.ucb.edu.abc.mscompany.bl
 import com.ucb.edu.abc.mscompany.dao.AccountDao
 import com.ucb.edu.abc.mscompany.dto.request.AccountDto
 import com.ucb.edu.abc.mscompany.dto.request.AccountablePlanDto
+import com.ucb.edu.abc.mscompany.dto.request.NewAccount
+import com.ucb.edu.abc.mscompany.dto.request.SetNewAccountPlan
 import com.ucb.edu.abc.mscompany.entity.AccountEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
@@ -28,6 +30,15 @@ class AccountBl @Autowired constructor(
             return accountEntity.accountId
         } catch (e: Exception) {
             throw PostgresException("Ocurrio un error al crear la cuenta ${accountEntity.toString()}", e.message.toString())
+        }
+    }
+
+    fun delete(accountId:Int){
+        try {
+            logger.info("Eliminando cuenta")
+            accountDao.delete(accountId)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al eliminar la cuenta con id: $accountId", e.message.toString())
         }
     }
 
@@ -77,6 +88,20 @@ class AccountBl @Autowired constructor(
         return accountEntity
     }
 
+    fun factoryNewAccount(companyId: Int, newAccount: NewAccount): AccountEntity{
+        val accountEntity = AccountEntity()
+        accountEntity.companyId = companyId
+        accountEntity.codeAccount = newAccount.accountCode
+        accountEntity.nameAccount = newAccount.nameAccount
+        accountEntity.clasificator = newAccount.clasificator
+        accountEntity.level = newAccount.level
+        accountEntity.report = newAccount.report
+        accountEntity.status = true
+        accountEntity.moneyRub = newAccount.moneyRub
+        accountEntity.accountAccountId = null
+        return accountEntity
+    }
+
 
 
     fun getAccountPlan(companyId: Int) : List<AccountablePlanDto> {
@@ -96,8 +121,7 @@ class AccountBl @Autowired constructor(
                 accountablePlanDto.add(setAccountIntoAccountablePlanDto(accountPlan[i], AccountablePlanDto()))
             }
         }
-        var accountablePlanDto = accountablePlanTree(accountPlan, accountablePlanDto) as MutableList<AccountablePlanDto>
-      return accountablePlanDto
+        return accountablePlanTree(accountPlan, accountablePlanDto) as MutableList<AccountablePlanDto>
     }
 
     fun accountablePlanTree(accountPlan: MutableList<AccountEntity>, accountablePlanDto: MutableList<AccountablePlanDto>): List<AccountablePlanDto> {
@@ -122,8 +146,32 @@ class AccountBl @Autowired constructor(
         accountablePlanDto.report = account.report
         accountablePlanDto.clasificator = account.clasificator
         accountablePlanDto.level = account.level
-        accountablePlanDto.editable = true //TODO need to develop a function that verifies if the account is editable or not
+        accountablePlanDto.editable = isEditable(account.accountId)
         return accountablePlanDto
+    }
+
+    fun isEditable(accountId: Int): Boolean {
+        try {
+            logger.info("Verificando si la cuenta es editable")
+            return accountDao.isEditable(accountId)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al verificar si la cuenta es editable", e.message.toString())
+        }
+    }
+
+    fun setNewAccountPlan(setNewAccountPlan: SetNewAccountPlan, companyId: Int): List<AccountablePlanDto>{
+        //Eliminar la lista
+        for(account in setNewAccountPlan.delete){
+            delete(account)
+        }
+        //Actualizar la lista
+        for(account in setNewAccountPlan.new){
+            val accountEntity = factoryNewAccount(companyId, account)
+            createChildOfAccount(accountEntity, account.dad)
+        }
+
+        //Obtener la lista
+        return getAccountPlan(companyId)
     }
 
 

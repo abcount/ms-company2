@@ -69,8 +69,7 @@ class TransactionBl @Autowired constructor(
         transactionalVoucherDto.companyName = companyBl.getCompanyName(companyId)
 
         //Obteniendo la lista de transactionType
-        val transactionTypeList = transactionTypeBl.getTransactionTypeByCompanyId(companyId)
-        transactionalVoucherDto.transactionType = transactionTypeList
+        transactionalVoucherDto.transactionType = transactionTypeBl.getAllTransactionType()
 
         //Obtener Subsidiaries
         //TODO: verificar que tiene acceso a las subsidiarias, verificar que es editable

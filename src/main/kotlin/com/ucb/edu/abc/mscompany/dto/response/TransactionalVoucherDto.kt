@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dto.response
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.ucb.edu.abc.mscompany.entity.TransactionTypeEntity
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor
 data class TransactionalVoucherDto(
     var transactionNumber: Int,
     var companyName: String,
-    var transactionType: List<TransactionType>,
+    var transactionType: List<TransactionTypeEntity>,
     var subsidiaries: List<Subsidiary>,
     var areas: List<Area>,
     var currencies: List<CurrencyVoucher>,
@@ -22,17 +23,6 @@ data class TransactionalVoucherDto(
 ){
     constructor(): this(0, "", listOf(), listOf(), listOf(), listOf(), listOf(), listOf())
 }
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class TransactionType(
-    val transactionTypeId: Int,
-    val type: String,
-    val description: String
-)
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
