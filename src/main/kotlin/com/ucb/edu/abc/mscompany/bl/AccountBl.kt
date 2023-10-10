@@ -140,11 +140,11 @@ class AccountBl @Autowired constructor(
 
     fun setAccountIntoAccountablePlanDto(account: AccountEntity, accountablePlanDto: AccountablePlanDto): AccountablePlanDto {
         accountablePlanDto.accountId = account.accountId
-        accountablePlanDto.accountCode = account.codeAccount
+        accountablePlanDto.codeAccount = account.codeAccount
         accountablePlanDto.nameAccount = account.nameAccount
         accountablePlanDto.moneyRub = account.moneyRub
         accountablePlanDto.report = account.report
-        accountablePlanDto.clasificator = account.clasificator
+        accountablePlanDto.classificator = account.clasificator
         accountablePlanDto.level = account.level
         accountablePlanDto.editable = isEditable(account.accountId)
         return accountablePlanDto

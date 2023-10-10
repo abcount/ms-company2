@@ -14,10 +14,11 @@ interface TransactionDao {
     @Options(useGeneratedKeys = true, keyProperty = "transactionId")
     @Insert(
             """
-                INSERT INTO transaction ( transaction_type_id, transaction_number, glosa_general, date, exchange_rate_id,area_subsidiary_id, company_id
-                VALUES ( #{transactionTypeId}, #{transactionNumber}, #{glosaGeneral}, #{date}, #{exchangeRateId}, #{areaSubsidiaryId}, #{companyId})
-         """
+    INSERT INTO transaction ( transaction_type_id, transaction_number, glosa_general, date, exchange_rate_id, area_subsidiary_id, company_id)
+    VALUES ( #{transactionTypeId}, #{transactionNumber}, #{glosaGeneral}, #{date}, #{exchangeRateId}, #{areaSubsidiaryId}, #{companyId})
+    """
     )
+
     fun create(transaction: TransactionEntity)
 
     @Select("SELECT MAX(transaction_number) FROM transaction WHERE company_id = #{companyId}")

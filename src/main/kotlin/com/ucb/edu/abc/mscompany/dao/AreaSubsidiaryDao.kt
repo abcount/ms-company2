@@ -19,6 +19,7 @@ interface AreaSubsidiaryDao {
     @Select("SELECT * FROM area_subsidiary WHERE area_id = #{areaId} AND subsidiary_id = #{subsidiaryId}")
     fun findByAreaAndSubsidiary(areaId: Int, subsidiaryId: Int): AreaSubsidiaryEntity?
     @Select("SELECT area_subsidiary_id FROM area_subsidiary WHERE subsidiary_id = #{subsidiaryId} and area_id = #{areaId}")
-    fun findAreaSubsidiaryId(subsidiaryId: Int, areaId: Int): Int
+    fun findAreaSubsidiaryId(subsidiaryId: Int, areaId: Int): Int?
+
 
 }
