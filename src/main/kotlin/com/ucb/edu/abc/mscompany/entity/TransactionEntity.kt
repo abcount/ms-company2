@@ -15,7 +15,7 @@ data class TransactionEntity(
         var glosaGeneral: String,
         var date: LocalDateTime,
         var exchangeRateId: Int,
-        var areaSubsidiaryId: Int,
+        var areaSubsidiaryId: Int?,
         var companyId: Int
 
 )
