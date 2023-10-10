@@ -128,7 +128,7 @@ class TransactionBl @Autowired constructor(
         transactionEntity.glosaGeneral = transactionDto.glosaGeneral
         transactionEntity.date= LocalDateTime.now()
         transactionEntity.exchangeRateId = transactionDto.currencyId
-        transactionEntity.areaSubsidiaryId =   areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)
+        transactionEntity.areaSubsidiaryId = areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)
         transactionEntity.companyId = transactionDto.companyId
         return transactionEntity
     }

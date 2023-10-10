@@ -1,6 +1,6 @@
 --Elimina los registros existentes para que no exista duplicados
 TRUNCATE TABLE exchange;
-TRUNCATE TABLE transaction_type
+TRUNCATE TABLE transaction_type;
 
 -- Reinicia el contador de la secuencia
 -- Lo hacemos ya que seguimos en un entorno de desarrollo

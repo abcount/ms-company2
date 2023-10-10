@@ -98,7 +98,7 @@ class AccountBl @Autowired constructor(
         accountEntity.report = newAccount.report
         accountEntity.status = true
         accountEntity.moneyRub = newAccount.moneyRub
-        accountEntity.accountAccountId = null
+        accountEntity.accountAccountId = newAccount.dad
         return accountEntity
     }
 
@@ -167,7 +167,7 @@ class AccountBl @Autowired constructor(
         //Actualizar la lista
         for(account in setNewAccountPlan.new){
             val accountEntity = factoryNewAccount(companyId, account)
-            createChildOfAccount(accountEntity, account.dad)
+            create(accountEntity)
         }
 
         //Obtener la lista

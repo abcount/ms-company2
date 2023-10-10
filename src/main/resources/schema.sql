@@ -421,6 +421,7 @@ date timestamp NOT NULL,
 exchange_rate_id int NOT NULL,
 area_subsidiary_id int NOT NULL,
 company_id int NOT NULL,
+user_id int NOT NULL,
 CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 );
 
@@ -428,7 +429,6 @@ CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 -- Table: transaction_account
 CREATE TABLE IF NOT EXISTS transaction_account (
 transaction_account_id serial  NOT NULL,
-user_id int  NOT NULL,
 entity_id int  NOT NULL,
 transaction_id int  NOT NULL,
 account_id int  NOT NULL,
@@ -444,7 +444,6 @@ CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 -- Table: transaction_type
 CREATE TABLE IF NOT EXISTS transaction_type (
                                   transaction_type_id serial  NOT NULL,
-                                  company_id int  NOT NULL,
                                   type varchar(50)  NOT NULL,
                                   description varchar(255)  NOT NULL,
                                   CONSTRAINT transaction_type_pk PRIMARY KEY (transaction_type_id)
