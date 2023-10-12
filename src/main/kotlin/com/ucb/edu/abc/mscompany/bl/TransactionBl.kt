@@ -40,19 +40,14 @@ class TransactionBl @Autowired constructor(
         if (transactionDto.totalCredit != transactionDto.totalDebit){
             throw Exception("El total de creditos y debitos no coinciden")
         }
-        val transactionEntity = factoryTransaction(transactionDto)
+        val transactionEntity = factoryTransaction(transactionDto, companyId)
         transactionDao.create(transactionEntity)
 
         //registrar en transaction Account
         transactionDto.transactions.forEach {
             val transactionAccountEntity = factoryTransactionAccount(it)
             transactionAccountEntity.transactionId = transactionEntity.transactionId
-            transactionAccountEntity.userId = transactionDto.userId
             transactionAccountEntity.companyId = companyId
-
-            //OJO -->Tal vez seria bueno cambiar la bd, ya que el userid está fuera de la lista, en la bd
-            //en vez de poner el userid en transactionAccount, tal vez ponerlo simplemente en transaction, así no repetiriamos el userid en toda la transaccion
-            //esto porque de todas maneras al estar el userId fuera, igual se repetirá
 
             transactionAccountDao.create(transactionAccountEntity)
             val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId, transactionDto.currencyId)
@@ -121,7 +116,7 @@ class TransactionBl @Autowired constructor(
         return transactionalVoucherDto
     }
 
-    fun factoryTransaction(transactionDto: TransactionDto): TransactionEntity{
+    fun factoryTransaction(transactionDto: TransactionDto, companyId: Int): TransactionEntity{
         val transactionEntity = TransactionEntity()
         transactionEntity.transactionTypeId = transactionDto.transactionTypeId
         transactionEntity.transactionNumber= transactionDto.transactionNumber
@@ -129,19 +124,19 @@ class TransactionBl @Autowired constructor(
         transactionEntity.date= LocalDateTime.now()
         transactionEntity.exchangeRateId = transactionDto.currencyId
         transactionEntity.areaSubsidiaryId = areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)
-        transactionEntity.companyId = transactionDto.companyId
+        transactionEntity.companyId = companyId
+        transactionEntity.userId = transactionDto.userId
         return transactionEntity
     }
 
     fun factoryTransactionAccount(transactionAccountDto: TransactionAccountDto): TransactionAccountEntity{
         val transactionAccountEntity = TransactionAccountEntity()
         transactionAccountEntity.entityId = transactionAccountDto.entityId
-        transactionAccountEntity.accountId = transactionAccountDto.accountCode
+        transactionAccountEntity.accountId = transactionAccountDto.accountId
         transactionAccountEntity.auxiliaryAccountId = transactionAccountDto.auxiliaryId
         transactionAccountEntity.glosaDetail = transactionAccountDto.glosaDetail
         transactionAccountEntity.documentNumber = transactionAccountDto.documentCode
-        // en el mock falta el due date (creo xD)
-        transactionAccountEntity.dueDate = Date()
+        transactionAccountEntity.dueDate = transactionAccountDto.emitedDate
         return transactionAccountEntity
     }
 
