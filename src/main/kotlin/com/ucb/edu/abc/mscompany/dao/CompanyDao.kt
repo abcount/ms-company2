@@ -34,10 +34,15 @@ interface CompanyDao {
     fun getCompanyById(companyId: Int): CompanyEntity
 
     @Update(
-            "UPDATE company SET company_name = #{companyName}, dicc_category = #{diccCategory}, " +
-                    "nit = #{nit}, address = #{address}, logo_uuid = #{logoUuid}, " +
-                    "contact_email = #{contactEmail}, contact_name = #{contactName} " +
-                    "WHERE company_id = #{companyId}"
+            """
+            UPDATE company SET 
+                company_name = #{companyName}, dicc_category = #{diccCategory}, nit = #{nit}, address = #{address}, 
+                logo_uuid = #{logoUuid}, opening_date = #{openingDate}, email_representative = #{emailRepresentative}, 
+                number_representative = #{numberRepresentative}, legal_representative = #{legalRepresentative},
+                ci_representative = #{ciRepresentative}, number_registration = #{numberRegistration}, 
+                number_employee = #{numberEmployee}, rubro = #{rubro}
+            WHERE company_id = #{companyId}
+            """
     )
     fun updateCompany(company: CompanyEntity)
 
