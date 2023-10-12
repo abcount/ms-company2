@@ -5,7 +5,6 @@ import com.ucb.edu.abc.mscompany.dto.request.CreateCompanyDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -13,10 +12,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
+import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -107,6 +105,34 @@ class CompanyApi @Autowired constructor(
             println(ex.message)
             return ResponseEntity(
                 ResponseDto<List<CompanyListDto>>(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+    // creating invitations
+    @RequestMapping(value = ["/companies/{id}/invitations"], method = [RequestMethod.POST])
+    fun createInvitation(@PathVariable id: Int, @RequestBody body: NewInvitationDto): ResponseEntity<ResponseDto<*>> {
+        try{
+            companyBl.createNewInvitation(body, id);
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto(
                     data = null,
                     message = ex.message,
                     success = false,

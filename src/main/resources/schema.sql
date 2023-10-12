@@ -344,9 +344,10 @@ CONSTRAINT group_role_common_pk PRIMARY KEY (group_role_common_id)
 -- Table: invitation
 CREATE TABLE IF NOT EXISTS invitation (
 invitation_id serial NOT NULL,
-user_id int NOT NULL,
+user_id int,
 company_id int NOT NULL,
 invitation_status Varchar(10) NOT NULL,
+access_person_id int,
 status boolean NOT NULL,
 CONSTRAINT invitation_pk PRIMARY KEY (invitation_id)
 );

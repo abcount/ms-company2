@@ -2,7 +2,6 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.UserDao
 import com.ucb.edu.abc.mscompany.dto.response.Employee
-import com.ucb.edu.abc.mscompany.dto.response.Invitation
 import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.UserEntity
@@ -19,7 +18,8 @@ import java.time.LocalDate
 @NoArgsConstructor
 class UserBl @Autowired constructor(
     private val userDao: UserDao,
-    private val accessPersonService: AccessPersonBl
+    private val accessPersonService: AccessPersonBl,
+    private val invitationBl: InvitationBl
 ) {
     fun getUserInformationByToken(token: String): AccessPersonEntity? {
         try{
@@ -38,9 +38,6 @@ class UserBl @Autowired constructor(
         return accessPersonEntity
 
     }
-
-
-
 
     fun createUserByAccessEntity(accessPersonEntity: AccessPersonEntity, category: String):UserEntity? {
         val userEntity = UserEntity()
@@ -84,17 +81,20 @@ class UserBl @Autowired constructor(
                 email = item.email,
                 urlProfilePicture = "")
         }
-        val invitationList =userDao.getInvitationByCompanyByInvitationState(companyId = companyId,  invitationState = InvitationState.PENDING.name)
-            ?: throw Exception("Null list for invitation by companyId")
-        usersAndInvitation.invitation = invitationList.map { item->
-            Invitation(
-                invitationId = item.invitationId,
-                invited = "${item.firstName} ${item.lastName}",
-                invitedId = item.userId,
-                email = item.email,
-                urlProfilePicture = ""
-            )
+        val invitationList = invitationBl.getInvitationByCompanyAndState(companyId = companyId, invitationState = InvitationState.PENDING)
+        invitationList.forEach { item ->
+            val ap = accessPersonService.getAccessPersonInformationById(item.accessPersonId);
+            if(ap != null){
+                usersAndInvitation.invitation.add(
+                    invitationBl.convertDtoInvitation(
+                        accessPersonEntity = ap,
+                        invitationEntity = item
+                    )
+                )
+            }
         }
+
+
         return usersAndInvitation
     }
 }

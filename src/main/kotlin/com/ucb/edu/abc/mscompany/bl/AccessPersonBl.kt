@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.AccessPersonDao
+import com.ucb.edu.abc.mscompany.dto.response.PersonInfoDto
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.exception.UserNotFoundException
 import lombok.AllArgsConstructor
@@ -32,7 +33,7 @@ class AccessPersonBl @Autowired constructor(
         }
     }
 
-    fun getAccessPersonInformationById(id: String): AccessPersonEntity?{
+    fun getAccessPersonInformationById(id: Int): AccessPersonEntity?{
         try {
             val accessPersonEntity = accessPersonDao.findById(id.toInt())
                 .orElseThrow{ UserNotFoundException ("access person with id $id dont found in local DB")}
@@ -54,6 +55,18 @@ class AccessPersonBl @Autowired constructor(
             return createAccessPersonWithDataKeycloak(userUuidFromToken!!);
         }catch (ex2: Exception){
             return null;
+        }
+    }
+    fun getAccessPersonInfoAsUserByUsernameOrEmail(searched: String, limit:Int): List<PersonInfoDto> {
+        val listOfPossible = accessPersonDao.findUserByUsernameOrEmail("$searched%", limit)
+            ?: throw Exception("Null list");
+        return listOfPossible.map { itemAp ->
+            PersonInfoDto(
+                email = itemAp.email,
+                id = itemAp.accessPersonId.toInt(),
+                userName = itemAp.username,
+                fullName = itemAp.firstName + " "+ itemAp.lastName
+            )
         }
     }
     private fun createAccessPersonWithDataKeycloak(userUuidFromToken:String): AccessPersonEntity {

@@ -5,11 +5,11 @@ import com.ucb.edu.abc.mscompany.dao.CompanyDao
 import com.ucb.edu.abc.mscompany.dao.FileDao
 import com.ucb.edu.abc.mscompany.dto.request.CompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.EnterpriseDto
+import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
-import org.apache.commons.codec.binary.Base64
 import org.apache.ibatis.exceptions.PersistenceException
 
 import org.slf4j.Logger
@@ -29,7 +29,8 @@ import java.time.format.DateTimeFormatter
 class CompanyBl @Autowired constructor(
         private val companyDao: CompanyDao,
     private val userBl: UserBl,
-    private val fileDao: FileDao
+    private val fileDao: FileDao,
+    private val invitationBl: InvitationBl
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -162,5 +163,9 @@ class CompanyBl @Autowired constructor(
         return string.imageContent
     }
 
+    // invitations
+    fun createNewInvitation(inv: NewInvitationDto, companyId: Int){
+        invitationBl.createInvitation(inv, companyId)
+    }
 
 }

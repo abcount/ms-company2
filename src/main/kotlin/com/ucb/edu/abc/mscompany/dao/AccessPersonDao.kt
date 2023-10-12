@@ -31,4 +31,12 @@ interface AccessPersonDao {
                 " #{lastName}, #{genderPerson}, #{birthday}, #{diccCategory}, now(), " +
                 " #{userUuid} ) RETURNING access_person_id;")
     fun save(accessPersonEntity: AccessPersonEntity): Int
+
+    @Select("""
+        SELECT * FROM access_person WHERE
+         username LIKE #{searched}
+         OR email LIKE #{searched}
+         LIMIT #{limit}
+    """)
+    fun findUserByUsernameOrEmail(searched: String, limit:Int): List<AccessPersonEntity>?
 }

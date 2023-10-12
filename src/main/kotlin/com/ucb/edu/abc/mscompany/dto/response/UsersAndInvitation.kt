@@ -2,7 +2,7 @@ package com.ucb.edu.abc.mscompany.dto.response
 
 data class UsersAndInvitation(
     var employee: List<Employee>,
-    var invitation: List<Invitation>
+    var invitation: MutableList<InvitationDto>
 )
 data class Employee(
     var employeeId: Int,
@@ -10,10 +10,10 @@ data class Employee(
     var email: String,
     var urlProfilePicture: String
 )
-data class Invitation(
+data class InvitationDto(
     var invitationId: Int,
     var invited: String,
-    var invitedId: Int,
+    var invitedId: Long,
     var email: String,
     var urlProfilePicture: String
 )
