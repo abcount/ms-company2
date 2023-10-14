@@ -1,9 +1,6 @@
 package com.ucb.edu.abc.mscompany.bl
 
-import com.ucb.edu.abc.mscompany.dao.AreaSubsidiaryDao
-import com.ucb.edu.abc.mscompany.dao.DebitCreditDao
-import com.ucb.edu.abc.mscompany.dao.TransactionAccountDao
-import com.ucb.edu.abc.mscompany.dao.TransactionDao
+import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.TransactionAccountDto
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.*
@@ -23,6 +20,8 @@ class TransactionBl @Autowired constructor(
         private val transactionAccountDao: TransactionAccountDao,
         private val debitCreditDao: DebitCreditDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
+        private val areaDao: AreaDao,
+        private val subsidiaryDao: SubsidiaryDao,
         private val transactionTypeBl: TransactionTypeBl,
         private val subsidiaryBl: SubsidiaryBl,
         private val areaBl: AreaBl,
@@ -66,15 +65,25 @@ class TransactionBl @Autowired constructor(
         //Obteniendo la lista de transactionType
         transactionalVoucherDto.transactionType = transactionTypeBl.getAllTransactionType()
 
-        //Obtener Subsidiaries
-        //TODO: verificar que tiene acceso a las subsidiarias, verificar que es editable
+        //Obtener Subsidiaries con permisos
+        //TODO: verificar que la funcion de abajo funciona
+        /*
+        val subsidiaryList = subsidiaryDao.getSubsidiariesByUserIdAndCompanyId(userId, companyId).map{
+            Subsidiary(it.subsidiaryId, it.subsidiaryName, it.address?:"", false)
+        }*/
+
+
         val subsidiaryList = subsidiaryBl.getByCompanyId(companyId).map{
             Subsidiary(it.subsidiaryId, it.subsidiaryName, it.address?:"", false)
         }
         transactionalVoucherDto.subsidiaries = subsidiaryList
 
-        //Obtener Areas
-        //TODO: verificar que tiene acceso a las areas, verificar que es editable
+        //Obtener Areas con permisos
+        //TODO: verificar que la funcion de abajo funciona
+        /*val areaList = areaDao.getAreasByUserIdAndCompanyId(userId, companyId).map {
+            Area(it.areaId, it.areaName, false)
+        }
+        */
         val areaList = areaBl.getAreasByCompanyId(companyId).map {
             Area(it.areaId, it.areaName, false)
         }
@@ -119,7 +128,8 @@ class TransactionBl @Autowired constructor(
     fun factoryTransaction(transactionDto: TransactionDto, companyId: Int): TransactionEntity{
         val transactionEntity = TransactionEntity()
         transactionEntity.transactionTypeId = transactionDto.transactionTypeId
-        transactionEntity.transactionNumber= transactionDto.transactionNumber
+        transactionEntity.transactionNumber= (transactionDao.getLastTransactionNumber(companyId)?.plus(1)?:1).toLong()
+        //transactionEntity.transactionNumber= transactionDto.transactionNumber
         transactionEntity.glosaGeneral = transactionDto.glosaGeneral
         transactionEntity.date= LocalDateTime.now()
         transactionEntity.exchangeRateId = transactionDto.currencyId

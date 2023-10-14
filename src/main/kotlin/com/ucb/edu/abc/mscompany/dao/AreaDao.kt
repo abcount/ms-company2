@@ -22,6 +22,25 @@ interface AreaDao {
     @Select("SELECT * FROM area WHERE company_id = #{companyId} and status = 'true'")
     fun getAreasByCompanyId(companyId: Int): List<AreaEntity>
 
+    @Select("""
+        SELECT
+            a.*
+        FROM
+            abc_permission ap
+        JOIN
+            area_subsidiary asub ON ap.area_subsidiary_id = asub.area_subsidiary_id
+        JOIN
+            area a ON asub.area_id = a.area_id
+        JOIN
+            subsidiary s ON asub.subsidiary_id = s.subsidiary_id
+        WHERE
+            ap.user_id = #{userId} AND
+            s.company_id = #{companyId} AND
+            a.status = true
+    """)
+    fun getAreasByUserIdAndCompanyId(userId: Int, companyId: Int): List<AreaEntity>
+
+
     @Update("UPDATE area SET status = 'false' WHERE area_id = #{areaId}")
     fun updateStatus(areaId: Int)
 
