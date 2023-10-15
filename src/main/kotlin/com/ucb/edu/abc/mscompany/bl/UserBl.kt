@@ -4,8 +4,11 @@ import com.ucb.edu.abc.mscompany.dao.UserDao
 import com.ucb.edu.abc.mscompany.dto.response.Employee
 import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
+import com.ucb.edu.abc.mscompany.entity.InvitationEntity
 import com.ucb.edu.abc.mscompany.entity.UserEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.UserAndAccessPersonInformation
 import com.ucb.edu.abc.mscompany.enums.InvitationState
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.UserNotFoundException
 import lombok.AllArgsConstructor
 import lombok.NoArgsConstructor
@@ -19,8 +22,53 @@ import java.time.LocalDate
 class UserBl @Autowired constructor(
     private val userDao: UserDao,
     private val accessPersonService: AccessPersonBl,
-    private val invitationBl: InvitationBl
+    private val invitationBl: InvitationBl,
 ) {
+
+    fun getUserByCompanyIdAndToken(token:String, companyId:Int, userCat: UserAbcCategory, currentAccessPersonEntity: AccessPersonEntity?): UserEntity {
+        val accessPersonEntity = getAccessPersonEntityEasy(token, currentAccessPersonEntity)
+
+        val listFilterByCompanyAndAccessPersonUUid =
+            userDao.getUserEntityByCompanyAndAccessPersonUUID(
+                companyId = companyId,cat=userCat.name, userUuid = accessPersonEntity!!.userUuid)
+            ?: throw Exception("Could not get list merged")
+        if(listFilterByCompanyAndAccessPersonUUid.size > 1){
+            throw Exception("More that one user and company");
+        }
+        val id =  listFilterByCompanyAndAccessPersonUUid[0].userId;
+        return getUserById(id)
+            ?: throw Exception("Not user found");
+
+    }
+
+
+    fun getAccessPersonEntityEasy(token: String, currentAccessPersonEntity: AccessPersonEntity?): AccessPersonEntity? {
+        var accessPersonEntity = currentAccessPersonEntity
+        if(currentAccessPersonEntity == null){
+            accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
+                ?: throw Exception("Access person entity not found");
+        }
+        return accessPersonEntity
+    }
+    fun getUserIdByCompanyIdAndToken(token:String, companyId:Int, userAbcCategory: UserAbcCategory, currentAccessPersonEntity: AccessPersonEntity?): Int {
+        var accessPersonEntity = currentAccessPersonEntity
+        if(currentAccessPersonEntity == null){
+            accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
+                ?: throw Exception("Access person entity not found");
+        }
+
+
+        val listFilterByCompanyAndAccessPersonUUid = userDao.getUserEntityByCompanyAndAccessPersonUUID(companyId = companyId,cat=userAbcCategory.name, userUuid = accessPersonEntity!!.userUuid)
+            ?: throw Exception("Could not get list merged")
+        if(listFilterByCompanyAndAccessPersonUUid.size > 1){
+            throw Exception("More that one user and company");
+        }
+        val id =  listFilterByCompanyAndAccessPersonUUid[0].userId;
+        return id;
+    }
+    fun getUsersListByAccessPerson(accessPersonEntity: AccessPersonEntity): MutableList<UserEntity> {
+        return userDao.findUsersByAccessPersonUuid(userUuid = accessPersonEntity.userUuid)
+    }
     fun getUserInformationByToken(token: String): AccessPersonEntity? {
         try{
             val accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
@@ -49,6 +97,16 @@ class UserBl @Autowired constructor(
         return  userEntity
 
     }
+    fun createUserByAccessPersonId(
+        accessPersonId: Int, category: String, status: Boolean): UserEntity {
+        val userEntity = UserEntity()
+        userEntity.dateCreated = LocalDate.now()
+        userEntity.accessPersonId = accessPersonId;
+        userEntity.diccCategory = category;
+        userEntity.status = status;
+        userDao.save(userEntity);
+        return userEntity;
+    }
 
     fun createUserByToken(token: String, category: String?): UserEntity? {
         val accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
@@ -68,13 +126,18 @@ class UserBl @Autowired constructor(
 
     }
 
-    fun getUserInformationByCompanyId(companyId: Int): UsersAndInvitation{
+    fun getUserListByCompanyId(companyId:Int): List<UserAndAccessPersonInformation> {
+        return userDao.getUserInfoByCompanyIdAndCategory(companyId, category = UserAbcCategory.ACTIVE.name)
+            ?: throw Exception("Null list for user by companyId")
+
+    }
+
+    fun getUserInformationInvitationByCompanyId(companyId: Int): UsersAndInvitation{
         val usersAndInvitation = UsersAndInvitation(
             mutableListOf(),
             mutableListOf()
         )
-        val userInfoList = userDao.getUserInfoByCompanyId(companyId)
-            ?: throw Exception("Null list for user by companyId")
+        val userInfoList = getUserListByCompanyId(companyId)
         usersAndInvitation.employee = userInfoList.map { item ->
             Employee(employeeId = item.userId,
                 name = "${item.firstName} ${item.lastName}",
@@ -96,5 +159,48 @@ class UserBl @Autowired constructor(
 
 
         return usersAndInvitation
+    }
+
+    fun updateUserCategory(userEntity: UserEntity, userCat: UserAbcCategory){
+        userDao.updateUserCategory(userId = userEntity.userId, category = userCat.name)
+    }
+    fun getPersonalInvitations(token: String, currentAccessPersonEntity: AccessPersonEntity?): MutableMap<String, List<Any>> {
+        var accessPersonEntity = currentAccessPersonEntity
+        if(currentAccessPersonEntity == null){
+            accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
+                ?: throw Exception("Access person entity not found");
+        }
+
+        val personaInvitations = invitationBl.getPersonalInvitationsByAccessPersonAndState(accessPersonEntity!!, InvitationState.PENDING)
+            ?: throw Exception("Personal invitation null");
+        val personalInvitations2 = invitationBl.getPersonalInvitationsByAccessPersonAndState(accessPersonEntity, InvitationState.REFUSED)
+            ?: throw Exception("Personal invitation refused null");
+        //create dto
+        val mapToReturn: MutableMap<String, List<Any>> = mutableMapOf()
+        mapToReturn[InvitationState.PENDING.name] = personaInvitations;
+        mapToReturn[InvitationState.REFUSED.name] = personalInvitations2;
+        return mapToReturn;
+    }
+
+
+    // function to get invitation
+    fun getPersonalUpdatedInvitations(token: String, invitationId:Int, accepted:Boolean, currentAccessPersonEntity: AccessPersonEntity?): InvitationEntity? {
+        var accessPersonEntity = currentAccessPersonEntity
+        if(currentAccessPersonEntity == null){
+            accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
+                ?: throw Exception("Access person entity not found");
+        }
+        val invitation = invitationBl.findById(invitationId)
+        if(invitation.accessPersonId.toLong() != accessPersonEntity?.accessPersonId)
+            throw Exception("Not mached in invitation and accessPerson")
+
+        if(accepted){
+            invitationBl.changeStateOfInvitation(invitationId, InvitationState.ACCEPTED);
+        }else{
+            invitationBl.changeStateOfInvitation(invitationId, InvitationState.REFUSED)
+            return null
+        }
+        return invitation
+
     }
 }

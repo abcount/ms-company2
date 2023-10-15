@@ -21,4 +21,7 @@ interface RoleDao {
             " VALUES (#{name}, #{description}, #{diccCategory}, #{status}, #{dateCreated}, #{commonId});")
     fun createRole(roleEntity: RoleEntity)
 
+    @Select("SELECT * FROM role_entity")
+    fun getAllRoles(): List<RoleEntity>
+
 }

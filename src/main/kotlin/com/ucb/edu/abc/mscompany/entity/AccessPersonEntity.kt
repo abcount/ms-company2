@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
 import java.time.LocalDate
+import java.util.Date
 
 @Data
 @NoArgsConstructor
@@ -24,7 +25,7 @@ data class AccessPersonEntity (
     var genderPerson: Int = 0,
     var birthday: LocalDate?  = LocalDate.now(),
     var diccCategory: String? = "",
-    var dateCreation: LocalDate = LocalDate.now(),
+    var dateCreation: Date = Date(),
     var userUuid: String = "",
 ){
 }

@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.AccessPersonBl
+import com.ucb.edu.abc.mscompany.bl.PermissionBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.slf4j.LoggerFactory
@@ -16,7 +17,8 @@ import kotlin.math.log
 @RequestMapping("/users")
 class UserApi @Autowired constructor(
     private val userBl: UserBl,
-    private val accessPersonBl: AccessPersonBl
+    private val accessPersonBl: AccessPersonBl,
+    private val permissionBl: PermissionBl
 ){
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -61,6 +63,68 @@ class UserApi @Autowired constructor(
             return ResponseEntity(
                 ResponseDto(
                     data = userBl.getUserInformationByToken(tokenAuth),
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = "Algo salio terriblemente mal XD",
+                    success = false,
+                    errors = ex.message
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+
+    }
+
+    @RequestMapping(value = ["/invitations"], method = [RequestMethod.GET])
+    fun getInvitationsByPerson(
+        @RequestHeader headers: Map<String, String>
+    ): ResponseEntity<ResponseDto<*>>
+    {
+        try{
+            val tokenAuth =  headers["authorization"]!!.substring(7)
+            return ResponseEntity(
+                ResponseDto(
+                    data = userBl.getPersonalInvitations(tokenAuth, null),
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = "Algo salio terriblemente mal XD",
+                    success = false,
+                    errors = ex.message
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+
+    }
+
+    @RequestMapping(value = ["/invitations/{id}"], method = [RequestMethod.GET])
+    fun updateInvitation(
+        @RequestHeader headers: Map<String, String>,
+        @RequestParam("state") state: Boolean,
+        @PathVariable id: Int,
+    ): ResponseEntity<ResponseDto<*>>
+    {
+        try{
+            val tokenAuth =  headers["authorization"]!!.substring(7)
+            return ResponseEntity(
+                ResponseDto(
+                    data = permissionBl.updatePersonalUpdatedInvitations(tokenAuth, id, state ),
                     message = null,
                     success = true,
                     errors = null

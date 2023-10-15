@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class NewInvitationDto (
     var userId: Int,
-    var subsidiaries: MutableList<Int>,
-    var areas: MutableList<Int>,
-    var permissions: MutableList<Int>
+    var areaSubsidiaryId: MutableList<Int>,
+    var roles: MutableList<Int>
 ){
 }

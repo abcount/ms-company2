@@ -9,6 +9,8 @@ import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
+import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
 
@@ -30,7 +32,9 @@ class CompanyBl @Autowired constructor(
         private val companyDao: CompanyDao,
     private val userBl: UserBl,
     private val fileDao: FileDao,
-    private val invitationBl: InvitationBl
+    private val invitationBl: InvitationBl,
+    private val permissionBl: PermissionBl,
+    private val groupBl: GroupBl
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -89,6 +93,9 @@ class CompanyBl @Autowired constructor(
         }
     }
 
+    fun getCompanyEntityById(companyId:Int): CompanyEntity {
+        return companyDao.getCompanyById(companyId)
+    }
 
     fun getCompanyById(companyId: Int): EnterpriseDto {
         try {
@@ -164,8 +171,39 @@ class CompanyBl @Autowired constructor(
     }
 
     // invitations
-    fun createNewInvitation(inv: NewInvitationDto, companyId: Int){
-        invitationBl.createInvitation(inv, companyId)
+    fun createNewInvitation(inv: NewInvitationDto, companyId: Int, token: String){
+        // set invitation
+        val userIdOfCreator = userBl.getUserIdByCompanyIdAndToken(token= token , userAbcCategory = UserAbcCategory.ACTIVE, companyId = companyId, currentAccessPersonEntity = null)
+        invitationBl.createInvitation(inv, companyId, userIdOfCreator)
+
+        // createCredentials
+
+        // createAUserRelationSHip
+        val userEntity = userBl.createUserByAccessPersonId(
+            accessPersonId = inv.userId,
+            category = UserAbcCategory.INACTIVE.name,
+            status = true)
+
+        // create permission
+
+        // create group
+        val groupEntity = groupBl.createGroup(category = GroupCategory.EMPLOYEE, companyId = companyId,
+            description = "Group EMPLOYEE", name = "employee")
+            ?: throw Exception("NUll group")
+        // creategroupRole
+        inv.roles.forEach { rol ->
+            val res = groupBl.createGroupRole(rol, groupEntity.groupId)
+                ?: throw Exception("Couldnt create group role ")
+        }
+        //create permission
+        inv.areaSubsidiaryId.forEach { arSub ->
+            val permissionId = permissionBl.createPermissionsOnDb(areaSubId = arSub, status = false ,userId = userEntity.userId)
+                ?:throw Exception("Couldnt create permissionId")
+            val groupPermissionId = permissionBl.createGroupPermissionOnDB(permissionId = permissionId, groupId = groupEntity.groupId)
+                ?:throw Exception("Couldnt create groupPermissionId")
+        }
+
     }
+
 
 }

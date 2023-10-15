@@ -1,8 +1,11 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.PermissionDao
+import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
+import com.ucb.edu.abc.mscompany.entity.InvitationEntity
 import com.ucb.edu.abc.mscompany.entity.PermissionEntity
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -14,6 +17,9 @@ class PermissionBl @Autowired constructor(
 
 ){
 
+    /**
+     * Get permissions by params
+     */
 
 
 
@@ -28,7 +34,7 @@ class PermissionBl @Autowired constructor(
     fun createPermissionsForCompany(tokenAuth: String, listOfAreasSubsidiary: MutableList<Int>, companyId: Int, groupCat: GroupCategory) {
         if(groupCat == GroupCategory.FOUNDER){
             // create user entity because when creating a new company there isn't a user registry in Db, only access person that's why we use token auth
-            val userEntity =  userBl.createUserByToken(tokenAuth, category = GroupCategory.FOUNDER.name)
+            val userEntity =  userBl.createUserByToken(tokenAuth, category = UserAbcCategory.ACTIVE.name)
                 ?: throw Exception("Couldn't create User entity #PermissionBl.createPermissionsForCompany ")
 
             println("USER ENTITY ======= $userEntity")
@@ -43,7 +49,7 @@ class PermissionBl @Autowired constructor(
             // create permissions on abc_permissions table iterating list
             listOfAreasSubsidiary.forEach { areaSubId ->
                 // create permission
-                val permissionId = createPermissionsOnDb(areaSubId =  areaSubId, userId = userEntity.userId)
+                val permissionId = createPermissionsOnDb(areaSubId =  areaSubId, userId = userEntity.userId, status = true)
 
                 // create relationship between abc_permission and group
                 val groupPermission = createGroupPermissionOnDB(permissionId = permissionId!!, groupId = groupId)
@@ -51,17 +57,19 @@ class PermissionBl @Autowired constructor(
             }
 
         }
+
     }
-    fun createPermissionsOnDb(areaSubId: Int, userId: Int): Int? {
+
+    fun createPermissionsOnDb(areaSubId: Int, userId: Int, status:Boolean): Int? {
         try{
             val map = HashMap<String, Any>()
-            map["abc_permission_id"] = 0
-            permissionDao.createPermission(areaSubId = areaSubId, userId= userId, dicCategory = "NEW", map = map)
-            if (map["abc_permission_id"] == 0){
+            map["permission_id"] = 0
+            permissionDao.createPermission(areaSubId = areaSubId, status = status ,  userId= userId, dicCategory = "NEW", map = map)
+            if (map["permission_id"] == 0){
                 throw Exception("Couldn't create PERMISSION #PermissionBl.createPermissionsOnBd")
             }
 
-            return (map["abc_permission_id"] as Int?)!!
+            return (map["permission_id"] as Int?)!!
         }catch (ex: Exception){
             return null
         }
@@ -82,6 +90,29 @@ class PermissionBl @Autowired constructor(
         }
     }
 
+    fun updateCredentials(token:String, invitation: InvitationEntity, accessPersonEntity:AccessPersonEntity){
+        // updateCredentials
+        val userEntity = userBl.getUserByCompanyIdAndToken(token, invitation.companyId, UserAbcCategory.INACTIVE ,  accessPersonEntity);
+        userBl.updateUserCategory(userEntity, UserAbcCategory.ACTIVE);
+
+        // update permission table
+        val perms = permissionDao.getPermissionsByUserAndStatus(userId = userEntity.userId, status = false);
+        perms.forEach { perm ->
+            permissionDao.updateStatusByPermissionId(true, perm.permissionId)
+        }
+    }
+    fun updatePersonalUpdatedInvitations(token:String, invitationId: Int, accepted: Boolean): MutableMap<String, List<Any>> {
+        val accessPersonEntity = userBl.getUserInformationByToken(token)
+            ?: throw Exception("NOt access person entity founded")
+        val invitation = userBl.getPersonalUpdatedInvitations(token, invitationId, accepted,accessPersonEntity )
+            ?: return userBl.getPersonalInvitations(token ,accessPersonEntity)
+
+        updateCredentials(token, invitation, accessPersonEntity);
+
+
+
+        return userBl.getPersonalInvitations(token ,accessPersonEntity)
+    }
 
 
 

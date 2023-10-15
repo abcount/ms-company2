@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.RoleDao
+import com.ucb.edu.abc.mscompany.dto.response.RoleSimpleDto
 import com.ucb.edu.abc.mscompany.entity.RoleEntity
 import com.ucb.edu.abc.mscompany.exception.AbcRoleNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,6 +51,20 @@ class RoleBl @Autowired constructor(
         }catch (ex: Exception){
             println("Something wrong with :RoleBl.getRole ${ex.message}")
             return null
+        }
+    }
+    fun getAllRoles(): MutableList<RoleEntity>{
+        return roleDao.getAllRoles().toMutableList()
+    }
+
+    fun getAllRolesSimpleDto(): List<RoleSimpleDto> {
+        val listComplex = getAllRoles();
+        return listComplex.map { it ->
+            RoleSimpleDto(
+                roleId = it.roleId,
+                roleDescription = it.description,
+                roleShortName = it.name
+            )
         }
     }
 }

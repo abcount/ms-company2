@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor
 @NoArgsConstructor
 data class InvitationEntity (
     var invitationId : Int = 0,
-    var userId: Int = 0,
+    var userId: Int = 0, // person who invited
     var companyId: Int = 0,
     var invitationStatus: String = "",
     var status: Boolean = false,
-    var accessPersonId: Int = 0
+    var accessPersonId: Int = 0  // subject of invitation
 ) {
 }

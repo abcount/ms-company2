@@ -30,7 +30,7 @@ interface AccessPersonDao {
                 " #{extNoFono}, #{countryIdentity}, #{noIdentity}, #{extNoIdentity}, #{firstName}, " +
                 " #{lastName}, #{genderPerson}, #{birthday}, #{diccCategory}, now(), " +
                 " #{userUuid} ) RETURNING access_person_id;")
-    fun save(accessPersonEntity: AccessPersonEntity): Int
+    fun save(accessPersonEntity: AccessPersonEntity)
 
     @Select("""
         SELECT * FROM access_person WHERE

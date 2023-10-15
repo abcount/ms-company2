@@ -34,8 +34,8 @@ interface GroupDao {
             " VALUES (#{entidad.roleId}, #{entidad.groupId}, true, now() )  ;")
     @Options(useGeneratedKeys = true, keyProperty = "map.group_role_id")
     fun createRoleGroup(@Param("entidad") entity: TestEntity, @Param("map") vals: HashMap<String, Any>): Int?
-    // this f*** piece of code doesn't work with mybatis, great font: https://kamalmeet.com/java/returning-auto-generated-id-in-spring-mybatis/
-
+    // this  piece of code doesn't work with mybatis, great font: https://kamalmeet.com/java/returning-auto-generated-id-in-spring-mybatis/
+    // so i made a trick using map instead object entity
 
 
 

@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dao.GroupDao
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.TestEntity
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.exception.AbcGroupNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -50,20 +51,30 @@ class GroupBl @Autowired constructor(
                     hasGroupFounder = groupEntity.groupId
                 }
                 // create association of roles and group
-                var roleEntity = roleBl.getRole("***");
-                if (roleEntity == null){
-                    roleEntity = roleBl.createRole("***", "this is role is for founders", GroupCategory.FOUNDER.name );
-                }
-                if (roleEntity == null){
-                    throw Exception("No se pudo crear el role expecifico")
+                var roleEntity = roleBl.getAllRoles();
+                if (roleEntity.size != RolesAbc.values().size){
+                    for( rol in RolesAbc.values()){
+                        val roleEntity2 = roleBl.getRole(rol.name)
+                        if(roleEntity2 == null){
+                            val flagRole = roleBl.createRole(rol.name, rol.descriptionDb, "ANYONE")
+                                ?: throw Exception("Could not create role")
+                            roleEntity.add(flagRole)
+                        }
+                    }
+
                 }
 
-                createGroupRole(roleEntity.roleId, hasGroupFounder)
-                    ?: throw Exception("Error")
+                for(rol in roleEntity){
+                    createGroupRole(rol.roleId, hasGroupFounder)
+                        ?: throw Exception("Error")
+                }
+
+
                 // end of creation
                 return hasGroupFounder
 
             }
+
             return null
         }catch (abx: AbcGroupNotFoundException){
             return null

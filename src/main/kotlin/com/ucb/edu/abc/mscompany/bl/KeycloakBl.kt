@@ -68,6 +68,7 @@ class KeycloakBl @Autowired constructor(
                 userId
             )
 
+
             return kcClient
         }catch (ex: Exception){
             throw FailedExtractInfoFromKeycloak("Cannot get info about $userId :user from keycloak Exception: ${ex.message}");

@@ -39,12 +39,12 @@ DROP TABLE IF EXISTS images_for_all;
 -- tables
 -- Table: abc_permission
 CREATE TABLE IF NOT EXISTS abc_permission (
-abc_permission_id serial NOT NULL,
+permission_id serial NOT NULL,
 area_subsidiary_id int NOT NULL,
 user_id int NOT NULL,
 status boolean NOT NULL,
 dic_category varchar(100) NOT NULL,
-CONSTRAINT abc_permission_pk PRIMARY KEY (abc_permission_id)
+CONSTRAINT abc_permission_pk PRIMARY KEY (permission_id)
 );
 
 

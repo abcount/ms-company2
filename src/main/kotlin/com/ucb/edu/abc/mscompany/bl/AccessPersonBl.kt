@@ -1,8 +1,10 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.AccessPersonDao
+import com.ucb.edu.abc.mscompany.dto.response.KeycloakUserDto
 import com.ucb.edu.abc.mscompany.dto.response.PersonInfoDto
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.UserNotFoundException
 import lombok.AllArgsConstructor
 import lombok.NoArgsConstructor
@@ -10,7 +12,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Date
+import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -32,6 +38,7 @@ class AccessPersonBl @Autowired constructor(
             return null;
         }
     }
+
 
     fun getAccessPersonInformationById(id: Int): AccessPersonEntity?{
         try {
@@ -65,30 +72,47 @@ class AccessPersonBl @Autowired constructor(
                 email = itemAp.email,
                 id = itemAp.accessPersonId.toInt(),
                 userName = itemAp.username,
-                fullName = itemAp.firstName + " "+ itemAp.lastName
+                fullName = itemAp.firstName + " "+ itemAp.lastName,
+                imagePath =  "http://localhost:8080/users/1/images/profile"
             )
         }
+    }
+
+    private fun convertUnixTimestampToLocalDate(timestamp: Long, timeZoneId: String): LocalDate {
+        val instant = Instant.ofEpochSecond(timestamp)
+        val zoneId = ZoneId.of(timeZoneId)
+        val zonedDateTime = instant.atZone(zoneId)
+        return zonedDateTime.toLocalDate()
+    }
+
+    private fun factoryAccessPersonEntity(userKc: KeycloakUserDto): AccessPersonEntity {
+        val apE = AccessPersonEntity()
+        apE.username = userKc.username;
+        apE.lastName = userKc.lastName;
+        apE.firstName = userKc.firstName;
+        apE.email = userKc.email!!;
+        val stamp = Timestamp(userKc.createdTimestamp)
+        apE.dateCreation = Date(stamp.time)
+        if (userKc.attributes != null){
+            if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
+                apE.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            }
+        }
+        if(userKc.enabled == true){
+            apE.diccCategory = UserAbcCategory.ACTIVE.name;
+        }else{
+            apE.diccCategory = UserAbcCategory.DISABLED.name;
+        }
+        apE.userUuid = userKc.id
+        return apE
     }
     private fun createAccessPersonWithDataKeycloak(userUuidFromToken:String): AccessPersonEntity {
         logger.info("#createAccessPersonWithDataKeycloak Creating user requesting keycloak ")
         val userKc = keycloakBl.getUserInfoFromKeycloak(userUuidFromToken)
-        val accessPersonEntity = AccessPersonEntity()
-        accessPersonEntity.email = userKc.email!!;
-        accessPersonEntity.username = userKc.username;
-
-        if (userKc.attributes != null){
-            if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
-                accessPersonEntity.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            }
-        }
-
-        accessPersonEntity.userUuid = userKc.id
-        accessPersonEntity.diccCategory = "CREATED"
-        accessPersonEntity.dateCreation = LocalDate.now()
+        val accessPersonEntity = factoryAccessPersonEntity(userKc)
         // save in db
-        val res = accessPersonDao.save(accessPersonEntity)
+        accessPersonDao.save(accessPersonEntity)
 
-        accessPersonEntity.accessPersonId = res.toLong();
         return accessPersonEntity
     }
 }

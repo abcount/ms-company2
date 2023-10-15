@@ -10,6 +10,7 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ucb.edu.abc.mscompany.bl.AreaSubsidiaryBl
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
@@ -18,14 +19,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/ms-company")
+@RequestMapping("/companies")
 class CompanyApi @Autowired constructor(
         private val configCompany: ConfigCompany,
     private val companyBl: CompanyBl,
-    private val userBl: UserBl
+    private val userBl: UserBl,
+    private val areaSubsidiaryBl: AreaSubsidiaryBl
 ){
     val objectMapper = jacksonObjectMapper()
-    @PostMapping("/company")
+    @PostMapping("")
     fun handleFileUpload(request: HttpServletRequest, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
         val multipartRequest = request as? MultipartHttpServletRequest
                 ?: return ResponseDto("No se ha recibido un archivo","",false,"")
@@ -59,7 +61,7 @@ class CompanyApi @Autowired constructor(
         return response
     }
 
-    @RequestMapping(value = ["/companies"], method = [RequestMethod.GET])
+    @RequestMapping(value = [""], method = [RequestMethod.GET])
     fun getImageByCompanyId( @RequestHeader headers: Map<String, String>): ResponseEntity<ResponseDto<*>> {
 
         try{
@@ -88,10 +90,11 @@ class CompanyApi @Autowired constructor(
         }
     }
 
-    @RequestMapping(value = ["/companies/{id}/employees"], method = [RequestMethod.GET])
-    fun getUsersAndInvited(@PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
+    @RequestMapping(value = ["/{id}/employees"], method = [RequestMethod.GET])
+    fun getUsersAndInvited(
+        @PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
         try{
-            val invitationAndUsers = userBl.getUserInformationByCompanyId(companyId = id)
+            val invitationAndUsers = userBl.getUserInformationInvitationByCompanyId(companyId = id)
             return ResponseEntity(
                 ResponseDto(
                     data = invitationAndUsers,
@@ -116,10 +119,15 @@ class CompanyApi @Autowired constructor(
     }
 
     // creating invitations
-    @RequestMapping(value = ["/companies/{id}/invitations"], method = [RequestMethod.POST])
-    fun createInvitation(@PathVariable id: Int, @RequestBody body: NewInvitationDto): ResponseEntity<ResponseDto<*>> {
+    @RequestMapping(value = ["/{id}/invitations"],
+        method = [RequestMethod.POST])
+    fun createInvitation(
+        @RequestHeader headers: Map<String, String>,
+        @PathVariable id: Int,
+        @RequestBody body: NewInvitationDto): ResponseEntity<ResponseDto<*>> {
         try{
-            companyBl.createNewInvitation(body, id);
+            val tokenAuth =  headers["authorization"]!!.substring(7)
+            companyBl.createNewInvitation(body, id, tokenAuth);
             return ResponseEntity(
                 ResponseDto(
                     data = null,
@@ -142,5 +150,36 @@ class CompanyApi @Autowired constructor(
             )
         }
     }
+    @RequestMapping(value = ["/{id}/area-subsidiary"],
+        method = [RequestMethod.GET])
+    fun getAreaSubsidiary(
+        @RequestHeader headers: Map<String, String>,
+        @PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
+        try{
+            //val tokenAuth =  headers["authorization"]!!.substring(7)
+            val result = areaSubsidiaryBl.getAreaSubsidiaryByCompany(id)
+            return ResponseEntity(
+                ResponseDto(
+                    data = result,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
 
 }

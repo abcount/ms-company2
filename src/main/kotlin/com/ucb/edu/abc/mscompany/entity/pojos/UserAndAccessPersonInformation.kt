@@ -1,5 +1,7 @@
 package com.ucb.edu.abc.mscompany.entity.pojos
 
+import com.ucb.edu.abc.mscompany.enums.InvitationState
+
 data class UserAndAccessPersonInformation (
     var userId: Int,
     var firstName: String,
@@ -13,4 +15,13 @@ data class InvitationAndUserInformation(
     var firstName: String,
     var lastName: String,
     var email: String
+)
+
+data class PersonalInvitations(
+    var invitationId: Int,
+    var username: String, // this is the username of person who make the invitation
+    var companyName: String, // company name
+    var invitationStatus: String,
+    var status: Boolean,
+    var accessPersonId: Int // invited
 )

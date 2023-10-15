@@ -14,7 +14,23 @@
     "openingDate": "10-06-2023",
     "subsidiaries": [
       {
-        "name": "hola",
+        "name": "sub1",
+        "address": "ss",
+        "areas": [
+          "mkt",
+          "disneo"
+        ]
+      },
+      {
+        "name": "sub2",
+        "address": "ss",
+        "areas": [
+          "mkt",
+          "disneo"
+        ]
+      },
+      {
+        "name": "sub3",
         "address": "ss",
         "areas": [
           "mkt",
