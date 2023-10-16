@@ -25,6 +25,13 @@ class UserBl @Autowired constructor(
     private val invitationBl: InvitationBl,
 ) {
 
+    /**
+     * @param token token of user doing the request
+     * @param companyId
+     * @param userCat categories of user ex. INACTIVE, ACTIVE
+     * @param currentAccessPersonEntity optional if you have already the accessPersonEntity
+     * @return returns USERENTITY object
+     */
     fun getUserByCompanyIdAndToken(token:String, companyId:Int, userCat: UserAbcCategory, currentAccessPersonEntity: AccessPersonEntity?): UserEntity {
         val accessPersonEntity = getAccessPersonEntityEasy(token, currentAccessPersonEntity)
 
@@ -50,6 +57,13 @@ class UserBl @Autowired constructor(
         }
         return accessPersonEntity
     }
+    /**
+     * @param token token of user doing the request
+     * @param companyId
+     * @param userAbcCategory categories of user ex. INACTIVE, ACTIVE
+     * @param currentAccessPersonEntity optional if you have already the accessPersonEntity
+     * @return returns just ID (Integer)
+     */
     fun getUserIdByCompanyIdAndToken(token:String, companyId:Int, userAbcCategory: UserAbcCategory, currentAccessPersonEntity: AccessPersonEntity?): Int {
         var accessPersonEntity = currentAccessPersonEntity
         if(currentAccessPersonEntity == null){
