@@ -1,13 +1,13 @@
 server:
-  port: 8080
+  port: ${PORT_MS:8080}
 
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dev_env_abcount2
+    url: ${DB_URL:jdbc:postgresql://54.71.239.115:5432/abcount}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: secret
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:sucha1234}
   sql:
     init:
       mode: always
