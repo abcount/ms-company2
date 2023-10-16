@@ -13,7 +13,6 @@ import java.util.Date
 
 data class TransactionAccountEntity(
         var transactionAccountId: Long,
-        var userId: Int,
         var entityId: Int,
         var transactionId: Long,
         var accountId: Long,
@@ -23,8 +22,8 @@ data class TransactionAccountEntity(
         var dueDate: Date,
         var companyId: Int,
 ) {
-    constructor(): this(0, 0, 0, 0, 0, 0, "", "", Date(), 0)
+    constructor(): this(0,  0, 0, 0, 0, "", "", Date(), 0)
     override fun toString(): String {
-        return "TransactionAccountEntity(transactionAccountId=$transactionAccountId, userId=$userId, entityId=$entityId, transactionId=$transactionId, accountId=$accountId, auxiliaryAccountId=$auxiliaryAccountId, glosaDetail='$glosaDetail', documentNumber='$documentNumber', dueDate=$dueDate, companyId=$companyId)"
+        return "TransactionAccountEntity(transactionAccountId=$transactionAccountId, entityId=$entityId, transactionId=$transactionId, accountId=$accountId, auxiliaryAccountId=$auxiliaryAccountId, glosaDetail='$glosaDetail', documentNumber='$documentNumber', dueDate=$dueDate, companyId=$companyId)"
     }
 }

@@ -34,10 +34,15 @@ interface CompanyDao {
     fun getCompanyById(companyId: Int): CompanyEntity
 
     @Update(
-            "UPDATE company SET company_name = #{companyName}, dicc_category = #{diccCategory}, " +
-                    "nit = #{nit}, address = #{address}, logo_uuid = #{logoUuid}, " +
-                    "contact_email = #{contactEmail}, contact_name = #{contactName} " +
-                    "WHERE company_id = #{companyId}"
+            """
+            UPDATE company SET 
+                company_name = #{companyName}, dicc_category = #{diccCategory}, nit = #{nit}, address = #{address}, 
+                logo_uuid = #{logoUuid}, opening_date = #{openingDate}, email_representative = #{emailRepresentative}, 
+                number_representative = #{numberRepresentative}, legal_representative = #{legalRepresentative},
+                ci_representative = #{ciRepresentative}, number_registration = #{numberRegistration}, 
+                number_employee = #{numberEmployee}, rubro = #{rubro}
+            WHERE company_id = #{companyId}
+            """
     )
     fun updateCompany(company: CompanyEntity)
 
@@ -65,6 +70,10 @@ interface CompanyDao {
         group by c.company_id, c.company_name, us.user_id;
     """)
     fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
+
+
+    @Select("SELECT company_name FROM company WHERE company_id = #{companyId}")
+    fun getNameCompany(companyId: Int): String
 
 
 

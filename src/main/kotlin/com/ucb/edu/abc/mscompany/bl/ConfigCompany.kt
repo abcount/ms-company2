@@ -17,6 +17,7 @@ class ConfigCompany @Autowired constructor(
         private val areaSubsidiaryBl: AreaSubsidiaryBl,
         private val exchangeMoneyBl: ExchangeMoneyBl,
         private val accountBl: AccountBl,
+        private val exchangeBl: ExchangeBl,
     private val userBl: UserBl,
     private val permissionBl: PermissionBl
 ){
@@ -58,13 +59,18 @@ class ConfigCompany @Autowired constructor(
         permissionBl.createPermissionsForCompany(tokenAuth, listOfAreasSubsidiary, companyId, GroupCategory.FOUNDER)
 
         //Crear lista de cambios de moneda
-        createCompanyDto.currencyConfig.currencyList.forEachIndexed() { index, element ->
-            if(element != null){
-                val currencyEntity = exchangeMoneyBl.factoryExchangeMoney(companyId, element.moneyName, element.abbreviationName, false)
-                if(index == createCompanyDto.currencyConfig.principalCurrency){
-                    currencyEntity.isPrincipal = true
-                }
-                exchangeMoneyBl.create(currencyEntity)
+        //Se crea la moneda principal
+        val bol = exchangeBl.getBoliviano();
+        val exchangeBol = exchangeMoneyBl.factoryExchangeMoney(bol, companyId, true)
+        exchangeMoneyBl.create(exchangeBol)
+
+        //Se crea la lista recibida
+
+        val listExchange = exchangeBl.getByArrayId(createCompanyDto.currencyConfig.currencyList)
+        listExchange.forEach() {
+            if(it.moneyName!=bol.moneyName){ //Verficar que no exista duplicado de moneda
+                val exchangeMoneyEntity = exchangeMoneyBl.factoryExchangeMoney(it, companyId, false)
+                exchangeMoneyBl.create(exchangeMoneyEntity)
             }
         }
 

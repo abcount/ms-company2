@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeMoneyDao
+import com.ucb.edu.abc.mscompany.entity.ExchangeEntity
 import com.ucb.edu.abc.mscompany.entity.ExchangeMoneyEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
@@ -11,7 +12,8 @@ import java.text.ParseException
 
 @Service
 class ExchangeMoneyBl @Autowired constructor(
-        private val exchangeMoneyDao: ExchangeMoneyDao
+        private val exchangeMoneyDao: ExchangeMoneyDao,
+        private val exchangeBl: ExchangeBl
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -36,11 +38,20 @@ class ExchangeMoneyBl @Autowired constructor(
         }
     }
 
-    fun factoryExchangeMoney(companyId: Int, name: String, abbreviation: String, isPrincipal:Boolean): ExchangeMoneyEntity{
+    fun createByListExchangeId(listExchangeId: List<Int>, companyId: Int): List<ExchangeMoneyEntity>{
+        for(id in listExchangeId){
+            val exchangeBl = exchangeBl.getById(id)
+            val exchangeMoneyEntity = factoryExchangeMoney(exchangeBl, companyId, false)
+            create(exchangeMoneyEntity)
+        }
+        return getAllCurrenciesByCompanyId(companyId)
+    }
+
+    fun factoryExchangeMoney(exchangeEntity: ExchangeEntity, companyId: Int, isPrincipal: Boolean): ExchangeMoneyEntity{
         var exchangeMoneyEntity = ExchangeMoneyEntity()
         exchangeMoneyEntity.companyId = companyId
-        exchangeMoneyEntity.moneyName = name
-        exchangeMoneyEntity.abbreviationName = abbreviation
+        exchangeMoneyEntity.moneyName = exchangeEntity.moneyName + " - " + exchangeEntity.country
+        exchangeMoneyEntity.abbreviationName = exchangeEntity.moneyIso
         exchangeMoneyEntity.isPrincipal = isPrincipal
         return exchangeMoneyEntity
     }

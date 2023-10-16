@@ -1,5 +1,5 @@
 -- DROP TABLES
-
+/*
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -35,6 +35,7 @@ DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 DROP TABLE IF EXISTS images_for_all;
+*/
 
 -- tables
 -- Table: abc_permission
@@ -157,6 +158,7 @@ CREATE TABLE IF NOT EXISTS auxiliary_account (
 auxiliary_account_id serial NOT NULL,
 code_account varchar(15) NOT NULL,
 name_description varchar(150) NOT NULL,
+company_id int NOT NULL,
 CONSTRAINT auxiliary_account_pk PRIMARY KEY (auxiliary_account_id)
 );
 
@@ -263,8 +265,8 @@ CONSTRAINT exchange_pk PRIMARY KEY (exchange_id)
 CREATE TABLE IF NOT EXISTS exchange_money (
 exchange_money_id serial NOT NULL,
 company_id int NOT NULL,
-money_name Varchar(30) NOT NULL,
-abbreviation_name Varchar(5) NOT NULL,
+money_name Varchar(50) NOT NULL,
+abbreviation_name Varchar(10) NOT NULL,
 is_principal boolean NOT NULL,
 CONSTRAINT exchange_money_pk PRIMARY KEY (exchange_money_id)
 );
@@ -405,7 +407,7 @@ CREATE TABLE IF NOT EXISTS subsidiary (
 subsidiary_id serial NOT NULL,
 company_id int NOT NULL,
 subsidiary_name varchar(255) NOT NULL,
-address varchar(255) NOT NULL,
+address varchar(255) NULL,
 CONSTRAINT subsidiary_pk PRIMARY KEY (subsidiary_id)
 );
 
@@ -419,23 +421,23 @@ glosa_general varchar(255) NOT NULL,
 date timestamp NOT NULL,
 exchange_rate_id int NOT NULL,
 area_subsidiary_id int NOT NULL,
+company_id int NOT NULL,
+user_id int NOT NULL,
 CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 );
 
 
 -- Table: transaction_account
 CREATE TABLE IF NOT EXISTS transaction_account (
-transaction_account_id serial NOT NULL,
-user_id int NOT NULL,
-entity_id int NOT NULL,
-transaction_id int NOT NULL,
-account_id int NOT NULL,
-auxiliary_account_id int NULL,
-glosa_detail varchar(500) NULL,
-"check" varchar(20) NULL,
-reference varchar(80) NULL,
-due_date date NULL,
-company_company_id int NOT NULL,
+transaction_account_id serial  NOT NULL,
+entity_id int  NOT NULL,
+transaction_id int  NOT NULL,
+account_id int  NOT NULL,
+auxiliary_account_id int  NULL,
+glosa_detail varchar(500)  NULL,
+document_number varchar(20)  NULL,
+due_date date  NULL,
+company_id int  NOT NULL,
 CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 );
 
@@ -443,7 +445,6 @@ CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 -- Table: transaction_type
 CREATE TABLE IF NOT EXISTS transaction_type (
                                   transaction_type_id serial  NOT NULL,
-                                  company_id int  NOT NULL,
                                   type varchar(50)  NOT NULL,
                                   description varchar(255)  NOT NULL,
                                   CONSTRAINT transaction_type_pk PRIMARY KEY (transaction_type_id)

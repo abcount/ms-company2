@@ -44,6 +44,15 @@ class SubsidiaryBl @Autowired constructor(
         }
     }
 
+    fun getByCompanyId(companyId: Int): List<SubsidiaryEntity>{
+        try {
+            logger.info("Obteniendo sucursales por id de compañia")
+            return subsidiaryDao.getSubsidiariesByCompanyId(companyId)
+        } catch (e: Exception) {
+            throw PostgresException("Ocurrio un error al obtener las sucursales de la empresa con id: $companyId", e.message.toString())
+        }
+    }
+
 
     fun factorySubsidiary(subsidiaryDto: SubsidiaryDto, companyId: Int): SubsidiaryEntity{
         val subsidiaryEntity = SubsidiaryEntity()

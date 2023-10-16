@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
-import org.springframework.web.multipart.MultipartFile
 
 @Data
 @AllArgsConstructor
@@ -55,19 +54,9 @@ data class CompanyDto(
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CurrencyConfigDto (
-        var principalCurrency: Int,
-        var currencyList: List<CurrencyDto>
+        var currencyList: List<Int>
 )
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class CurrencyDto (
-        var moneyName: String,
-        var abbreviationName: String,
-        var currency: Double,
-)
 
 @Data
 @AllArgsConstructor
@@ -75,6 +64,6 @@ data class CurrencyDto (
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SubsidiaryDto (
         var name: String,
-        var address: String,
+        var address: String?,
         var areas: List<String?>
 )

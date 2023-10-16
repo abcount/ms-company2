@@ -27,5 +27,23 @@ interface SubsidiaryDao {
     @Select("SELECT * FROM subsidiary WHERE company_id = #{companyId} ")
     fun getSubsidiariesByCompanyId(companyId: Int): List<SubsidiaryEntity>
 
+    @Select("""
+            SELECT DISTINCT
+                s.*
+            FROM
+                abc_permission ap
+            JOIN
+                area_subsidiary asub ON ap.area_subsidiary_id = asub.area_subsidiary_id
+            JOIN
+                area a ON asub.area_id = a.area_id
+            JOIN
+                subsidiary s ON asub.subsidiary_id = s.subsidiary_id
+            WHERE
+                ap.user_id = #{userId} AND
+                s.company_id = #{companyId}
+        """)
+    fun getSubsidiariesByUserIdAndCompanyId(userId: Int, companyId: Int): List<SubsidiaryEntity>
+
+
 
 }

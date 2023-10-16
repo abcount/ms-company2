@@ -114,7 +114,18 @@ class CompanyBl @Autowired constructor(
                     companyEntity.rubro
             )
         } catch (e: PersistenceException) {
+            logger.error("Ocurrio un error al obtener la compañia con el id: $companyId error: ${e.message.toString()}")
             throw PostgresException("Ocurrio un error al obtener la compañia con el id: $companyId", e.message.toString())
+        }
+    }
+
+    fun getCompanyName(companyId: Int): String {
+        try{
+            logger.info("Obteniendo nombre de compañia")
+            return companyDao.getNameCompany(companyId)
+        } catch (e: Exception){
+            logger.error("Ocurrio un error al obtener el nombre de la compañia con el id: $companyId")
+            throw PostgresException("Ocurrio un error al obtener el nombre de la compañia con el id: $companyId", e.message.toString())
         }
     }
 

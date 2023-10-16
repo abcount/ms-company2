@@ -15,12 +15,13 @@ data class TransactionEntity(
         var glosaGeneral: String,
         var date: LocalDateTime,
         var exchangeRateId: Int,
-        var areaSubsidiaryId: Int,
-
+        var areaSubsidiaryId: Int?  ,
+        var companyId: Int,
+        var userId: Int,
 )
 {
-    constructor(): this(0, 0, 0, "", LocalDateTime.now(), 0, 0  )
+    constructor(): this(0, 0, 0, "", LocalDateTime.now(), 0, 0, 0, 0  )
     override fun toString(): String {
-        return "TransactionEntity(transactionId=$transactionId, transactionTypeId=$transactionTypeId, transactionNumber=$transactionNumber, glosaGeneral='$glosaGeneral', date=$date, exchangeRateId=$exchangeRateId, areaSubsidiaryId=$areaSubsidiaryId)"
+        return "TransactionEntity(transactionId=$transactionId, transactionTypeId=$transactionTypeId, transactionNumber=$transactionNumber, glosaGeneral='$glosaGeneral', date=$date, exchangeRateId=$exchangeRateId, areaSubsidiaryId=$areaSubsidiaryId, companyId=$companyId, userId=$userId)"
     }
 }
