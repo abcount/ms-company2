@@ -93,9 +93,11 @@ class AccessPersonBl @Autowired constructor(
         apE.email = userKc.email!!;
         val stamp = Timestamp(userKc.createdTimestamp)
         apE.dateCreation = Date(stamp.time)
+        // Atts: attributes={no_identify=[], ext_no_fono=[], ext_no_identify=[], address=[], birthdate=[2001-12-23], country_identify=[], type_count=[on], last_name=[], no_fono=[], first_name=[], gender_person=[]},
+
         if (userKc.attributes != null){
             if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
-                apE.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                apE.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
         }
         if(userKc.enabled == true){
