@@ -3,6 +3,8 @@ server:
 
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
     url: ${DB_URL:jdbc:postgresql://54.71.239.115:5432/abcount}
     driver-class-name: org.postgresql.Driver
