@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.response.*
 import com.ucb.edu.abc.mscompany.entity.DebitCreditEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionAccountEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,11 +21,12 @@ class TransactionBl @Autowired constructor(
         private val transactionAccountDao: TransactionAccountDao,
         private val debitCreditDao: DebitCreditDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
-        private val areaDao: AreaDao,
-        private val subsidiaryDao: SubsidiaryDao,
         private val transactionTypeBl: TransactionTypeBl,
+        private val userBl: UserBl,
         private val subsidiaryBl: SubsidiaryBl,
+        private val subsidiaryDao: SubsidiaryDao,
         private val areaBl: AreaBl,
+        private val areaDao: AreaDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
         private val accountBl: AccountBl,
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
@@ -55,8 +57,11 @@ class TransactionBl @Autowired constructor(
     }
 
 
-    fun getDataForDoATransaction(companyId: Int, user: String): TransactionalVoucherDto{
+    fun getDataForDoATransaction(companyId: Int, headers: Map<String,String>): TransactionalVoucherDto{
         val transactionalVoucherDto = TransactionalVoucherDto()
+        val tokenAuth =  headers["authorization"]!!.substring(7)
+        println("tokenAuth: $tokenAuth")
+        val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth,   companyId, UserAbcCategory.ACTIVE,null)
 
         //Obteniendo los datos sueltos del response
         transactionalVoucherDto.transactionNumber = (transactionDao.getLastTransactionNumber(companyId)?:0) + 1
@@ -67,26 +72,27 @@ class TransactionBl @Autowired constructor(
 
         //Obtener Subsidiaries con permisos
         //TODO: verificar que la funcion de abajo funciona
-        /*
+
         val subsidiaryList = subsidiaryDao.getSubsidiariesByUserIdAndCompanyId(userId, companyId).map{
             Subsidiary(it.subsidiaryId, it.subsidiaryName, it.address?:"", false)
-        }*/
+        }
 
-
+        /*
         val subsidiaryList = subsidiaryBl.getByCompanyId(companyId).map{
             Subsidiary(it.subsidiaryId, it.subsidiaryName, it.address?:"", false)
-        }
+        }*/
         transactionalVoucherDto.subsidiaries = subsidiaryList
 
         //Obtener Areas con permisos
         //TODO: verificar que la funcion de abajo funciona
-        /*val areaList = areaDao.getAreasByUserIdAndCompanyId(userId, companyId).map {
+        val areaList = areaDao.getAreasByUserIdAndCompanyId(userId, companyId).map {
             Area(it.areaId, it.areaName, false)
         }
-        */
+
+        /*
         val areaList = areaBl.getAreasByCompanyId(companyId).map {
             Area(it.areaId, it.areaName, false)
-        }
+        }*/
         transactionalVoucherDto.areas = areaList
 
         //Obtener tipos de cambio
