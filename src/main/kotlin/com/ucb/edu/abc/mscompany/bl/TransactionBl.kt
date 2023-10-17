@@ -36,12 +36,15 @@ class TransactionBl @Autowired constructor(
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
-    fun saveTransaction(companyId: Int, transactionDto: TransactionDto){
+    fun saveTransaction(companyId: Int, transactionDto: TransactionDto, headers: Map<String, String>){
+        val tokenAuth =  headers["authorization"]!!.substring(7)
+        val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth,   companyId, UserAbcCategory.ACTIVE,null)
+
         logger.info("Guardando transaccion")
         if (transactionDto.totalCredit != transactionDto.totalDebit){
             throw Exception("El total de creditos y debitos no coinciden")
         }
-        val transactionEntity = factoryTransaction(transactionDto, companyId)
+        val transactionEntity = factoryTransaction(transactionDto, companyId, userId)
         transactionDao.create(transactionEntity)
 
         //registrar en transaction Account
@@ -131,7 +134,7 @@ class TransactionBl @Autowired constructor(
         return transactionalVoucherDto
     }
 
-    fun factoryTransaction(transactionDto: TransactionDto, companyId: Int): TransactionEntity{
+    fun factoryTransaction(transactionDto: TransactionDto, companyId: Int, userId: Int): TransactionEntity{
         val transactionEntity = TransactionEntity()
         transactionEntity.transactionTypeId = transactionDto.transactionTypeId
         transactionEntity.transactionNumber= (transactionDao.getLastTransactionNumber(companyId)?.plus(1)?:1).toLong()
@@ -141,7 +144,7 @@ class TransactionBl @Autowired constructor(
         transactionEntity.exchangeRateId = transactionDto.currencyId
         transactionEntity.areaSubsidiaryId = areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)
         transactionEntity.companyId = companyId
-        transactionEntity.userId = transactionDto.userId
+        transactionEntity.userId = userId
         return transactionEntity
     }
 

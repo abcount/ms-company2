@@ -14,8 +14,8 @@ class TransactionApi @Autowired constructor(
         private val transactionBl: TransactionBl,
 ) {
     @PostMapping("/{companyId}")
-    fun saveTransaction(@PathVariable companyId: Int, @RequestBody transactionDto: TransactionDto): ResponseDto<String> {
-         transactionBl.saveTransaction(companyId, transactionDto)
+    fun saveTransaction(@PathVariable companyId: Int, @RequestBody transactionDto: TransactionDto, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
+         transactionBl.saveTransaction(companyId, transactionDto, headers)
         return ResponseDto("", "Request exitoso", true, "", )
     }
 
