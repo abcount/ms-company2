@@ -35,13 +35,13 @@ class TestApi @Autowired constructor(
     }
 
     @RequestMapping(value = ["/company/{id}"] , method = [RequestMethod.GET])
-    fun getUserByCompanyAndToken(@PathVariable id:Int, @RequestHeader headers: Map<String, String>): ResponseDto<UserEntity> {
+    fun getUserByCompanyAndToken(@PathVariable id:Int, @RequestHeader headers: Map<String, String>): ResponseDto<*> {
         val tokenAuth =  headers["authorization"]!!.substring(7)
 
-        val ac=  userBl.getUserByCompanyIdAndToken(
+        val ac=  userBl.getUserIdByCompanyIdAndToken(
             token = tokenAuth,
             companyId = id,
-            userCat = UserAbcCategory.ACTIVE,
+            userAbcCategory = UserAbcCategory.ACTIVE,
             currentAccessPersonEntity = null
         )
         return ResponseDto(
