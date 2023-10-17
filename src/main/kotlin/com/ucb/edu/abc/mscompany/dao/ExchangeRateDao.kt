@@ -7,8 +7,14 @@ import org.springframework.stereotype.Component
 
 @Mapper
 @Component
-interface ExchangeRate {
+interface ExchangeRateDao {
 
     @Select("SELECT * FROM exchange_rate WHERE exchange_rate_id = #{exchangeRateId}")
     fun getExchangeRateById(exchangeRateId: Int): ExchangeRateEntity
+
+    @Select("SELECT * FROM exchange_rate WHERE date::date = current_date AND company_id = #{companyId}")
+    fun getAllExchangeRateByCompanyIdAndDate(companyId: Int): List<ExchangeRateEntity>
+
+    @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId}")
+    fun getAllExchangeRateByCompanyId(companyId: Int): List<ExchangeRateEntity>
 }

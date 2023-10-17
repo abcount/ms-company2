@@ -49,9 +49,10 @@ data class Area(
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CurrencyVoucher(
-    val exchangeMoneyId: Int,
+    val exchangeRateId: Int,
     val moneyName: String,
     val abbreviationName: String,
+    val currency: Double
 )
 
 @Data

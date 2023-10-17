@@ -31,6 +31,7 @@ class TransactionBl @Autowired constructor(
         private val accountBl: AccountBl,
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
         private val companyBl: CompanyBl,
+        private val exchangeRateBl: ExchangeRateBl
 
 
 ){
@@ -99,11 +100,12 @@ class TransactionBl @Autowired constructor(
         transactionalVoucherDto.areas = areaList
 
         //Obtener tipos de cambio
-        val exchangeList = exchangeMoneyBl.getAllCurrenciesByCompanyId(companyId).map {
+        val exchangeList = exchangeRateBl.getAllExchangeRateByCompanyIdAndDate(companyId).map {
             CurrencyVoucher(
-                it.exchangeMoneyId,
+                it.exchangeRateId,
                 it.moneyName,
                 it.abbreviationName,
+                it.currency
             )
         }
         transactionalVoucherDto.currencies = exchangeList
