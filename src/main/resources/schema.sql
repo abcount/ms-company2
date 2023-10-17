@@ -1,5 +1,5 @@
 -- DROP TABLES
-
+/*
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 DROP TABLE IF EXISTS images_for_all;
-
+*/
 
 -- tables
 -- Table: abc_permission
@@ -242,11 +242,11 @@ CONSTRAINT dicc_category_pk PRIMARY KEY (dic_category_id)
 -- Table: entity
 CREATE TABLE IF NOT EXISTS entity (
 entity_id serial NOT NULL,
-company_company_id int NOT NULL,
+company_id int NOT NULL,
 entity_name varchar(50) NOT NULL,
 nit Varchar(50) NULL,
 social_reason Varchar(100) NOT NULL,
-"foreign" boolean NOT NULL,
+externo boolean NOT NULL,
 CONSTRAINT entity_pk PRIMARY KEY (entity_id)
 );
 
