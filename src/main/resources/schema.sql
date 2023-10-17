@@ -242,11 +242,11 @@ CONSTRAINT dicc_category_pk PRIMARY KEY (dic_category_id)
 -- Table: entity
 CREATE TABLE IF NOT EXISTS entity (
 entity_id serial NOT NULL,
-company_company_id int NOT NULL,
+company_id int NOT NULL,
 entity_name varchar(50) NOT NULL,
 nit Varchar(50) NULL,
 social_reason Varchar(100) NOT NULL,
-"foreign" boolean NOT NULL,
+externo boolean NOT NULL,
 CONSTRAINT entity_pk PRIMARY KEY (entity_id)
 );
 
