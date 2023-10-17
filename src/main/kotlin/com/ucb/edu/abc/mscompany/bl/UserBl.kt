@@ -124,7 +124,7 @@ class UserBl @Autowired constructor(
 
     fun createUserByToken(token: String, category: String?): UserEntity? {
         val accessPersonEntity = accessPersonService.getAccessPersonInformationByToken(token)
-            ?: throw Exception("NOt found")
+            ?: throw Exception("Not found")
         val catFinal  = category?:""
         return createUserByAccessEntity(accessPersonEntity, catFinal)
     }

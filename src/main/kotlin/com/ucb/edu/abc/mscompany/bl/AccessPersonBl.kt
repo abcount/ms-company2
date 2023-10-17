@@ -61,6 +61,7 @@ class AccessPersonBl @Autowired constructor(
             logger.error("#getAccessPersonInformationByToken User not found")
             return createAccessPersonWithDataKeycloak(userUuidFromToken!!);
         }catch (ex2: Exception){
+            logger.error(ex2.message)
             return null;
         }
     }
