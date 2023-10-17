@@ -4,8 +4,8 @@ import com.ucb.edu.abc.mscompany.enums.InvitationState
 
 data class UserAndAccessPersonInformation (
     var userId: Int,
-    var firstName: String,
-    var lastName: String,
+    var firstName: String?,
+    var lastName: String?,
     var email: String,
 )
 
