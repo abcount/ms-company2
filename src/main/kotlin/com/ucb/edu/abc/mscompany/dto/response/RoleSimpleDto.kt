@@ -11,5 +11,6 @@ data class RoleSimpleDto(
     var roleId: Int,
     var roleShortName: String,
     var roleDescription: String,
+    var status: Boolean = false
 ) {
 }

@@ -29,12 +29,13 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class CompanyBl @Autowired constructor(
-        private val companyDao: CompanyDao,
+    private val companyDao: CompanyDao,
     private val userBl: UserBl,
     private val fileDao: FileDao,
     private val invitationBl: InvitationBl,
     private val permissionBl: PermissionBl,
-    private val groupBl: GroupBl
+    private val groupBl: GroupBl,
+    private val roleBl: RoleBl
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -201,11 +202,24 @@ class CompanyBl @Autowired constructor(
         val groupEntity = groupBl.createGroup(category = GroupCategory.EMPLOYEE, companyId = companyId,
             description = "Group EMPLOYEE", name = "employee")
             ?: throw Exception("NUll group")
+
+        // listOfAllRoles()
         // creategroupRole
+        groupBl.createRoleGroupByList(
+            roleIdListWhiteList = inv.roles,
+            allRolesList = roleBl.getAllRolesFromEnum().map { it.roleId },
+            groupId = groupEntity.groupId
+        )
+
+        /*
+        // FIXME DEPRECATED
+        @Deprecated
         inv.roles.forEach { rol ->
-            val res = groupBl.createGroupRole(rol, groupEntity.groupId)
+            val res = groupBl.createGroupRole(rol, groupEntity.groupId, true)
                 ?: throw Exception("Couldnt create group role ")
         }
+
+         */
         //create permission
         inv.areaSubsidiaryId.forEach { arSub ->
             val permissionId = permissionBl.createPermissionsOnDb(areaSubId = arSub, status = false ,userId = userEntity.userId)
@@ -214,6 +228,14 @@ class CompanyBl @Autowired constructor(
                 ?:throw Exception("Couldnt create groupPermissionId")
         }
 
+    }
+
+
+    fun getPermissionAndRolesByUserAndCompany(userId: Int, companyId: Int): Map<String, List<Any>> {
+        return mapOf(
+            "areasAndSubs" to permissionBl.getPermissionsByUserAndCompanyId(userId, companyId),
+            "roles" to roleBl.getMergedCurrentRolesOfUserAndRolesOfCompany(userId, companyId)
+        )
     }
 
 

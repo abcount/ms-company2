@@ -16,5 +16,6 @@ data class SubsidiaryAndAreaPojo(
     var dateCreated: Date,
     var areaName: String,
     var subsidiaryName:String,
+    var permissionId: Int?,
 ) {
 }

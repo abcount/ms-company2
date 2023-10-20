@@ -51,7 +51,7 @@ class GroupBl @Autowired constructor(
                     hasGroupFounder = groupEntity.groupId
                 }
                 // create association of roles and group
-                var roleEntity = roleBl.getAllRoles();
+                var roleEntity = roleBl.getAllRolesFromEnum();
                 if (roleEntity.size != RolesAbc.values().size){
                     for( rol in RolesAbc.values()){
                         val roleEntity2 = roleBl.getRole(rol.name)
@@ -65,7 +65,7 @@ class GroupBl @Autowired constructor(
                 }
 
                 for(rol in roleEntity){
-                    createGroupRole(rol.roleId, hasGroupFounder)
+                    createGroupRole(rol.roleId, hasGroupFounder, true)
                         ?: throw Exception("Error")
                 }
 
@@ -84,19 +84,41 @@ class GroupBl @Autowired constructor(
     }
 
 
-    fun createGroupRole(roleId: Int, groupId: Int): Int? {
+    fun createGroupRole(roleId: Int, groupId: Int, status:Boolean): Int? {
         try{
             // really helpful doc > https://stackoverflow.com/questions/59668117/how-to-properly-use-the-param-annotation-of-mybatis/59811574#59811574
 
             val map = HashMap<String, Any>()
             map["group_role_id"] = 0
-            val grId = groupDao.createRoleGroup(TestEntity(roleId, groupId), map)
+            val grId = groupDao.createRoleGroup(TestEntity(roleId, groupId, status), map)
             return map["group_role_id"] as Int?
 
         }catch (ex: Exception){
             return null
         }
     }
+
+    fun checkFirstArrayInSecondArray(first: List<Int>, second: List<Int>){
+        first.forEach{
+            if(! second.contains(it)){
+                throw Exception("first not In second");
+            }
+        }
+    }
+    fun createRoleGroupByList(roleIdListWhiteList: List<Int>, allRolesList: List<Int>, groupId:Int ){
+        checkFirstArrayInSecondArray(roleIdListWhiteList, allRolesList);
+        allRolesList.forEach{ role ->
+
+            val res = createGroupRole(
+                roleId = role,
+                groupId = groupId,
+                status = roleIdListWhiteList.contains(role)
+            )
+                ?: throw Exception("Could not save role group id in groupRole Table")
+        }
+    }
+
+
 
 
 }

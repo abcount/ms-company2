@@ -157,7 +157,7 @@ class CompanyApi @Autowired constructor(
         @PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
         try{
             //val tokenAuth =  headers["authorization"]!!.substring(7)
-            val result = areaSubsidiaryBl.getAreaSubsidiaryByCompany(id)
+            val result = areaSubsidiaryBl.getAreaSubsidiaryAndRolesByCompany(id)
             return ResponseEntity(
                 ResponseDto(
                     data = result,

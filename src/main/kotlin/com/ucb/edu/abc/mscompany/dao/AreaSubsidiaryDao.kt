@@ -26,18 +26,20 @@ interface AreaSubsidiaryDao {
     @Select("""
         SELECT 
         ars.area_subsidiary_id, s.subsidiary_id, a.area_id, ars.dicc_category, ars.date_created,
-        a.area_name, s.subsidiary_name
+        a.area_name, s.subsidiary_name, ars.area_subsidiary_id
         FROM 
-        area_subsidiary ars,
-        subsidiary s,
-        area a,
-        company c
-        WHERE ars.area_id = a.area_id
-        AND ars.subsidiary_id = s.subsidiary_id
-        AND c.company_id =  a.company_id
+        area_subsidiary ars
+        JOIN subsidiary s
+        ON ars.subsidiary_id = s.subsidiary_id
+        JOIN area a
+        ON ars.area_id = a.area_id
+        AND a.status = true
+        JOIN company c
+        ON c.company_id =  a.company_id
         AND c.company_id = s.company_id
-        AND a.status =  true
         AND c.company_id = #{companyId}
     """)
     fun findByCompanyId(companyId: Int):List<SubsidiaryAndAreaPojo>
+
+
 }

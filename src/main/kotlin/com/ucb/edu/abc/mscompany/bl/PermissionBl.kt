@@ -1,6 +1,8 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.PermissionDao
+import com.ucb.edu.abc.mscompany.dto.response.AreaDtoRes
+import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.InvitationEntity
 import com.ucb.edu.abc.mscompany.entity.PermissionEntity
@@ -14,6 +16,7 @@ class PermissionBl @Autowired constructor(
     private val groupBl: GroupBl,
     private val permissionDao: PermissionDao,
     private val userBl: UserBl,
+    private val areaSubsidiaryBl: AreaSubsidiaryBl,
 
 ){
 
@@ -113,6 +116,43 @@ class PermissionBl @Autowired constructor(
 
         return userBl.getPersonalInvitations(token ,accessPersonEntity)
     }
+
+    fun getPermissionsByUserAndCompanyId(userId: Int, companyId: Int): List<SubsidiaryDtoRes> {
+        val listOfAreaSubsCurrentUser = permissionDao.findByUserId(userId = userId, userCategory = UserAbcCategory.ACTIVE.name);
+        val listOfAreaSubsCompany = areaSubsidiaryBl.getAreasSubsidiaryByCompany(companyId = companyId);
+        val listOfAreasSubsIdsOfCurrentUser = listOfAreaSubsCurrentUser.map { it.areaSubsidiaryId }
+        var mapOfSummarizedValues : MutableMap<Int, SubsidiaryDtoRes> = mutableMapOf();
+        var mapOfSizeElements : MutableMap<Int, Int> = mutableMapOf()
+        listOfAreaSubsCompany.forEach{ item ->
+            val idSub = item.subsidiaryId
+            if(mapOfSummarizedValues[idSub] == null){
+                mapOfSummarizedValues[idSub] = SubsidiaryDtoRes(
+                    subsidiaryId = item.subsidiaryId,
+                    subsidiaryName = item.subsidiaryName,
+                    areas = mutableListOf()
+                )
+            }
+            val area = AreaDtoRes(
+                areaId = item.areaId,
+                areaName = item.areaName,
+                areaSubsidiaryId = item.areaSubsidiaryId,
+                status = false
+            )
+            if( listOfAreasSubsIdsOfCurrentUser.contains(item.areaSubsidiaryId)){
+                area.status = true;
+                if(mapOfSizeElements[idSub]== null){
+                    mapOfSizeElements[idSub] = 0;
+                }
+                mapOfSizeElements[idSub] = mapOfSizeElements[idSub]!! + 1;
+            }
+            mapOfSummarizedValues[idSub]?.areas?.add(area)
+        }
+
+        return mapOfSummarizedValues.values.toList();
+    }
+
+
+
 
 
 

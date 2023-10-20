@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
+import com.ucb.edu.abc.mscompany.bl.RoleBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.UserEntity
@@ -21,7 +22,8 @@ import javax.annotation.Resource
 @RequestMapping("/test-api")
 class TestApi @Autowired constructor(
     private val companyBl: CompanyBl,
-    private val userBl: UserBl
+    private val userBl: UserBl,
+    private val rolesBl: RoleBl
 ) {
     val objectMapper = jacksonObjectMapper()
 
@@ -51,5 +53,16 @@ class TestApi @Autowired constructor(
             errors = null
         )
     }
+    @RequestMapping(value = ["/all-roles"], method = [RequestMethod.GET])
+    fun getALl(): Any{
+        return rolesBl.getAllRolesFromEnum();
+    }
 
+    @RequestMapping(value = ["/company/{companyId}/users/{userId}/roles"], method = [RequestMethod.GET])
+    fun getPermissionsAndRolesByCompanyIdAndUserId(
+        @PathVariable companyId:Int,
+        @PathVariable userId:Int
+    ):Any{
+        return companyBl.getPermissionAndRolesByUserAndCompany(userId, companyId);
+    }
 }

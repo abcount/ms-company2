@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.response.AreaDtoRes
 import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 
 import com.ucb.edu.abc.mscompany.entity.AreaSubsidiaryEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import org.apache.ibatis.exceptions.PersistenceException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,9 +43,13 @@ class AreaSubsidiaryBl @Autowired constructor(
         return areaSubsidiaryEntity
     }
 
-    fun getAreaSubsidiaryByCompany(companyId: Int): MutableMap<String, Any> {
+    fun getAreasSubsidiaryByCompany(companyId: Int): List<SubsidiaryAndAreaPojo> {
+        return areaSubsidiaryDao.findByCompanyId(companyId);
+    }
 
-        val areaSub = areaSubsidiaryDao.findByCompanyId(companyId)
+    fun getAreaSubsidiaryAndRolesByCompany(companyId: Int): MutableMap<String, Any> {
+
+        val areaSub = getAreasSubsidiaryByCompany(companyId);
 
         val mapOfValues: MutableMap<Int, SubsidiaryDtoRes> = mutableMapOf()
 
@@ -66,11 +71,12 @@ class AreaSubsidiaryBl @Autowired constructor(
             mapOfValues[id]?.areas?.add(area)
         }
 
-        val returned = mapOfValues.map { (key, value) ->
-            value
-        }
+        //val returned = mapOfValues.map { (key, value) ->
+        //    value
+        //}
+
         return mutableMapOf(
-            "areasAndSubs" to returned,
+            "areasAndSubs" to mapOfValues.values.toList(),
             "roles" to roleBl.getAllRolesSimpleDto()
         )
     }

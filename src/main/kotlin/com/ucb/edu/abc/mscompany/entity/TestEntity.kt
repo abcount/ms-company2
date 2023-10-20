@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor
 @NoArgsConstructor
 data class TestEntity (
     var roleId: Int,
-    var groupId: Int
+    var groupId: Int,
+    var status: Boolean = false
 ) {
 }
