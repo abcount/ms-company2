@@ -24,6 +24,11 @@ class UserBl @Autowired constructor(
     private val accessPersonService: AccessPersonBl,
     private val invitationBl: InvitationBl,
 ) {
+    
+    fun getAccessPersonById(accessPersonId: Int): AccessPersonEntity {
+        return accessPersonService.getAccessPersonInformationById(accessPersonId)
+            ?: throw UserNotFoundException("Access Person Not found");
+    }
 
     /**
      * @param token token of user doing the request
@@ -49,6 +54,16 @@ class UserBl @Autowired constructor(
     }
 
 
+    fun getUserByAccessPersonEntityAndCompany(companyId: Int, accessPerson: AccessPersonEntity): UserAndAccessPersonInformation {
+        val listOfUser = userDao.getUserEntityByCompanyAndAccessPersonUuidNOCat(companyId = companyId, userUuid = accessPerson.userUuid)
+        if(listOfUser.isNullOrEmpty()){
+            throw Exception("Not matched company id and access person entity");
+        }
+        if(listOfUser.size > 1){
+            throw Exception("Multiple users")
+        }
+        return listOfUser[0]
+    }
     fun getAccessPersonEntityEasy(token: String, currentAccessPersonEntity: AccessPersonEntity?): AccessPersonEntity? {
         var accessPersonEntity = currentAccessPersonEntity
         if(currentAccessPersonEntity == null){
@@ -146,6 +161,20 @@ class UserBl @Autowired constructor(
 
     }
 
+    fun  getUserInformationByCompanyIdAndUserId(userId: Int, companyId:Int): Employee {
+        val listRes = userDao.getUserEntityByCompanyAndUserIdNOCat(companyId, userId)
+        if(listRes.isNullOrEmpty()){
+            throw Exception("This is null or empty")
+        }
+        if(listRes.size > 1) throw Exception("Not Value")
+        return Employee(
+            employeeId = listRes[0].userId,
+            name = "${listRes[0].firstName} ${listRes[0].lastName}",
+            email = listRes[0].email,
+            urlProfilePicture = ""
+        )
+    }
+
     fun getUserInformationInvitationByCompanyId(companyId: Int): UsersAndInvitation{
         val usersAndInvitation = UsersAndInvitation(
             mutableListOf(),
@@ -160,12 +189,13 @@ class UserBl @Autowired constructor(
         }
         val invitationList = invitationBl.getInvitationByCompanyAndState(companyId = companyId, invitationState = InvitationState.PENDING)
         invitationList.forEach { item ->
-            val ap = accessPersonService.getAccessPersonInformationById(item.accessPersonId);
+            val ap = accessPersonService.getAccessPersonInformationById(item.accessPersonId)
             if(ap != null){
                 usersAndInvitation.invitation.add(
                     invitationBl.convertDtoInvitation(
                         accessPersonEntity = ap,
-                        invitationEntity = item
+                        invitationEntity = item,
+                        userId = getUserByAccessPersonEntityAndCompany(companyId = companyId, accessPerson = ap).userId
                     )
                 )
             }

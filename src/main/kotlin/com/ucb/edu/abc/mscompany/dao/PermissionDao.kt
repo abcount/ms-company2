@@ -28,6 +28,19 @@ interface PermissionDao {
     @Options(useGeneratedKeys = true, keyProperty = "map.group_access_entity_id")
     fun createGroupPermission(groupId: Int, permissionId: Int,  @Param("map") map: HashMap<String, Int>)
 
+    @Delete("""
+        DELETE FROM group_access_entity
+        WHERE abc_permission_id = #{permissionId}
+        AND group_id = #{groupId}
+    """)
+    fun deleteGroupPermissionsByPermission(permissionId: Int, groupId: Int)
+
+    @Delete("""
+        DELETE FROM abc_permission
+        WHERE permission_id = #{permissionId}
+    """)
+    fun deletePermissionById(permissionId: Int)
+
     @Select("""
         SELECT * FROM abc_permission
         WHERE user_id = #{userId}
@@ -63,14 +76,36 @@ interface PermissionDao {
         AND c.company_id = s.company_id
         JOIN abc_permission perm
         ON perm.area_subsidiary_id = ars.area_subsidiary_id
-        AND perm.status = true
         JOIN abc_user usr
         ON usr.user_id = perm.user_id
         AND usr.user_id = #{userId}
-        AND usr.status = true
-        AND usr.dicc_category = #{userCategory}
     """)
-    fun findByUserId(userId: Int, userCategory: String): List<SubsidiaryAndAreaPojo>
+    fun findByUserId(userId: Int): List<SubsidiaryAndAreaPojo>
 
+    @Select("""
+        SELECT per.*
+        FROM abc_permission per
+        JOIN area_subsidiary ars
+        ON ars.area_subsidiary_id = per.area_subsidiary_id
+        AND per.status = true
+        AND ars.area_subsidiary_id = #{areaSubId}
+        JOIN abc_user usr
+        ON usr.user_id = per.user_id
+        AND usr.user_id = #{userId}
+        AND usr.status = true
+        AND usr.dicc_category = 'ACTIVE'
+        JOIN group_access_entity gper
+        ON gper.abc_permission_id = per.permission_id
+        JOIN group_entity gr
+        ON gr.group_id = gper.group_id
+        AND gr.status = true
+        JOIN group_role  grole
+        ON grole.group_id = gr.group_id
+        AND grole.status = true
+        JOIN role_entity ro
+        ON ro.role_id = grole.role_id
+        AND ro.name = #{roleName}
+    """)
+    fun findRolePermission(roleName:String, userId: Int, areaSubId: Int ): List<PermissionEntity>?
 
 }

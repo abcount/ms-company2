@@ -117,8 +117,19 @@ class RoleBl @Autowired constructor(
             ?: throw Exception("Not roles founded")
     }
 
+    fun getAllRolesByUserId(userId: Int): List<RoleEntity> {
+        return roleDao.getRolesByUser(userId)
+            ?: throw Exception("Not roles founded for $userId")
+    }
+
+
+    fun getRolesByUserNoFilters(userId:Int, roleStatus: Boolean): List<RoleEntity> {
+        return roleDao.getRolesByUserAndUserCategoryNOFilters( statusGroupRole = roleStatus, userId=userId)
+            ?: throw Exception("Not roles founded")
+    }
+
     fun getMergedCurrentRolesOfUserAndRolesOfCompany(userId: Int, companyId: Int): MutableList<RoleSimpleDto> {
-        val listOfCurrentRoles = getRolesByUserIdAndCategoryAndStatusOfRole(userId= userId, userAbcCategory = UserAbcCategory.ACTIVE, roleStatus = true);
+        val listOfCurrentRoles = getRolesByUserNoFilters(userId= userId, roleStatus = true);
         val listOfAllRoles = getAllRolesFromEnum();
         val listOfSimpleRoleDtoResponse : MutableList<RoleSimpleDto> = mutableListOf()
         val listOfCurrentRolesIds = listOfCurrentRoles.map { it.roleId }

@@ -81,6 +81,9 @@ class AreaSubsidiaryBl @Autowired constructor(
         )
     }
 
+    fun getAreaSubIdByCompany( areaId: Int, subsidiaryId: Int): Int? {
+        return areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryId, areaId)
+    }
 
 
 

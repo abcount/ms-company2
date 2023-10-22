@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.bl
 import com.ucb.edu.abc.mscompany.dao.GroupDao
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.TestEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.GroupRoleExtendedPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.exception.AbcGroupNotFoundException
@@ -24,6 +25,11 @@ class GroupBl @Autowired constructor(
         }catch (ex: Exception){
             return null
         }
+    }
+
+    fun getGroupEntityByUser(userId: Int): GroupEntity{
+        return groupDao.getGroupByUserId(userId)
+            ?: throw Exception("Not group founded for user id $userId")
     }
     fun createGroup(category: GroupCategory, companyId: Int, description: String, name: String): GroupEntity? {
         try {
@@ -83,7 +89,6 @@ class GroupBl @Autowired constructor(
         }
     }
 
-
     fun createGroupRole(roleId: Int, groupId: Int, status:Boolean): Int? {
         try{
             // really helpful doc > https://stackoverflow.com/questions/59668117/how-to-properly-use-the-param-annotation-of-mybatis/59811574#59811574
@@ -118,7 +123,24 @@ class GroupBl @Autowired constructor(
         }
     }
 
+    fun getRolesByGroupId(groupId:Int): List<GroupRoleExtendedPojo> {
+        return groupDao.getRolesByGroupId(groupId = groupId)
+    }
 
 
+    fun updateRolesForThisGroup(groupEntityOfPerson: GroupEntity, roles: MutableList<Int>) {
+        val currentRolesOfUser = getRolesByGroupId(groupEntityOfPerson.groupId)
+        currentRolesOfUser.forEach {
+            if(roles.contains(it.roleId)){
+                if(!it.status){
+                    groupDao.updateGroupRoleById(groupRoleId = it.groupRoleId, status = true)
+                }
+            }else{
+                if(it.status){
+                    groupDao.updateGroupRoleById(groupRoleId = it.groupRoleId, status = false)
+                }
+            }
+        }
+    }
 
 }

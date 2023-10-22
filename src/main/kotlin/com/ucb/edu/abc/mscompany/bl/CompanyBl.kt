@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.request.CompanyDto
 import com.ucb.edu.abc.mscompany.dto.request.EnterpriseDto
 import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
+import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
@@ -182,8 +183,25 @@ class CompanyBl @Autowired constructor(
         return string.imageContent
     }
 
+    fun checkIfUserAlreadyExists(companyId: Int, accessPerson: AccessPersonEntity): Boolean {
+        return try{
+            val usr = userBl.getUserByCompanyIdAndToken("", companyId, UserAbcCategory.ACTIVE, accessPerson);
+            true;
+        }catch (ex: Exception){
+            false
+        }
+    }
+
     // invitations
     fun createNewInvitation(inv: NewInvitationDto, companyId: Int, token: String){
+
+        val accessPersonEntity = userBl.getAccessPersonById(inv.userId);
+
+        // check if accessPersonEntityId as userId exists
+        invitationBl.isThereAnCurrentInvitation(inv, companyId, token, accessPersonEntity)
+        // check if user is already in company
+        if(checkIfUserAlreadyExists(companyId, accessPersonEntity)) throw Exception("Usuario ya esta incorporado a la empresa")
+
         // set invitation
         val userIdOfCreator = userBl.getUserIdByCompanyIdAndToken(token= token , userAbcCategory = UserAbcCategory.ACTIVE, companyId = companyId, currentAccessPersonEntity = null)
         invitationBl.createInvitation(inv, companyId, userIdOfCreator)
@@ -192,7 +210,7 @@ class CompanyBl @Autowired constructor(
 
         // createAUserRelationSHip
         val userEntity = userBl.createUserByAccessPersonId(
-            accessPersonId = inv.userId,
+            accessPersonId = accessPersonEntity.accessPersonId.toInt(),
             category = UserAbcCategory.INACTIVE.name,
             status = true)
 
@@ -238,5 +256,12 @@ class CompanyBl @Autowired constructor(
         )
     }
 
+    fun updatePermissionsByCompanyAndUserId(requestedChanges: NewInvitationDto, companyId: Int, tokenCreator: String ){
+        val groupEntityOfPerson =  groupBl.getGroupEntityByUser(requestedChanges.userId);
+        groupBl.updateRolesForThisGroup(groupEntityOfPerson, requestedChanges.roles);
+        permissionBl.updatePermissions(companyId = companyId, requestedChanges, groupEntity = groupEntityOfPerson);
+
+    }
 
 }
+

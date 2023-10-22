@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor
 data class SubsidiaryDtoRes(
     var subsidiaryId: Int,
     var subsidiaryName: String,
+    var status: Boolean = false,
     var areas: MutableList<AreaDtoRes>
 )
 

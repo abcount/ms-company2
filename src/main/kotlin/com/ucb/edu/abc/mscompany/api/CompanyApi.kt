@@ -15,6 +15,8 @@ import com.ucb.edu.abc.mscompany.bl.CompanyBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.CompanyListDto
+import com.ucb.edu.abc.mscompany.exception.InvitationException
+import com.ucb.edu.abc.mscompany.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -90,6 +92,34 @@ class CompanyApi @Autowired constructor(
         }
     }
 
+    @RequestMapping(value = ["/{companyId}/employees/{userId}"], method = [RequestMethod.GET])
+    fun getUserIfByCompanyIdAndUserId(
+        @PathVariable companyId: Int,
+        @PathVariable userId: Int): ResponseEntity<ResponseDto<*>> {
+        try{
+            val invitationAndUsers = userBl.getUserInformationByCompanyIdAndUserId(companyId = companyId, userId = userId)
+            return ResponseEntity(
+                ResponseDto(
+                    data = invitationAndUsers,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto<List<CompanyListDto>>(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
     @RequestMapping(value = ["/{id}/employees"], method = [RequestMethod.GET])
     fun getUsersAndInvited(
         @PathVariable id: Int): ResponseEntity<ResponseDto<*>> {
@@ -118,6 +148,66 @@ class CompanyApi @Autowired constructor(
         }
     }
 
+    @RequestMapping(value = ["/{companyId}/users/{userId}/roles"], method = [RequestMethod.GET])
+    fun getRolesByUserByCompanyId(
+        @PathVariable companyId: Int,
+        @PathVariable userId: Int): ResponseEntity<ResponseDto<*>> {
+        try{
+            val roles = companyBl.getPermissionAndRolesByUserAndCompany(userId, companyId);
+            return ResponseEntity(
+                ResponseDto(
+                    data = roles,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto<List<CompanyListDto>>(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = ""
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+
+    @RequestMapping(value = ["/{companyId}/users/{userId}/roles"], method = [RequestMethod.PUT])
+    fun updateRolesByCompanyIdAndUserId(
+        @PathVariable companyId: Int,
+        @PathVariable userId: Int,
+        @RequestBody body: NewInvitationDto): ResponseEntity<ResponseDto<*>> {
+        try{
+            val roles = companyBl.updatePermissionsByCompanyAndUserId(requestedChanges = body, companyId = companyId, "")
+            return ResponseEntity(
+                ResponseDto(
+                    data = roles,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto<List<CompanyListDto>>(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = ""
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
     // creating invitations
     @RequestMapping(value = ["/{id}/invitations"],
         method = [RequestMethod.POST])
@@ -125,8 +215,8 @@ class CompanyApi @Autowired constructor(
         @RequestHeader headers: Map<String, String>,
         @PathVariable id: Int,
         @RequestBody body: NewInvitationDto): ResponseEntity<ResponseDto<*>> {
-        try{
-            val tokenAuth =  headers["authorization"]!!.substring(7)
+        try {
+            val tokenAuth = headers["authorization"]!!.substring(7)
             companyBl.createNewInvitation(body, id, tokenAuth);
             return ResponseEntity(
                 ResponseDto(
@@ -136,6 +226,26 @@ class CompanyApi @Autowired constructor(
                     errors = null
                 ),
                 HttpStatus.OK
+            )
+        }catch (invEx: InvitationException){
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = "El usuario ya tiene una invitacion pendiente",
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }catch (userEx: UserNotFoundException){
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = userEx.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
             )
         }catch (ex: Exception){
             println(ex.message)

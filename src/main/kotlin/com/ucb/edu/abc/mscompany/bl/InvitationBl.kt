@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.InvitationEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.PersonalInvitations
 import com.ucb.edu.abc.mscompany.enums.InvitationState
+import com.ucb.edu.abc.mscompany.exception.InvitationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -18,10 +19,10 @@ class InvitationBl @Autowired constructor(
         return invitationDao.getInvitationsByCompanyAndStatus(companyId = companyId, invStatus = invitationState.name)
             ?: throw Exception("Null list of invitations")
     }
-    fun convertDtoInvitation(invitationEntity: InvitationEntity, accessPersonEntity: AccessPersonEntity): InvitationDto {
+    fun convertDtoInvitation(invitationEntity: InvitationEntity, accessPersonEntity: AccessPersonEntity, userId: Int): InvitationDto {
         return InvitationDto(
             invitationId = invitationEntity.invitationId,
-            invitedId = accessPersonEntity.accessPersonId,
+            invitedId = userId.toLong(),
             invited = accessPersonEntity.firstName +" "+ accessPersonEntity.lastName,
             email = accessPersonEntity.email,
             urlProfilePicture = "https://bestprofilepictures.com/wp-content/uploads/2021/04/Cool-Picture-Wallpaper-473x1024.jpg"
@@ -53,5 +54,26 @@ class InvitationBl @Autowired constructor(
     fun findById(invitationId:Int): InvitationEntity {
         return invitationDao.findById(invitationId)
             ?: throw Exception("Invitation not found $invitationId")
+    }
+
+    fun isThereAnCurrentInvitation(
+        inv: NewInvitationDto,
+        companyId: Int,
+        token: String,
+        accessPersonEntity: AccessPersonEntity
+    ) {
+
+        val listIs =  invitationDao.getInvitationByCatAndAccessIdAndCompanyId(accessPersonId = accessPersonEntity.accessPersonId.toInt(),
+            cat = InvitationState.PENDING.name, companyId = companyId)
+        if(listIs == null){
+            println("THIS LIST IS NULL")
+            return
+        }
+        if(listIs.isEmpty()){
+            println("THIS LIST IS EMPTY")
+            return
+        }
+        throw InvitationException("HAS Other invitations");
+
     }
 }

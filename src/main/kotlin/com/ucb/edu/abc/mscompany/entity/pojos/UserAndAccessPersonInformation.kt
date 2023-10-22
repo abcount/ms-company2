@@ -25,3 +25,11 @@ data class PersonalInvitations(
     var status: Boolean,
     var accessPersonId: Int // invited
 )
+
+data class GroupRoleExtendedPojo(
+    var groupRoleId: Int,
+    var roleId: Int,
+    var groupId: Int,
+    var name:String,
+    var status: Boolean
+)
