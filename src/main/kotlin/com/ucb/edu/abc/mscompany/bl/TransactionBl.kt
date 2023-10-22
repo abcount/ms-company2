@@ -31,7 +31,8 @@ class TransactionBl @Autowired constructor(
         private val accountBl: AccountBl,
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
         private val companyBl: CompanyBl,
-        private val exchangeRateBl: ExchangeRateBl
+        private val exchangeRateBl: ExchangeRateBl,
+        private val entityBl: EntityBl
 
 
         ){
@@ -131,6 +132,18 @@ class TransactionBl @Autowired constructor(
             )
         }
         transactionalVoucherDto.auxiliar = auxiliaryList
+
+        //Obteniendo entidades
+        val entityList = entityBl.getAllEntitiesByCompanyId(companyId).map {
+            EntityForTransaction(
+                    it.entityId,
+                    it.entityName,
+                    it.nit,
+                    it.socialReason,
+                    it.foreign
+            )
+        }
+        transactionalVoucherDto.entities = entityList
 
         return transactionalVoucherDto
     }
