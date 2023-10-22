@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
+import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Component
@@ -17,4 +18,8 @@ interface ExchangeRateDao {
 
     @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId}")
     fun getAllExchangeRateByCompanyId(companyId: Int): List<ExchangeRateEntity>
+
+    @Insert("INSERT INTO exchange_rate (money_name, company_id, currency, abbreviation_name, date) " +
+            "VALUES (#{moneyName}, #{companyId}, #{currency}, #{abbreviationName}, #{date})")
+    fun createExchangeRate(exchangeRateEntity: ExchangeRateEntity)
 }

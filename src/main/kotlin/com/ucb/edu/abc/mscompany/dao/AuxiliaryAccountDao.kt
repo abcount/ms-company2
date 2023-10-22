@@ -23,4 +23,11 @@ interface AuxiliaryAccountDao {
     @Update("UPDATE auxiliary_account SET name_description = #{name}, code_account = #{code} WHERE auxiliary_account_id = #{auxiliaryId}")
     fun update(auxiliaryId: Int, name: String, code: String)
 
+    @Select("SELECT EXISTS (" +
+            "    SELECT 1" +
+            "    FROM auxiliary_account " +
+            "    WHERE LOWER(code_account) = LOWER(#{code}) " +
+            "    AND company_id = #{companyId} )")
+    fun existsByCode(code: String, companyId: Int): Boolean
+
 }
