@@ -13,12 +13,10 @@ import java.util.Date
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TransactionDto(
-        var userId: Int,
         var subsidiaryId: Int,
         var currencyId: Int,
         var transactionTypeId: Int,
         var areaId: Int,
-        var transactionNumber: Long,
         var glosaGeneral: String,
         var transactions: List<TransactionAccountDto>,
         var totalDebit: BigDecimal,

@@ -12,4 +12,7 @@ interface TransactionTypeDao {
 
     @Select("SELECT * FROM transaction_type")
     fun getAllTransactionType(): List<TransactionTypeEntity>
+    @Select("SELECT type FROM transaction_type WHERE transaction_type_id = #{transactionTypeId}")
+    fun getTransactionTypeNameById(transactionTypeId: Int): String
+
 }
