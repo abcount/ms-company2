@@ -1,5 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
+import com.ucb.edu.abc.mscompany.dto.response.AccountDto
+import com.ucb.edu.abc.mscompany.dto.response.TransactionDto
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
 import com.ucb.edu.abc.mscompany.entity.aux.CompanyDataVoucher
 import org.apache.ibatis.annotations.Insert
@@ -7,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Component
+import java.util.Date
 
 @Mapper
 @Component
@@ -23,5 +26,45 @@ interface TransactionDao {
 
     @Select("SELECT MAX(transaction_number) FROM transaction WHERE company_id = #{companyId}")
     fun getLastTransactionNumber(companyId: Int): Int?
+
+    @Select(
+            """
+    SELECT t.transaction_id, t.transaction_type_id ,t.transaction_number, t.glosa_general, t.date, t.exchange_rate_id
+    FROM transaction t
+    JOIN area_subsidiary a_s ON t.area_subsidiary_id = a_s.area_subsidiary_id
+    WHERE a_s.subsidiary_id = #{subsidiaryId} AND a_s.area_id = #{areaId} AND t.company_id = #{companyId} AND t.date BETWEEN #{from} AND #{to}
+    """
+    )
+
+    fun getTransactionForAreaAndSubsidiary(companyId: Int, subsidiaryId: Int, areaId: Int, from: Date, to: Date): List<TransactionEntity>
+
+    @Select(
+            """
+    SELECT 
+        a.code_account,
+        a.name_account,
+        ta.glosa_detail,
+        SUM(dc.amount_debit) AS debitamount,
+        SUM(dc.amount_credit) AS creditamount
+    FROM 
+        transaction t
+    JOIN 
+        transaction_account ta ON t.transaction_id = ta.transaction_id
+    JOIN 
+        account a ON ta.account_id = a.account_id
+    LEFT JOIN 
+        debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
+    WHERE 
+        t.transaction_id = #{transactionId}
+    GROUP BY 
+        a.code_account, 
+        a.name_account, 
+        ta.glosa_detail
+    """
+    )
+    fun getAccountDetailsByTransactionId(transactionId: Long): List<AccountDto>
+
+
+
 
 }
