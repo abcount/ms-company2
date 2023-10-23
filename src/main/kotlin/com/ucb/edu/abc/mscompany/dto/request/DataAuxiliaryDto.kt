@@ -38,13 +38,6 @@ data class ExchangeDto(
         val currency: Double
 )
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class ExchangeRateDto(
-        val exchange: List<ExchangeDto>
-)
 
 
 

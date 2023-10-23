@@ -2,7 +2,6 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeRateDao
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
-import com.ucb.edu.abc.mscompany.dto.request.ExchangeRateDto
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory

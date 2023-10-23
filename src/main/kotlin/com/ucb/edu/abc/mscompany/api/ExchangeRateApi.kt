@@ -1,8 +1,9 @@
 package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.ExchangeRateBl
-import com.ucb.edu.abc.mscompany.dto.request.ExchangeRateDto
+import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
+import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -30,16 +31,24 @@ class ExchangeRateApi @Autowired constructor(
     }
 
     @PostMapping("/{companyId}")
-    fun createExchangeRate(@PathVariable companyId: Int, @RequestBody exchangeRateDto: ExchangeRateDto): ResponseEntity<ResponseDto<*>>{
+    fun createExchangeRate(@PathVariable companyId: Int, @RequestBody exchangeRateDto: List<ExchangeDto>): ResponseEntity<ResponseDto<*>>{
         logger.info("Creando tipos de cambio")
         val exist = exchangeRateBl.existRegister(companyId)
         if(exist) {
             return ResponseEntity.ok(
-                ResponseDto(false, "Ya existen registros de tipos de cambio", false, ""))
+                ResponseDto(false, "Ya existen registros de tipos de cambio el día de hoy", false, ""))
         }
-        exchangeRateBl.createExchangeRateList(exchangeRateDto.exchange, companyId)
+        exchangeRateBl.createExchangeRateList(exchangeRateDto, companyId)
         return ResponseEntity.ok(
-            ResponseDto("", "Datos obtenidos con exito", true, "" ))
+            ResponseDto("", "Tipo de cambio creado correctamente", true, "" ))
+    }
+
+    @GetMapping("/{companyId}")
+    fun getAllExchangeRate(@PathVariable companyId: Int): ResponseEntity<ResponseDto<List<ExchangeRateEntity>>>{
+        logger.info("Obteniendo tipos de cambio")
+        val listExchange = exchangeRateBl.getAllExchangeRateByCompanyId(companyId)
+        return ResponseEntity.ok(
+            ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
     }
 
 
