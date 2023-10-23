@@ -260,5 +260,10 @@ class PermissionBl @Autowired constructor(
         return true;
     }
 
+    fun deletePermissionsByUserId(userId: Int) {
+
+        permissionDao.deletePermissionsByUserId(userId);
+    }
+
 
 }

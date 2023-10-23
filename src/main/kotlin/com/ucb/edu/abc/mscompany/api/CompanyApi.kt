@@ -291,5 +291,71 @@ class CompanyApi @Autowired constructor(
         }
     }
 
+    @RequestMapping(value = ["/{companyId}/users/{userId}"],
+        method = [RequestMethod.DELETE])
+    fun deleteUserOfCompany(
+        @RequestHeader headers: Map<String, String>,
+        @PathVariable companyId: Int,
+        @PathVariable userId: Int): ResponseEntity<ResponseDto<*>> {
+        try{
+            //val tokenAuth =  headers["authorization"]!!.substring(7)
+            val result = companyBl.deleteUserByCompany(companyId, userId)
+            return ResponseEntity(
+                ResponseDto(
+                    data = result,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+    @RequestMapping(value = ["/{companyId}/invitations/{invitationId}/users/{userId}"],
+        method = [RequestMethod.DELETE])
+    fun deleteInvitation(
+        @RequestHeader headers: Map<String, String>,
+        @PathVariable companyId: Int,
+        @PathVariable userId: Int,
+        @PathVariable invitationId: Int
+    ): ResponseEntity<ResponseDto<*>> {
+        try{
+            //val tokenAuth =  headers["authorization"]!!.substring(7)
+            val result = companyBl.cancelInvitation(invitationId, userId)
+            return ResponseEntity(
+                ResponseDto(
+                    data = result,
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            println(ex.message)
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = ex.message,
+                    success = false,
+                    errors = "CODES: 0001, 0002"
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
 
 }

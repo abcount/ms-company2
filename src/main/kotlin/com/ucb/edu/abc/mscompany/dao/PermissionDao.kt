@@ -41,6 +41,11 @@ interface PermissionDao {
     """)
     fun deletePermissionById(permissionId: Int)
 
+    @Delete("""
+        DELETE FROM abc_permission
+        WHERE user_id = #{userId}
+    """)
+    fun deletePermissionsByUserId(userId:Int)
     @Select("""
         SELECT * FROM abc_permission
         WHERE user_id = #{userId}

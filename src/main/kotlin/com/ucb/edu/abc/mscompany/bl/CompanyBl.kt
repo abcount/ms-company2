@@ -11,6 +11,7 @@ import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.CompanyEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import com.ucb.edu.abc.mscompany.enums.InvitationState
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.apache.ibatis.exceptions.PersistenceException
@@ -260,6 +261,17 @@ class CompanyBl @Autowired constructor(
         val groupEntityOfPerson =  groupBl.getGroupEntityByUser(requestedChanges.userId);
         groupBl.updateRolesForThisGroup(groupEntityOfPerson, requestedChanges.roles);
         permissionBl.updatePermissions(companyId = companyId, requestedChanges, groupEntity = groupEntityOfPerson);
+
+    }
+
+    fun deleteUserByCompany(companyId:Int, userId: Int){
+        val userEntity = userBl.getUserInformationByCompanyIdAndUserId(userId, companyId);
+        permissionBl.deletePermissionsByUserId(userEntity.employeeId);
+        userBl.updateUserStatusAndCategory(userId, UserAbcCategory.DISABLED, status = false);
+    }
+    fun cancelInvitation(invitationId: Int, userId: Int){
+        userBl.updateUserStatusAndCategory(userId, UserAbcCategory.DISABLED, status = false);
+        invitationBl.changeStateOfInvitation(invitationId, InvitationState.CANCELED);
 
     }
 

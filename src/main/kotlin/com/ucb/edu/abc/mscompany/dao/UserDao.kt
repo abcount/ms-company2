@@ -96,6 +96,15 @@ interface UserDao {
     """)
     fun updateUserCategory(userId:Int, category:String)
 
+    @Update("""
+        UPDATE abc_user
+        SET dicc_category = #{category},
+        status = #{status}
+        WHERE user_id = #{userId}
+        
+    """)
+    fun updateUserStatusAndCategory(userId:Int, category:String, status: Boolean)
+
 
     @Select("""
         select us.user_id , acp.first_name, acp.last_name , acp.email

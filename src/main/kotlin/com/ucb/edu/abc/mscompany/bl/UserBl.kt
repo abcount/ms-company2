@@ -208,6 +208,10 @@ class UserBl @Autowired constructor(
     fun updateUserCategory(userEntity: UserEntity, userCat: UserAbcCategory){
         userDao.updateUserCategory(userId = userEntity.userId, category = userCat.name)
     }
+
+    fun updateUserStatusAndCategory(userId: Int, userCat: UserAbcCategory, status: Boolean){
+        userDao.updateUserStatusAndCategory(userId = userId, category = userCat.name, status = status)
+    }
     fun getPersonalInvitations(token: String, currentAccessPersonEntity: AccessPersonEntity?): MutableMap<String, List<Any>> {
         var accessPersonEntity = currentAccessPersonEntity
         if(currentAccessPersonEntity == null){
