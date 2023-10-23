@@ -3,11 +3,13 @@ package com.ucb.edu.abc.mscompany.dao
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.RoleEntity
 import com.ucb.edu.abc.mscompany.entity.TestEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.GroupRoleExtendedPojo
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.collections.HashMap
@@ -38,5 +40,36 @@ interface GroupDao {
     // so i made a trick using map instead object entity
 
 
+    @Select("""
+        SELECT DISTINCT g.* 
+        FROM group_entity g
+        JOIN group_access_entity gperm
+        ON gperm.group_id  = g.group_id
+        JOIN abc_permission perm
+        ON perm.permission_id = gperm.abc_permission_id
+        JOIN abc_user usr
+        ON usr.user_id = perm.user_id
+        AND usr.user_id = #{userId}
+    """)
+    fun getGroupByUserId(userId: Int): GroupEntity?
+
+    @Update("""
+        UPDATE group_role 
+        SET status = #{status}
+        WHERE group_role_id = #{groupRoleId}
+    """)
+    fun updateGroupRoleById(groupRoleId: Int, status: Boolean)
+
+
+    @Select("""
+    SELECT grr.group_role_id, grr.role_id, grr.group_id, r.name , grr.status
+    FROM group_role grr
+    JOIN role_entity r
+    ON r.role_id = grr.role_id
+    JOIN group_entity g
+    ON g.group_id = grr.group_id
+    WHERE g.group_id = #{groupId}
+    """)
+    fun getRolesByGroupId(groupId: Int): List<GroupRoleExtendedPojo>
 
 }

@@ -1,13 +1,17 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.PermissionDao
+import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.AreaDtoRes
 import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
+import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.InvitationEntity
-import com.ucb.edu.abc.mscompany.entity.PermissionEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
+import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -19,13 +23,7 @@ class PermissionBl @Autowired constructor(
     private val areaSubsidiaryBl: AreaSubsidiaryBl,
 
 ){
-
-    /**
-     * Get permissions by params
-     */
-
-
-
+    private val logger = LoggerFactory.getLogger(this::class.java)
     // create permissions
     /**
      * create permission for any type
@@ -117,8 +115,15 @@ class PermissionBl @Autowired constructor(
         return userBl.getPersonalInvitations(token ,accessPersonEntity)
     }
 
+    fun getPermissionsByUserId(userId: Int): List<SubsidiaryAndAreaPojo> {
+        return permissionDao.findByUserId(userId = userId)
+    }
+    fun getAreasAndSubsByCompany(companyId: Int): List<SubsidiaryAndAreaPojo> {
+        return areaSubsidiaryBl.getAreasSubsidiaryByCompany(companyId = companyId)
+    }
+
     fun getPermissionsByUserAndCompanyId(userId: Int, companyId: Int): List<SubsidiaryDtoRes> {
-        val listOfAreaSubsCurrentUser = permissionDao.findByUserId(userId = userId, userCategory = UserAbcCategory.ACTIVE.name);
+        val listOfAreaSubsCurrentUser = getPermissionsByUserId(userId)
         val listOfAreaSubsCompany = areaSubsidiaryBl.getAreasSubsidiaryByCompany(companyId = companyId);
         val listOfAreasSubsIdsOfCurrentUser = listOfAreaSubsCurrentUser.map { it.areaSubsidiaryId }
         var mapOfSummarizedValues : MutableMap<Int, SubsidiaryDtoRes> = mutableMapOf();
@@ -147,13 +152,118 @@ class PermissionBl @Autowired constructor(
             }
             mapOfSummarizedValues[idSub]?.areas?.add(area)
         }
-
+        mapOfSizeElements.forEach { t, u ->
+            if(u == mapOfSummarizedValues[t]!!.areas.size ){
+                mapOfSummarizedValues[t]!!.status = true;
+            }
+        }
         return mapOfSummarizedValues.values.toList();
     }
 
+    fun convertListAreasSubObjIntoMap(listOfObjects: List<SubsidiaryAndAreaPojo>): MutableMap<Int, SubsidiaryAndAreaPojo> {
+        var map: MutableMap<Int, SubsidiaryAndAreaPojo> = mutableMapOf();
+        listOfObjects.forEach {
+            map[it.areaSubsidiaryId] = it
+        }
+        return map;
+    }
+    fun updatePermissions(companyId: Int, requestedChanges: NewInvitationDto, groupEntity: GroupEntity) {
 
+        val currentPermissionsByUser = getPermissionsByUserId(requestedChanges.userId);
+        val mapOfCurrentPermissionsByUser = convertListAreasSubObjIntoMap(currentPermissionsByUser)
+        val listOfAreasSubsInUser = currentPermissionsByUser.map { it.areaSubsidiaryId }
 
+        val listToDelete = listOfAreasSubsInUser.filterNot{ it in requestedChanges.areaSubsidiaryId}
+        // find common
+        //val common = listOfAreasSubsInUser.filter { it in requestedChanges.areaSubsidiaryId }
+        //val common = listOfAreasSubsInUser.intersect(requestedChanges.areaSubsidiaryId.toSet())
+        val listToUpload = requestedChanges.areaSubsidiaryId.filterNot { it in listOfAreasSubsInUser }
 
+        val listPermissionIdToDelete = getPermissionIdFromThisMap(listToDelete, mapOfCurrentPermissionsByUser)
+
+        deleteThisPermissionInGroup(listPermissionIdToDelete, groupEntity.groupId)
+        deleteThisPermissions(listPermissionIdToDelete)
+        createThisPermissions(listToUpload, requestedChanges.userId, groupEntity.groupId)
+    }
+
+    private fun createThisPermissions(listToUploadAreaSub: List<Int>, userId: Int, groupId: Int) {
+        listToUploadAreaSub.forEach {
+            val permissionId = createPermissionsOnDb(areaSubId = it, userId = userId, status = true)
+                ?: throw Exception("Could not be created in DB permission")
+            createGroupPermissionOnDB(permissionId = permissionId, groupId = groupId)
+                ?: throw Exception("Could not be created in DB permission group")
+        }
+    }
+
+    private fun deleteThisPermissionInGroup(listDeleted: List<Int>, groupId: Int){
+        listDeleted.forEach {
+            permissionDao.deleteGroupPermissionsByPermission(it, groupId)
+        }
+    }
+    private fun deleteThisPermissions(listDeleted: List<Int>){
+        listDeleted.forEach {
+            permissionDao.deletePermissionById(it);
+        }
+    }
+    private fun getPermissionIdFromThisMap(listToDelete: List<Int>, mapOfSubsAreasId: MutableMap<Int, SubsidiaryAndAreaPojo>): MutableList<Int> {
+        val listPermissionsIdToDelete : MutableList<Int> = mutableListOf()
+        listToDelete.forEach {
+            if(mapOfSubsAreasId[it] != null){
+                val idPermission = mapOfSubsAreasId[it]?.permissionId;
+                if(idPermission != null){
+                    listPermissionsIdToDelete.add(idPermission);
+                }
+
+            }
+        }
+        return listPermissionsIdToDelete;
+    }
+
+    private fun getUserId(token: String, companyId: Int): Int {
+        val user = userBl.getUserByCompanyIdAndToken(token = token, companyId = companyId,
+            userCat = UserAbcCategory.ACTIVE, null)
+        return user.userId
+    }
+    private fun getAreaSubIdByCompany(areaId: Int, subsidiary: Int, companyId: Int): Int {
+        return areaSubsidiaryBl.getAreaSubIdByCompany(subsidiaryId = subsidiary, areaId = areaId)
+            ?: throw Exception("Not founded")
+    }
+
+    /**
+     * check if user has access to the action
+     * @param tokenUser  token of person who access the resource
+     * @param companyId  company id where user must be associated
+     * @param areaId id of area
+     * @param subsidiary id of sub
+     * @param role must be the action performed in resource
+     * @param companyId id of company
+     * @param userId (OPTIONAL default null) when request has userId, it saves request to get user
+     * @param areaSubId (OPTIONAL default null) when request has area subsidiary id, it saves request to get sub id
+     *
+     * @return boolean true if exists role and false if not
+     */
+    fun canPerformThisAction(tokenUser: String, areaId:Int, subsidiary:Int,
+                             role: RolesAbc, companyId: Int,
+                             userId: Int? = null, areaSubId: Int? = null ): Boolean {
+        val currentUserId = userId ?: getUserId(tokenUser, companyId)
+        val currentAreaSubId = areaSubId ?: getAreaSubIdByCompany(areaId, subsidiary, companyId)
+
+        val listOfResult = permissionDao.findRolePermission(role.name, currentUserId, currentAreaSubId);
+        if(listOfResult.isNullOrEmpty()){
+            logger.error("$currentUserId can not access to ${role.name} with area sub $currentAreaSubId")
+            return false;
+        }
+        if(listOfResult.size > 1){
+            logger.error("$currentUserId has more access to ${role.name} with area sub $currentAreaSubId")
+            return false;
+        }
+        return true;
+    }
+
+    fun deletePermissionsByUserId(userId: Int) {
+
+        permissionDao.deletePermissionsByUserId(userId);
+    }
 
 
 }

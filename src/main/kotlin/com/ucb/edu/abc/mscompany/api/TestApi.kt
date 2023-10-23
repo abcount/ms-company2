@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
 import com.ucb.edu.abc.mscompany.bl.RoleBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
+import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.UserEntity
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
@@ -58,11 +59,22 @@ class TestApi @Autowired constructor(
         return rolesBl.getAllRolesFromEnum();
     }
 
+    // ================== DONE =====================
     @RequestMapping(value = ["/company/{companyId}/users/{userId}/roles"], method = [RequestMethod.GET])
     fun getPermissionsAndRolesByCompanyIdAndUserId(
         @PathVariable companyId:Int,
         @PathVariable userId:Int
     ):Any{
         return companyBl.getPermissionAndRolesByUserAndCompany(userId, companyId);
+    }
+    // ================== DONE =====================
+    @RequestMapping(value = ["/companies/{companyId}/users/{userId}/roles"], method = [RequestMethod.PUT])
+    fun updatePermissions(
+        @PathVariable companyId:Int,
+        @PathVariable userId:Int,
+        @RequestBody body: NewInvitationDto
+    ): Any{
+        return companyBl.updatePermissionsByCompanyAndUserId(requestedChanges = body, companyId = companyId, "")
+
     }
 }

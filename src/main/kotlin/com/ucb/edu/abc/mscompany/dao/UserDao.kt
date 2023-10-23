@@ -96,5 +96,63 @@ interface UserDao {
     """)
     fun updateUserCategory(userId:Int, category:String)
 
+    @Update("""
+        UPDATE abc_user
+        SET dicc_category = #{category},
+        status = #{status}
+        WHERE user_id = #{userId}
+        
+    """)
+    fun updateUserStatusAndCategory(userId:Int, category:String, status: Boolean)
 
+
+    @Select("""
+        select us.user_id , acp.first_name, acp.last_name , acp.email
+        from 
+            company c,
+            subsidiary sub, 
+            area_subsidiary arsub, 
+            abc_permission perm,
+            area ar,
+            abc_user us,
+            access_person acp
+        where 
+            c.company_id = ar.company_id
+        and	sub.company_id = c.company_id
+        and	arsub.area_id = ar.area_id
+        and	sub.subsidiary_id = arsub.subsidiary_id 
+        and	arsub.area_subsidiary_id = perm.area_subsidiary_id
+        and perm.user_id = us.user_id
+        and acp.access_person_id = us.access_person_id
+        and c.company_id = #{companyId}
+        and us.status = true
+        and acp.user_uuid = #{userUuid} 
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+    """)
+    fun getUserEntityByCompanyAndAccessPersonUuidNOCat(companyId: Int, userUuid: String):MutableList<UserAndAccessPersonInformation>?;
+
+    @Select("""
+        select us.user_id , acp.first_name, acp.last_name , acp.email
+        from 
+            company c,
+            subsidiary sub, 
+            area_subsidiary arsub, 
+            abc_permission perm,
+            area ar,
+            abc_user us,
+            access_person acp
+        where 
+            c.company_id = ar.company_id
+        and	sub.company_id = c.company_id
+        and	arsub.area_id = ar.area_id
+        and	sub.subsidiary_id = arsub.subsidiary_id 
+        and	arsub.area_subsidiary_id = perm.area_subsidiary_id
+        and perm.user_id = us.user_id
+        and acp.access_person_id = us.access_person_id
+        and c.company_id = #{companyId}
+        and us.status = true
+        and us.user_id = #{userId} 
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+    """)
+    fun getUserEntityByCompanyAndUserIdNOCat(companyId: Int, userId: Int):MutableList<UserAndAccessPersonInformation>?;
 }

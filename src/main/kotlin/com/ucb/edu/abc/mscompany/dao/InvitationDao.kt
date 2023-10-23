@@ -79,4 +79,27 @@ interface InvitationDao {
         WHERE invitation_id = #{invitationId}
     """)
     fun updateStateByInvitationId(invitationId: Int, invitationStatus: String )
+
+
+    @Select("""
+        SELECT 
+        inv.invitation_id, ap2.username, com.company_name , inv.invitation_status, inv.status, 
+        inv.access_person_id
+        FROM 
+        invitation inv,
+        company com,
+        access_person ap,
+        abc_user usr,
+        access_person ap2
+        WHERE 
+            com.company_id = inv.company_id
+        AND ap.access_person_id = inv.access_person_id
+        AND usr.user_id = inv.user_id
+        AND ap2.access_person_id = usr.access_person_id
+        AND inv.status = true
+        AND inv.invitation_status = #{cat}
+        AND ap.access_person_id = #{accessPersonId}
+        AND com.company_id = #{companyId}
+    """)
+    fun getInvitationByCatAndAccessIdAndCompanyId(accessPersonId : Int, cat: String, companyId: Int ):List<PersonalInvitations>?
 }
