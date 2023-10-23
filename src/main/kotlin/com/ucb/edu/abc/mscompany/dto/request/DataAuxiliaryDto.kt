@@ -28,3 +28,23 @@ data class EntityDataDto(
         var foreign: Boolean,
 )
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ExchangeDto(
+        val moneyName: String,
+        val abbreviationName: String,
+        val currency: Double
+)
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ExchangeRateDto(
+        val exchange: List<ExchangeDto>
+)
+
+
+

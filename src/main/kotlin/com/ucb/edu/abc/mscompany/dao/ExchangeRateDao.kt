@@ -19,6 +19,7 @@ interface ExchangeRateDao {
     @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId}")
     fun getAllExchangeRateByCompanyId(companyId: Int): List<ExchangeRateEntity>
 
+    /*TODO: revisar si obtener hora del servidor o de la base de datos*/
     @Insert("INSERT INTO exchange_rate (money_name, company_id, currency, abbreviation_name, date) " +
             "VALUES (#{moneyName}, #{companyId}, #{currency}, #{abbreviationName}, #{date})")
     fun createExchangeRate(exchangeRateEntity: ExchangeRateEntity)

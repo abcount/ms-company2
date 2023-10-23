@@ -430,7 +430,7 @@ CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 -- Table: transaction_account
 CREATE TABLE IF NOT EXISTS transaction_account (
 transaction_account_id serial  NOT NULL,
-entity_id int  NOT NULL,
+entity_id int NULL,
 transaction_id int  NOT NULL,
 account_id int  NOT NULL,
 auxiliary_account_id int  NULL,
