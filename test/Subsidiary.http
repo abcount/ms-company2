@@ -63,3 +63,15 @@ Content-Type: application/json
   "totalDebit": 1000,
   "totalCredit": 1000
 }
+###
+POST http://localhost:8080/diary/book/4
+Content-Type: application/json
+
+{
+    "subsidiaries": [1, 2, 3],
+    "areas": [4, 5, 6],
+    "from": "2023-01-01",
+    "to": "2023-10-18",
+    "transactionType": 1,
+    "currencies": [1, 2]
+}

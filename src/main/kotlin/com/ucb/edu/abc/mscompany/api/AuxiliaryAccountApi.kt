@@ -38,8 +38,14 @@ class AuxiliaryAccountApi @Autowired constructor(
     }
 
     @PostMapping("/{companyId}")
-    fun createAuxiliaryAccount(@RequestBody auxiliaryDataDto: AuxiliaryDataDto, @PathVariable companyId: Int): ResponseEntity<ResponseDto<List<AuxiliaryDataDto>>>{
+    fun createAuxiliaryAccount(@RequestBody auxiliaryDataDto: AuxiliaryDataDto, @PathVariable companyId: Int): ResponseEntity<ResponseDto<*>>{
         logger.info("Creando cuenta auxiliar")
+        //Verificar que el codigo no existe
+        val exist = auxiliaryAccountBl.existCodeName(auxiliaryDataDto.auxiliaryCode,companyId)
+        if(exist) {
+            return ResponseEntity.ok(
+                    ResponseDto(false, "El codigo de cuenta auxiliar ya existe", false, ""))
+        }
          auxiliaryAccountBl.createAuxiliaryAccount(
                 AuxiliaryAccountEntity(
                     0,
@@ -47,7 +53,7 @@ class AuxiliaryAccountApi @Autowired constructor(
                     auxiliaryDataDto.auxiliaryName,
                     companyId
                 ))
-        val listAuxliar = auxiliaryAccountBl.getAuxiliariesAccountByCompanyId(companyId).map {
+        val listAuxiliary = auxiliaryAccountBl.getAuxiliariesAccountByCompanyId(companyId).map {
             AuxiliaryDataDto(
                     it.auxiliaryAccountId,
                     it.nameDescription,
@@ -55,12 +61,17 @@ class AuxiliaryAccountApi @Autowired constructor(
             )
         }
         return ResponseEntity.ok(
-            ResponseDto(listAuxliar, "Cuenta auxiliar creada con exito", true, "" ))
+            ResponseDto(listAuxiliary, "Cuenta auxiliar creada con exito", true, "" ))
     }
 
     @PutMapping("/{companyId}")
-    fun updateAuxiliaryAccount(@PathVariable companyId: Int, @RequestBody auxiliaryDataDto: AuxiliaryDataDto): ResponseEntity<ResponseDto<List<AuxiliaryDataDto>>>{
+    fun updateAuxiliaryAccount(@PathVariable companyId: Int, @RequestBody auxiliaryDataDto: AuxiliaryDataDto): ResponseEntity<ResponseDto<*>>{
         logger.info("Actualizando cuenta auxiliar")
+        val exist = auxiliaryAccountBl.existCodeName(auxiliaryDataDto.auxiliaryCode,companyId)
+        if(exist) {
+            return ResponseEntity.ok(
+                    ResponseDto(false, "El codigo de cuenta auxiliar ya existe", false, ""))
+        }
         auxiliaryAccountBl.updateAuxiliaryAccount(
                 auxiliaryDataDto.auxiliaryId!!,
                 auxiliaryDataDto.auxiliaryName,

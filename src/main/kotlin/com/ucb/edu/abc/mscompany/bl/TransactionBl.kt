@@ -31,10 +31,11 @@ class TransactionBl @Autowired constructor(
         private val accountBl: AccountBl,
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
         private val companyBl: CompanyBl,
-        private val exchangeRateBl: ExchangeRateBl
+        private val exchangeRateBl: ExchangeRateBl,
+        private val entityBl: EntityBl
 
 
-){
+        ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
     fun saveTransaction(companyId: Int, transactionDto: TransactionDto, headers: Map<String, String>){
@@ -64,7 +65,6 @@ class TransactionBl @Autowired constructor(
     fun getDataForDoATransaction(companyId: Int, headers: Map<String,String>): TransactionalVoucherDto{
         val transactionalVoucherDto = TransactionalVoucherDto()
         val tokenAuth =  headers["authorization"]!!.substring(7)
-        println("tokenAuth: $tokenAuth")
         val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth,   companyId, UserAbcCategory.ACTIVE,null)
 
         //Obteniendo los datos sueltos del response
@@ -102,10 +102,10 @@ class TransactionBl @Autowired constructor(
         //Obtener tipos de cambio
         val exchangeList = exchangeRateBl.getAllExchangeRateByCompanyIdAndDate(companyId).map {
             CurrencyVoucher(
-                it.exchangeRateId,
-                it.moneyName,
-                it.abbreviationName,
-                it.currency
+                    it.exchangeRateId,
+                    it.moneyName,
+                    it.abbreviationName,
+                    it.currency
             )
         }
         transactionalVoucherDto.currencies = exchangeList
@@ -113,12 +113,12 @@ class TransactionBl @Autowired constructor(
         //Obtener cuentas de movimiento
         val accountList = accountBl.getAccountsNonGrouperByCompanyId(companyId).map {
             Account(
-                it.accountId,
-                it.codeAccount,
-                it.nameAccount,
-                it.moneyRub,
-                it.report,
-                it.clasificator
+                    it.accountId,
+                    it.codeAccount,
+                    it.nameAccount,
+                    it.moneyRub,
+                    it.report,
+                    it.clasificator
             )
         }
         transactionalVoucherDto.accountablePlan = accountList
@@ -126,12 +126,24 @@ class TransactionBl @Autowired constructor(
         //Obtener cuentas auxiliares
         val auxiliaryList = auxiliaryAccountBl.getAuxiliariesAccountByCompanyId(companyId).map {
             Auxiliary(
-                it.auxiliaryAccountId,
-                it.codeAccount,
-                it.nameDescription
+                    it.auxiliaryAccountId,
+                    it.codeAccount,
+                    it.nameDescription
             )
         }
         transactionalVoucherDto.auxiliar = auxiliaryList
+
+        //Obteniendo entidades
+        val entityList = entityBl.getAllEntitiesByCompanyId(companyId).map {
+            EntityForTransaction(
+                    it.entityId,
+                    it.entityName,
+                    it.nit,
+                    it.socialReason,
+                    it.foreign
+            )
+        }
+        transactionalVoucherDto.entities = entityList
 
         return transactionalVoucherDto
     }
@@ -169,6 +181,7 @@ class TransactionBl @Autowired constructor(
         debitCreditEntity.exchangeRateId = exchangeRateId
         return debitCreditEntity
     }
+
 
 
 

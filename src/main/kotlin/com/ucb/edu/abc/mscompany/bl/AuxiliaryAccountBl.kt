@@ -46,4 +46,14 @@ class AuxiliaryAccountBl @Autowired constructor(
             throw PostgresException("Error al actualizar cuenta auxiliar", e.message.toString())
         }
     }
+
+    fun existCodeName(code: String, companyId: Int): Boolean{
+        try {
+            logger.info("Verificando si existe el codigo de cuenta auxiliar")
+            return auxiliaryAccountDao.existsByCode(code, companyId)
+        } catch (e: Exception) {
+            logger.error("Error al verificar si existe el codigo de cuenta auxiliar", e)
+            throw PostgresException("Error al verificar si existe el codigo de cuenta auxiliar", e.message.toString())
+        }
+    }
 }
