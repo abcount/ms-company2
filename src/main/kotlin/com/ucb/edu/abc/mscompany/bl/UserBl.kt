@@ -88,7 +88,8 @@ class UserBl @Autowired constructor(
 
 
         val listFilterByCompanyAndAccessPersonUUid = userDao.getUserEntityByCompanyAndAccessPersonUUID(companyId = companyId,cat=userAbcCategory.name, userUuid = accessPersonEntity!!.userUuid)
-            ?: throw Exception("Could not get list merged")
+        if(listFilterByCompanyAndAccessPersonUUid.isNullOrEmpty()) // TODO
+           throw Exception("Could not get list merged")
         if(listFilterByCompanyAndAccessPersonUUid.size > 1){
             throw Exception("More that one user and company");
         }
