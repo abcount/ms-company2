@@ -13,12 +13,12 @@ import java.util.Date
 
 data class TransactionAccountEntity(
         var transactionAccountId: Long,
-        var entityId: Int,
+        var entityId: Int?,
         var transactionId: Long,
         var accountId: Long,
-        var auxiliaryAccountId: Int,
+        var auxiliaryAccountId: Int?,
         var glosaDetail: String,
-        var documentNumber: String,
+        var documentNumber: String?,
         var companyId: Int,
 ) {
     constructor(): this(0,  0, 0, 0, 0, "", "", 0)

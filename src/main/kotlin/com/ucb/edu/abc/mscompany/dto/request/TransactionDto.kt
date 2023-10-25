@@ -29,11 +29,11 @@ data class TransactionDto(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TransactionAccountDto (
         var accountId: Long,
-        var entityId: Int,
-        var auxiliaryId: Int,
+        var entityId: Int?,
+        var auxiliaryId: Int?,
         var amountDebit: BigDecimal,
         var amountCredit: BigDecimal,
         var glosaDetail: String,
-        var documentCode: String,
+        var documentCode: String?,
 
 )
