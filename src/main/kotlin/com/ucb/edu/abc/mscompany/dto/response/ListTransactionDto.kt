@@ -26,6 +26,7 @@ data class ListTransactionDto(
 data class TransactionListDto(
     var accountId: Int,
     var accountCode: String,
+    var nameAccount: String,
     var entityId: Int?,
     var entityName: String?,
     var auxiliaryId: Int?,

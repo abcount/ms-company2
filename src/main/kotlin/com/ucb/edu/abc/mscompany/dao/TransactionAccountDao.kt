@@ -23,7 +23,7 @@ interface TransactionAccountDao {
     fun create(transactionAccountEntity: TransactionAccountEntity)
 
 
-    @Select("SELECT a.account_id, a.code_account, e.entity_id, e.entity_name," +
+    @Select("SELECT a.account_id, a.code_account, a.name_account, e.entity_id, e.entity_name," +
             " aux.auxiliary_account_id as auxiliaryId, aux.code_account, " +
             " dc.amount_debit, dc.amount_credit, ta.glosa_detail, ta.document_number" +
             " FROM account a, entity e, auxiliary_account aux, transaction_account ta, debit_credit dc" +

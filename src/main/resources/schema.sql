@@ -278,7 +278,7 @@ exchange_rate_id serial NOT NULL,
 money_name varchar(50) NOT NULL,
 company_id int NOT NULL,
 currency decimal(12,2) NOT NULL,
-abbreviation_name int NOT NULL,
+abbreviation_name varchar(10) NOT NULL,
 date timestamp NOT NULL,
 CONSTRAINT exchange_rate_pk PRIMARY KEY (exchange_rate_id)
 );
