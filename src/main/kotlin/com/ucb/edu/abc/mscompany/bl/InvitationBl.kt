@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class InvitationBl @Autowired constructor(
     private val invitationDao: InvitationDao,
+    private val imageService: ImageService
 ) {
     fun getInvitationByCompanyAndState(companyId: Int, invitationState: InvitationState): List<InvitationEntity> {
         return invitationDao.getInvitationsByCompanyAndStatus(companyId = companyId, invStatus = invitationState.name)
@@ -25,7 +26,7 @@ class InvitationBl @Autowired constructor(
             invitedId = userId.toLong(),
             invited = accessPersonEntity.firstName +" "+ accessPersonEntity.lastName,
             email = accessPersonEntity.email,
-            urlProfilePicture = "https://bestprofilepictures.com/wp-content/uploads/2021/04/Cool-Picture-Wallpaper-473x1024.jpg"
+            urlProfilePicture = imageService.getImageForUser(accessPersonEntity.accessPersonId.toInt())
         )
     }
 
@@ -43,9 +44,15 @@ class InvitationBl @Autowired constructor(
         }
     }
 
-    fun getPersonalInvitationsByAccessPersonAndState(accessPersonEntity: AccessPersonEntity,  category: InvitationState): List<PersonalInvitations>? {
-        return invitationDao.getInvitationsByAccessPersonIdAndListOfCategories(accessPersonId = accessPersonEntity.accessPersonId.toInt(),
-            cat = category.name)
+    fun getPersonalInvitationsByAccessPersonAndState(
+        accessPersonEntity: AccessPersonEntity,
+        category: InvitationState
+    ): List<PersonalInvitations>? {
+
+        return invitationDao.getInvitationsByAccessPersonIdAndListOfCategories(
+            accessPersonId = accessPersonEntity.accessPersonId.toInt(),
+            cat = category.name
+        );
     }
 
     fun changeStateOfInvitation(invitationId: Int, state:InvitationState) {

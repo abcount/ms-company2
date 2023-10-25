@@ -7,6 +7,7 @@ data class UserAndAccessPersonInformation (
     var firstName: String?,
     var lastName: String?,
     var email: String,
+    var accessPersonId: Int?,
 )
 
 data class InvitationAndUserInformation(
@@ -23,7 +24,9 @@ data class PersonalInvitations(
     var companyName: String, // company name
     var invitationStatus: String,
     var status: Boolean,
-    var accessPersonId: Int // invited
+    var accessPersonId: Int, // invited,
+    var companyId: Int,
+    var urlImage: String? = ""
 )
 
 data class GroupRoleExtendedPojo(

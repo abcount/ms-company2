@@ -29,13 +29,7 @@ class TestApi @Autowired constructor(
     val objectMapper = jacksonObjectMapper()
 
 
-    @RequestMapping(value = ["/3/{id}"], method = [RequestMethod.GET])
-    fun getImage3(@PathVariable id: Int): ResponseEntity<ByteArray> {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.IMAGE_JPEG
-        val base64 = companyBl.getImageOfCompany(id)
-        return ResponseEntity(base64, headers, HttpStatus.OK)
-    }
+
 
     @RequestMapping(value = ["/company/{id}"] , method = [RequestMethod.GET])
     fun getUserByCompanyAndToken(@PathVariable id:Int, @RequestHeader headers: Map<String, String>): ResponseDto<*> {

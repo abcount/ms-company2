@@ -37,7 +37,8 @@ class CompanyBl @Autowired constructor(
     private val invitationBl: InvitationBl,
     private val permissionBl: PermissionBl,
     private val groupBl: GroupBl,
-    private val roleBl: RoleBl
+    private val roleBl: RoleBl,
+    private val imageService: ImageService
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -156,12 +157,12 @@ class CompanyBl @Autowired constructor(
     fun getCompaniesByAccessPerson(token: String): List<CompanyListDto> {
         val accessPersonEntity = userBl.getUserInformationByToken(token)
             ?: throw Exception("Null accessPersonEntity");
-        val listOfCompanies = companyDao.getCompanyByUserId(accessPersonEntity.userUuid)
+        val listOfCompanies = companyDao.getCompanyByUserId(accessPersonEntity.userUuid, UserAbcCategory.ACTIVE.name)
         val listDtoCompanies = listOfCompanies.map { item->
             CompanyListDto(
                 companyId = item.companyId,
                 companyName = item.companyName,
-                urlIconImage = "http://localhost:$port/image/company/${item.companyId}",
+                urlIconImage = imageService.getImageFormatCompany(item.companyId), //"http://localhost:$port/image/company/${item.companyId}",
                 userId = item.userId)
         }
         return listDtoCompanies
@@ -178,11 +179,7 @@ class CompanyBl @Autowired constructor(
         fileDao.createImage(fileEntity)
     }
 
-    fun getImageOfCompany(id: Int): ByteArray {
-        val string =  fileDao.getImageByIdAndCategory(categoryOwner ="COMPANY-PROFILE-IMAGE", ownerId = id)
 
-        return string.imageContent
-    }
 
     fun checkIfUserAlreadyExists(companyId: Int, accessPerson: AccessPersonEntity): Boolean {
         return try{

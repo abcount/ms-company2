@@ -67,9 +67,10 @@ interface CompanyDao {
         and perm.status = true 
         and acp.user_uuid = #{accessPersonUuid}
         and us.status = true
+        and us.dicc_category = #{cate}
         group by c.company_id, c.company_name, us.user_id;
     """)
-    fun getCompanyByUserId(accessPersonUuid: String): List<CompanyIdAndUserId>
+    fun getCompanyByUserId(accessPersonUuid: String, cate: String): List<CompanyIdAndUserId>
 
 
     @Select("SELECT company_name FROM company WHERE company_id = #{companyId}")

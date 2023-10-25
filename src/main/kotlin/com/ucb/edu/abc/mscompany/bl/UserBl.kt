@@ -23,6 +23,7 @@ class UserBl @Autowired constructor(
     private val userDao: UserDao,
     private val accessPersonService: AccessPersonBl,
     private val invitationBl: InvitationBl,
+    private val imageService: ImageService
 ) {
     
     fun getAccessPersonById(accessPersonId: Int): AccessPersonEntity {
@@ -174,7 +175,7 @@ class UserBl @Autowired constructor(
             employeeId = listRes[0].userId,
             name = "${listRes[0].firstName} ${listRes[0].lastName}",
             email = listRes[0].email,
-            urlProfilePicture = ""
+            urlProfilePicture = imageService.getImageForUser(listRes[0].accessPersonId!!)
         )
     }
 
@@ -226,6 +227,13 @@ class UserBl @Autowired constructor(
             ?: throw Exception("Personal invitation null");
         val personalInvitations2 = invitationBl.getPersonalInvitationsByAccessPersonAndState(accessPersonEntity, InvitationState.REFUSED)
             ?: throw Exception("Personal invitation refused null");
+
+        personaInvitations.forEach {
+            it.urlImage = imageService.getImageFormatCompany(it.companyId)
+        }
+        personalInvitations2.forEach {
+            it.urlImage = imageService.getImageFormatCompany(it.companyId)
+        }
         //create dto
         val mapToReturn: MutableMap<String, List<Any>> = mutableMapOf()
         mapToReturn[InvitationState.PENDING.name] = personaInvitations;

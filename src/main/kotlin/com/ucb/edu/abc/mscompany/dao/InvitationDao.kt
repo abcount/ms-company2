@@ -47,7 +47,7 @@ interface InvitationDao {
     @Select("""
         SELECT 
         inv.invitation_id, ap2.username, com.company_name , inv.invitation_status, inv.status, 
-        inv.access_person_id
+        inv.access_person_id, com.company_id, ap2.username as urlImage
         FROM 
         invitation inv,
         company com,

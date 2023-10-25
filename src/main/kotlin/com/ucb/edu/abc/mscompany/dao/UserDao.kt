@@ -37,7 +37,7 @@ interface UserDao {
     fun save(userEntity: UserEntity)
 
     @Select("""
-        select us.user_id , acp.first_name, acp.last_name , acp.email
+        select us.user_id , acp.first_name, acp.last_name , acp.email, acp.access_person_id
         from 
             company c,
             subsidiary sub, 
@@ -58,13 +58,13 @@ interface UserDao {
         and c.company_id = #{companyId}
         and us.status = true
         AND us.dicc_category = #{category}
-        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email, acp.access_person_id;
     """)
     fun getUserInfoByCompanyIdAndCategory(companyId: Int, category: String): List<UserAndAccessPersonInformation>?
 
 
     @Select("""
-        select us.user_id , acp.first_name, acp.last_name , acp.email
+        select us.user_id , acp.first_name, acp.last_name , acp.email, acp.access_person_id
         from 
             company c,
             subsidiary sub, 
@@ -85,7 +85,7 @@ interface UserDao {
         and us.status = true
         and acp.user_uuid = #{userUuid}
         and us.dicc_category = #{cat}
-        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email, acp.access_person_id;
     """)
     fun getUserEntityByCompanyAndAccessPersonUUID(companyId: Int, userUuid: String, cat:String):MutableList<UserAndAccessPersonInformation>?;
 
@@ -107,7 +107,7 @@ interface UserDao {
 
 
     @Select("""
-        select us.user_id , acp.first_name, acp.last_name , acp.email
+        select us.user_id , acp.first_name, acp.last_name , acp.email, acp.access_person_id
         from 
             company c,
             subsidiary sub, 
@@ -127,12 +127,12 @@ interface UserDao {
         and c.company_id = #{companyId}
         and us.status = true
         and acp.user_uuid = #{userUuid} 
-        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email, acp.access_person_id;
     """)
     fun getUserEntityByCompanyAndAccessPersonUuidNOCat(companyId: Int, userUuid: String):MutableList<UserAndAccessPersonInformation>?;
 
     @Select("""
-        select us.user_id , acp.first_name, acp.last_name , acp.email
+        select us.user_id , acp.first_name, acp.last_name , acp.email, acp.access_person_id
         from 
             company c,
             subsidiary sub, 
@@ -152,7 +152,7 @@ interface UserDao {
         and c.company_id = #{companyId}
         and us.status = true
         and us.user_id = #{userId} 
-        group by us.user_id,  acp.first_name, acp.last_name , acp.email;
+        group by us.user_id,  acp.first_name, acp.last_name , acp.email, acp.access_person_id;
     """)
     fun getUserEntityByCompanyAndUserIdNOCat(companyId: Int, userId: Int):MutableList<UserAndAccessPersonInformation>?;
 }
