@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeRateDao
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
+import com.ucb.edu.abc.mscompany.dto.response.CurrencyVoucher
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
@@ -69,6 +70,16 @@ class ExchangeRateBl @Autowired constructor(
         } catch (e: Exception){
             logger.error("Error al verificar si existen registros de tipos de cambio", e)
             throw PostgresException("Error al verificar si existen registros de tipos de cambio", e.message.toString())
+        }
+    }
+
+    fun getExchangeRate(exchangeRateId: Int): CurrencyVoucher{
+        try {
+            logger.info("Obteniendo tipos de cambio por id")
+            return exchangeRateDao.getExchangeRate(exchangeRateId)
+        } catch (e: Exception){
+            logger.error("Error al obtener tipos de cambio por id", e)
+            throw PostgresException("Error al obtener tipos de cambio por id", e.message.toString())
         }
     }
 }

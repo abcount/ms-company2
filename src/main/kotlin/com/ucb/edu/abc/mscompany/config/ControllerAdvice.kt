@@ -17,7 +17,7 @@ class ControllerAdvice: ResponseEntityExceptionHandler() {
                 null,
                 e.message,
                 false,
-                e.error)
+                e.message+e.error)
         return ResponseEntity.internalServerError().body(response)
     }
 

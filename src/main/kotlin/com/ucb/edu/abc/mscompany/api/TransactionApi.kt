@@ -26,4 +26,12 @@ class TransactionApi @Autowired constructor(
         return ResponseEntity.ok(
             ResponseDto(transactionalVoucherDto, "Datos obtenidos con exito", true, "" ))
     }
+
+    @GetMapping("/list/{companyId}")
+    fun getListTransaction(@PathVariable companyId: Int, @RequestParam subsidiaryId: Int,
+                            @RequestParam areaId: Int, @RequestParam transactionTypeId: Int,): ResponseEntity<ResponseDto<*>>{
+        val listTransaction = transactionBl.getListTransaction(companyId, subsidiaryId, areaId, transactionTypeId)
+        return ResponseEntity.ok(
+            ResponseDto(listTransaction, "Datos obtenidos con exito", true, "" ))
+    }
 }

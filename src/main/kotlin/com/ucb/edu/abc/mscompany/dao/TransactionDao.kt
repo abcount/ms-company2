@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dto.response.AccountDto
 import com.ucb.edu.abc.mscompany.dto.response.TransactionDto
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
 import com.ucb.edu.abc.mscompany.entity.aux.CompanyDataVoucher
+import com.ucb.edu.abc.mscompany.entity.pojos.TransactionViewPojo
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
@@ -63,6 +64,17 @@ interface TransactionDao {
     """
     )
     fun getAccountDetailsByTransactionId(transactionId: Long): List<AccountDto>
+
+
+    @Select("SELECT t.transaction_id,t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
+            " FROM transaction t, area a, subsidiary s, area_subsidiary asub " +
+            " WHERE t.company_id = #{companyId} AND" +
+            " t.area_subsidiary_id = asub.area_subsidiary_id AND " +
+            " asub.area_id = #{areaId} AND" +
+            " asub.subsidiary_id = #{subsidiaryId} AND" +
+            " t.transaction_type_id = #{transactionTypeId} " +
+            " GROUP BY t.transaction_id")
+    fun getListTransactions(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<TransactionViewPojo>
 
 
 
