@@ -19,11 +19,10 @@ data class TransactionAccountEntity(
         var auxiliaryAccountId: Int,
         var glosaDetail: String,
         var documentNumber: String,
-        var dueDate: Date,
         var companyId: Int,
 ) {
-    constructor(): this(0,  0, 0, 0, 0, "", "", Date(), 0)
+    constructor(): this(0,  0, 0, 0, 0, "", "", 0)
     override fun toString(): String {
-        return "TransactionAccountEntity(transactionAccountId=$transactionAccountId, entityId=$entityId, transactionId=$transactionId, accountId=$accountId, auxiliaryAccountId=$auxiliaryAccountId, glosaDetail='$glosaDetail', documentNumber='$documentNumber', dueDate=$dueDate, companyId=$companyId)"
+        return "TransactionAccountEntity(transactionAccountId=$transactionAccountId, entityId=$entityId, transactionId=$transactionId, accountId=$accountId, auxiliaryAccountId=$auxiliaryAccountId, glosaDetail='$glosaDetail', documentNumber='$documentNumber',  companyId=$companyId)"
     }
 }

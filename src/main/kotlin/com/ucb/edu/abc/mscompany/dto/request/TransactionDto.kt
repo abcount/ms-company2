@@ -33,7 +33,6 @@ data class TransactionAccountDto (
         var auxiliaryId: Int,
         var amountDebit: BigDecimal,
         var amountCredit: BigDecimal,
-        var emitedDate: Date,
         var glosaDetail: String,
         var documentCode: String,
 
