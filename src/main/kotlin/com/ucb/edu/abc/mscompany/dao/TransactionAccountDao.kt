@@ -16,8 +16,8 @@ interface TransactionAccountDao {
     @Insert(
             """
                 INSERT INTO transaction_account ( entity_id, transaction_id, account_id, auxiliary_account_id, 
-                glosa_detail, document_number,due_date,company_id)
-                VALUES ( #{entityId}, #{transactionId}, #{accountId}, #{auxiliaryAccountId}, #{glosaDetail}, #{documentNumber}, #{dueDate}, #{companyId})
+                glosa_detail, document_number, company_id)
+                VALUES ( #{entityId}, #{transactionId}, #{accountId}, #{auxiliaryAccountId}, #{glosaDetail}, #{documentNumber}, #{companyId})
          """
     )
     fun create(transactionAccountEntity: TransactionAccountEntity)

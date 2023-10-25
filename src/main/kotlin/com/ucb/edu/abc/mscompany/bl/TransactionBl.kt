@@ -172,7 +172,6 @@ class TransactionBl @Autowired constructor(
         transactionAccountEntity.auxiliaryAccountId = transactionAccountDto.auxiliaryId
         transactionAccountEntity.glosaDetail = transactionAccountDto.glosaDetail
         transactionAccountEntity.documentNumber = transactionAccountDto.documentCode
-        transactionAccountEntity.dueDate = transactionAccountDto.emitedDate
         return transactionAccountEntity
     }
 
