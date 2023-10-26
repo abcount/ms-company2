@@ -34,5 +34,5 @@ data class TransactionListDto(
     var amountDebit: Double,
     var amountCredit: Double,
     var glosaDetail: String,
-    var documentCode: String
+    var documentCode: String?
 )

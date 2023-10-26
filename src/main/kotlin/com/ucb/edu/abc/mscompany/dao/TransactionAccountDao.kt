@@ -23,14 +23,15 @@ interface TransactionAccountDao {
     fun create(transactionAccountEntity: TransactionAccountEntity)
 
 
-    @Select("SELECT a.account_id, a.code_account, a.name_account, e.entity_id, e.entity_name," +
-            " aux.auxiliary_account_id as auxiliaryId, aux.code_account, " +
-            " dc.amount_debit, dc.amount_credit, ta.glosa_detail, ta.document_number" +
-            " FROM account a, entity e, auxiliary_account aux, transaction_account ta, debit_credit dc" +
-            " WHERE ta.transaction_account_id = #{transactionAccountId} AND " +
-            " ta.entity_id = e.entity_id AND ta.account_id = a.account_id AND " +
-            " ta.auxiliary_account_id = aux.auxiliary_account_id AND " +
-            " ta.transaction_account_id = dc.transaction_account_id")
+    @Select("SELECT a.account_id, a.code_account, a.name_account, e.entity_id, e.entity_name, " +
+            "     aux.auxiliary_account_id as auxiliaryId, aux.code_account, " +
+            "     dc.amount_debit, dc.amount_credit, ta.glosa_detail, ta.document_number as documentCode " +
+            "FROM transaction_account ta " +
+            "         LEFT JOIN account a ON ta.account_id = a.account_id " +
+            "         LEFT JOIN entity e ON ta.entity_id = e.entity_id " +
+            "         LEFT JOIN auxiliary_account aux ON ta.auxiliary_account_id = aux.auxiliary_account_id " +
+            "         LEFT JOIN debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id " +
+            "WHERE ta.transaction_id = #{transactionAccountId};")
     fun getTransactionAccount(transactionAccountId: Int): List<TransactionListDto>
 
 

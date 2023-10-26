@@ -188,6 +188,7 @@ class TransactionBl @Autowired constructor(
         try{
             val listTransaction = transactionDao.getListTransactions(companyId, subsidiaryId, areaId, transactionTypeId).map{
                 val list = transactionAccountBl.getAllTransactionByTransactionId(it.transactionId)
+                println(list)
                 val total = getTotalDebitCredit(list)
                 ListTransactionDto(
                     it.transactionNumber,

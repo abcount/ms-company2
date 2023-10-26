@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS closing_sheet;
 DROP TABLE IF EXISTS company;
 DROP TABLE IF EXISTS confidential;
 DROP TABLE IF EXISTS confidential_account;
-DROP TABLE IF EXISTS debit_credit;
+
 DROP TABLE IF EXISTS dicc_category;
 DROP TABLE IF EXISTS entity;
 DROP TABLE IF EXISTS exchange_money;
@@ -30,12 +30,17 @@ DROP TABLE IF EXISTS report_file;
 DROP TABLE IF EXISTS role_common;
 DROP TABLE IF EXISTS role_entity;
 DROP TABLE IF EXISTS subsidiary;
-DROP TABLE IF EXISTS transaction;
-DROP TABLE IF EXISTS transaction_account;
+
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 DROP TABLE IF EXISTS images_for_all;
+
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS transaction_account;
+DROP TABLE IF EXISTS debit_credit;
 */
+
+
 
 -- tables
 -- Table: abc_permission
