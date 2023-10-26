@@ -33,11 +33,11 @@ interface TransactionDao {
     SELECT t.transaction_id, t.transaction_type_id ,t.transaction_number, t.glosa_general, t.date, t.exchange_rate_id
     FROM transaction t
     JOIN area_subsidiary a_s ON t.area_subsidiary_id = a_s.area_subsidiary_id
-    WHERE a_s.subsidiary_id = #{subsidiaryId} AND a_s.area_id = #{areaId} AND t.company_id = #{companyId} AND t.date BETWEEN #{from} AND #{to}
+    WHERE a_s.subsidiary_id = #{subsidiaryId} AND a_s.area_id = #{areaId} AND t.transaction_type_id = #{transactionTypeId} AND t.company_id = #{companyId} AND t.date BETWEEN #{from} AND #{to}
     """
     )
 
-    fun getTransactionForAreaAndSubsidiary(companyId: Int, subsidiaryId: Int, areaId: Int, from: Date, to: Date): List<TransactionEntity>
+    fun getTransactionForAreaAndSubsidiary(companyId: Int, subsidiaryId: Int, areaId: Int, from: Date, to: Date, transactionTypeId: Int ): List<TransactionEntity>
 
     @Select(
             """

@@ -28,7 +28,7 @@ class JournalBl @Autowired constructor(
 
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
-                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId, areaId, subsidiaryId, journalRequestDto.from, journalRequestDto.to)
+                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
                 val transactionDtoList= transformToTransactionDtoList(transactions)
 
 

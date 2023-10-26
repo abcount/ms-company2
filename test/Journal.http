@@ -1,9 +1,9 @@
-POST http://localhost:8080/diary/book/4
+POST http://localhost:8080/diary/book/2
 Content-Type: application/json
 
 {
-  "subsidiaries": [6],
-  "areas": [6],
+  "subsidiaries": [2,3],
+  "areas": [2,3],
   "from": "2021-01-01",
   "to": "2024-12-31",
   "transactionType": 2,
