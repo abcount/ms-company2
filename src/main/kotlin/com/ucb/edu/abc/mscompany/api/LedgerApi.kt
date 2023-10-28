@@ -22,7 +22,7 @@ class LedgerApi @Autowired constructor(
         private val ledgerBl: LedgerBl
 )
 {
-    /*@PostMapping("/{companyId}")
+    @PostMapping("/{companyId}")
     fun getLedger(@PathVariable companyId: Int, @RequestBody ledgerRequestDto: LedgerRequestDto): ResponseEntity<ResponseDto<LedgerResponseDto>>{
         val journalResponseDto = ledgerBl.getLedger(companyId, ledgerRequestDto)
 
@@ -35,6 +35,6 @@ class LedgerApi @Autowired constructor(
                     ResponseDto(null, "Error al obtener el libro mayor", false, e.toString() ))
 
         }
-    }*/
+    }
 
 }

@@ -1,9 +1,8 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.dto.response.AccountDto
-import com.ucb.edu.abc.mscompany.dto.response.TransactionDto
+import com.ucb.edu.abc.mscompany.dto.response.TransactionLedger
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
-import com.ucb.edu.abc.mscompany.entity.aux.CompanyDataVoucher
 import com.ucb.edu.abc.mscompany.entity.pojos.TransactionViewPojo
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
@@ -76,6 +75,36 @@ interface TransactionDao {
             " GROUP BY t.transaction_id")
     fun getListTransactions(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<TransactionViewPojo>
 
+
+     //   GET TRANSACTION fOR LEDGER
+    @Select(
+            """
+                SELECT 
+                    t.transaction_number,
+                    t.date,
+                    ta.glosa_detail,
+                    ta.document_number,
+                    dc.amount_debit,
+                    dc.amount_credit,
+                    dc.amount_debit - dc.amount_credit AS balances
+                FROM
+                    transaction t
+                JOIN transaction_account ta ON t.transaction_id = ta.transaction_id
+                JOIN debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
+                WHERE
+                    ta.account_id = #{accountId}
+                AND	
+                    t.date BETWEEN #{from} AND #{to}
+                AND 
+                    t.area_subsidiary_id= #{areaSubsidiaryId}
+                AND 
+                    dc.exchange_rate_id= #{exchangeRateId}
+                AND 
+                    ta.company_id= #{companyId}
+                                
+          """
+    )
+    fun getLedgerTransactions(companyId: Int, accountId: Int, areaSubsidiaryId: Int?, from: Date, to: Date, exchangeRateId: Int ): List<TransactionLedger>
 
 
 

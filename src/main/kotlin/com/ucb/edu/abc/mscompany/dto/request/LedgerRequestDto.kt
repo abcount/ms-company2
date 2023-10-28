@@ -15,6 +15,6 @@ data class LedgerRequestDto(
         var from: Date,
         var to: Date,
         var accountsId: MutableList<Int>,
-        var currencies: MutableList<Int>,
+        var currencies: Int
 ) {
 }
