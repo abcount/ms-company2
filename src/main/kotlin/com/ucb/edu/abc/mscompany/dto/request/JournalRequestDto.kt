@@ -16,7 +16,7 @@ data class JournalRequestDto (
         var from: Date,
         var to: Date,
         var transactionType: Int,
-        var currencies: MutableList<Int>,
+        var currencies: Int,
         ){
 
 }

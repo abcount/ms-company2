@@ -15,11 +15,16 @@ class JournalBl @Autowired constructor(
         private val transactionDao: TransactionDao,
         private val transactionTypeDao: TransactionTypeDao,
         private val subsidiaryDao: SubsidiaryDao,
-        private val areaDao: AreaDao
+        private val companyDao: CompanyDao,
+        private val areaDao: AreaDao,
+        private val exchangeRateDao: ExchangeRateDao
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
-        logger.info("Obteniendo libro diario")
+        logger.info("Obteniendo libro diario de la empresa: $companyId")
+        val companyEntity = companyDao.getCompanyById(companyId)
+        val exchangeRateDao = exchangeRateDao.getExchangeRateById(journalRequestDto.currencies)
+
         val subsidiaryDtoList = mutableListOf<SubsidiaryDto>()
 
         for (subsidiaryId in journalRequestDto.subsidiaries) {
@@ -38,7 +43,7 @@ class JournalBl @Autowired constructor(
             subsidiaryDtoList.add(SubsidiaryDto(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
         }
 
-        return JournalResponseDto(subsidiaryDtoList)
+        return JournalResponseDto(companyEntity.companyName,journalRequestDto.from,journalRequestDto.to,exchangeRateDao.moneyName,subsidiaryDtoList)
     }
 
     private fun transformToAccountDtoList(transactionId: Long): List<AccountDto> {
