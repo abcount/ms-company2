@@ -92,7 +92,8 @@ class CompanyApi @Autowired constructor(
         }
     }
 
-    @RequestMapping(value = ["/{companyId}/employees/{userId}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/{companyId}/employees/{userId}"],
+        method = [RequestMethod.GET])
     fun getUserIfByCompanyIdAndUserId(
         @PathVariable companyId: Int,
         @PathVariable userId: Int): ResponseEntity<ResponseDto<*>> {

@@ -44,7 +44,9 @@ class PermissionBl @Autowired constructor(
                 category = GroupCategory.FOUNDER,
                 companyId = companyId,
                 description = "This is the group of founder with all privileges",
-                name = "Fundadores"
+                name = "Fundadores",
+                tokenAuth = tokenAuth,
+                accessPerson = userBl.getAccessPersonEntityEasy(tokenAuth, null)
             ) ?: throw Exception("Couldn't create GROUP entity #PermissionBl.createPermissionsForCompany ")
 
             // create permissions on abc_permissions table iterating list
@@ -108,7 +110,10 @@ class PermissionBl @Autowired constructor(
         val invitation = userBl.getPersonalUpdatedInvitations(token, invitationId, accepted,accessPersonEntity )
             ?: return userBl.getPersonalInvitations(token ,accessPersonEntity)
 
-        updateCredentials(token, invitation, accessPersonEntity);
+        if(accepted){
+            updateCredentials(token, invitation, accessPersonEntity);
+
+        }
 
 
 

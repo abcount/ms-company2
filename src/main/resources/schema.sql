@@ -1,5 +1,5 @@
 -- DROP TABLES
-/*
+
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -35,10 +35,19 @@ DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 DROP TABLE IF EXISTS images_for_all;
-*/
+DROP TABLE IF EXISTS role_kc;
 
 -- tables
 -- Table: abc_permission
+CREATE TABLE IF NOT EXISTS role_kc(
+role_kc_id SERIAL NOT NULL,
+uuid_role VARCHAR(120) NOT NULL,
+company_id INT NOT NULL,
+complete_role VARCHAR(120) NOT NULL,
+role_name VARCHAR(120) NOT NULL,
+CONSTRAINT role_kc_id_pk PRIMARY KEY (role_kc_id)
+);
+
 CREATE TABLE IF NOT EXISTS abc_permission (
 permission_id serial NOT NULL,
 area_subsidiary_id int NOT NULL,

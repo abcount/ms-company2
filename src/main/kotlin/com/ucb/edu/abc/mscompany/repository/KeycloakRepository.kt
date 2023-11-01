@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.repository
 import com.ucb.edu.abc.mscompany.config.ConfigFeignClient
 import com.ucb.edu.abc.mscompany.dto.response.KeycloakTokenDto
 import com.ucb.edu.abc.mscompany.dto.response.KeycloakUserDto
+import com.ucb.edu.abc.mscompany.dto.response.RolesKcDto
 import feign.Headers
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
@@ -73,7 +74,7 @@ interface KeycloakRepository {
      */
     @GetMapping(value = ["/admin/realms/\${keycloak.realm}/users/{user-id}/role-mappings/realm"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getRolesOfUser(@RequestHeader("Authorization") token: String,
-                       @PathVariable(value = "user-id") userId: String)
+                       @PathVariable(value = "user-id") userId: String):List<RolesKcDto>?
 
 
     /*
@@ -106,4 +107,24 @@ interface KeycloakRepository {
     fun addRoleToUser(@RequestHeader("Authorization") token: String,
                       @PathVariable(value = "user-id") userId: String,
                       @RequestBody body:List<Map<String, *>>)
+
+    @PostMapping(value = ["/admin/realms/\${keycloak.realm}/users/{user-id}/role-mappings/realm"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun removeRoleToUser(@RequestHeader("Authorization") token: String,
+                      @PathVariable(value = "user-id") userId: String,
+                      @RequestBody body:List<Map<String, *>>)
+
+    @GetMapping(value = ["/admin/realms/\${keycloak.realm}/roles/{roleName}"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun getRoleDtoByRoleName(@RequestHeader("Authorization") token: String,
+                             @PathVariable(value = "roleName") roleName:String): RolesKcDto?
+
+    /*
+        {
+		    "name": "NO_NAME",
+		    "description": "${NO_NAME}"
+	    }
+     */
+    @PostMapping(value = ["/admin/realms/\${keycloak.realm}/roles"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createRoleInRealm(@RequestHeader("Authorization") token: String,
+                          @RequestBody body:Map<String, *>)
+
 }

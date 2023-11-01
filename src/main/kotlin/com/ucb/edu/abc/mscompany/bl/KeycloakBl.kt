@@ -2,6 +2,8 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dto.response.KeycloakTokenDto
 import com.ucb.edu.abc.mscompany.dto.response.KeycloakUserDto
+import com.ucb.edu.abc.mscompany.dto.response.RolesKcDto
+import com.ucb.edu.abc.mscompany.exception.DuplicateRoleInRealmException
 import com.ucb.edu.abc.mscompany.exception.FailedExtractInfoFromKeycloak
 import com.ucb.edu.abc.mscompany.exception.FailedExtractInfoTokenException
 import com.ucb.edu.abc.mscompany.repository.KeycloakRepository
@@ -37,9 +39,13 @@ class KeycloakBl @Autowired constructor(
     @Value("\${custom-config.master-secret-key}")
     lateinit var password: String
 
+    fun getAccessTokenObject(token:String): AccessToken {
+        return TokenVerifier.create(token, AccessToken::class.java).token
+
+    }
     fun getKeycloakIdFromToken(token:String): String? {
         try {
-            val tokenValue: AccessToken = TokenVerifier.create(token, AccessToken::class.java).token
+            val tokenValue = getAccessTokenObject(token)
             return tokenValue.subject
         }catch (ex: Exception){
             logger.error("#getKeycloakIdFromToken:  There were problems to extract SubjectId from token $token")
@@ -76,6 +82,7 @@ class KeycloakBl @Autowired constructor(
 
     }
 
+
     private fun getKeycloakDtoMaster() : KeycloakTokenDto {
         try{
             val mapBody: Map<String,String> = mapOf(
@@ -101,5 +108,79 @@ class KeycloakBl @Autowired constructor(
             userUuid,
             mapBody
         )
+    }
+    fun currentRolesInToken(token:String): MutableSet<String> {
+        return getAccessTokenObject(token).realmAccess.roles
+            ?: throw Exception("Couldnt be founded roles in token provided")
+
+
+    }
+
+//    fun assignRoleInKcToUserUuid(userUuid:String, roleUuid:String,roleName:String){
+//        val mapRole: Map<String, String> = mapOf(
+//            "id" to roleUuid,
+//            "name" to roleName
+//        )
+//        keycloakRepository.addRoleToUser(
+//            token = getMasterToken(),
+//            userId = userUuid,
+//            body = mapRole
+//        )
+//    }
+    fun assignRoleInKcToUserUuid(userUuid:String, list: List<Map<String,String>>){
+
+        try{
+            keycloakRepository.addRoleToUser(
+                token = "Bearer ${getMasterToken()}",
+                userId = userUuid,
+                body = list
+            )
+        }catch (ex:Exception){
+            logger.error(ex.message)
+        }
+    }
+
+    fun removeRoleInKcToUserUuid(userUuid:String, list: List<Map<String,String>>){
+
+        try{
+            keycloakRepository.removeRoleToUser(
+                token = "Bearer ${getMasterToken()}",
+                userId = userUuid,
+                body = list
+            )
+        }catch (ex:Exception){
+            logger.error(ex.message)
+        }
+    }
+    fun createRoleInKc(name:String, description:String){
+        try{
+            val mapRole: Map<String, String> = mapOf(
+                "name" to name,
+                "description" to description
+            )
+            keycloakRepository.createRoleInRealm(
+                token = "Bearer ${getMasterToken()}",
+                body = mapRole
+            )
+        }catch (ex: Exception){
+            logger.error("while adding role into real")
+            logger.error(ex.message)
+            //throw DuplicateRoleInRealmException("Double real in exception")
+        }
+    }
+
+    fun getRoleInKc(name:String): RolesKcDto? {
+        return keycloakRepository.getRoleDtoByRoleName(
+            token = "Bearer ${getMasterToken()}",
+            roleName = name )
+    }
+    fun getRolesByUserUuid(userUuid: String): List<RolesKcDto>{
+        return keycloakRepository.getRolesOfUser(token = getMasterToken(), userUuid)
+            ?: throw Exception("Null list of roles in Kc")
+    }
+
+    fun isThisRoleInCurrentToken(token: String, currentRole:String):Boolean{
+        val rolesSet = currentRolesInToken(token)
+        return rolesSet.contains(currentRole);
     }
 }
