@@ -48,7 +48,9 @@ data class TransactionDto(
         val registrationDate: LocalDateTime,
         val exchangeRate: BigDecimal,
         val glosaGeneral: String,
-        val accounts: List<AccountDto>
+        val accounts: List<AccountDto>,
+        val totalDebitAmount: BigDecimal,
+        val totalCreditAmount: BigDecimal,
 )
 @Data
 @AllArgsConstructor

@@ -7,7 +7,7 @@ Content-Type: application/json
   "from": "2021-01-01",
   "to": "2024-12-31",
   "transactionType": 2,
-  "currencies": 19
+  "currencies": 17
 }
 
 ###

@@ -56,13 +56,15 @@ interface TransactionDao {
         debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
     WHERE 
         t.transaction_id = #{transactionId}
+    AND 
+        dc.exchange_rate_id = #{exchangeRateId}
     GROUP BY 
         a.code_account, 
         a.name_account, 
         ta.glosa_detail
     """
     )
-    fun getAccountDetailsByTransactionId(transactionId: Long): List<AccountDto>
+    fun getAccountDetailsByTransactionId(transactionId: Long, exchangeRateId: Int): List<AccountDto>
 
 
     @Select("SELECT t.transaction_id,t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
@@ -82,6 +84,7 @@ interface TransactionDao {
                 SELECT 
                     t.transaction_number,
                     t.date,
+                    tt.type,
                     ta.glosa_detail,
                     ta.document_number,
                     dc.amount_debit,
@@ -91,6 +94,7 @@ interface TransactionDao {
                     transaction t
                 JOIN transaction_account ta ON t.transaction_id = ta.transaction_id
                 JOIN debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
+                JOIN transaction_type tt ON t.transaction_type_id = tt.transaction_type_id
                 WHERE
                     ta.account_id = #{accountId}
                 AND	

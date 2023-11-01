@@ -40,6 +40,7 @@ data class AccountLedger(
 data class TransactionLedger(
         var voucherCode: Int,
         var registrationDate: Date,
+        var transactionType: String,
         var glosaDetail: String,
         var documentNumber: String?,
         var debitAmount: BigDecimal,

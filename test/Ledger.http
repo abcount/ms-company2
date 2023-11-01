@@ -1,27 +1,16 @@
 
-POST http://localhost:8080/mayor/book/5
+POST http://localhost:8080/mayor/book/2
 Content-Type: application/json
 
 {
-  "subsidiaries": [9],
-  "areas": [9],
-  "from": "2020-01-01T00:00:00Z",
-  "to": "2023-12-12T00:00:00Z",
-  "accountsId": [94],
-  "currencies": 19
+  "subsidiaries": [2,3],
+  "areas": [2,3],
+  "from": "2021-01-01",
+  "to": "2024-12-31",
+  "accountsId": [34,35],
+  "currencies": 17
 }
 
 
 ###
 
-POST http://localhost:8080/mayor/book/6
-Content-Type: application/json
-
-{
-  "subsidiaries": [11,12],
-  "areas": [11,12],
-  "from": "2020-01-01T00:00:00Z",
-  "to": "2023-12-12T00:00:00Z",
-  "accountsId": [114,115],
-  "currencies": 26
-}
