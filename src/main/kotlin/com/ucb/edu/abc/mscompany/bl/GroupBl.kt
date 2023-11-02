@@ -1,12 +1,15 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.GroupDao
+import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
+import com.ucb.edu.abc.mscompany.entity.RoleEntity
 import com.ucb.edu.abc.mscompany.entity.TestEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.GroupRoleExtendedPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.exception.AbcGroupNotFoundException
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -16,6 +19,7 @@ class GroupBl @Autowired constructor(
     private val groupDao: GroupDao,
     private val roleBl: RoleBl
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
     fun getGroupId(category: GroupCategory, companyId: Int): Int? {
         try{
             val groupEntity = groupDao.getGroupIDByCategoryAndCompany(category = category.name, companyId = companyId)
@@ -48,7 +52,7 @@ class GroupBl @Autowired constructor(
         }
     }
 
-    fun getOrCreateGroupIDByCat(category: GroupCategory, companyId: Int,description: String, name: String ): Int? {
+    fun getOrCreateGroupIDByCat(category: GroupCategory, companyId: Int,description: String, name: String, tokenAuth:String , accessPerson: AccessPersonEntity? ): Int? {
         try{
             if (category == GroupCategory.FOUNDER){
                 var hasGroupFounder = getGroupId(GroupCategory.FOUNDER, companyId)
@@ -71,9 +75,15 @@ class GroupBl @Autowired constructor(
                 }
 
                 for(rol in roleEntity){
+
                     createGroupRole(rol.roleId, hasGroupFounder, true)
                         ?: throw Exception("Error")
+
+
                 }
+
+                // create role in kc
+                roleBl.createRoleWithCompany(companyId, roleEntity, accessPerson, tokenAuth);
 
 
                 // end of creation
@@ -85,6 +95,7 @@ class GroupBl @Autowired constructor(
         }catch (abx: AbcGroupNotFoundException){
             return null
         }catch (ex: Exception){
+            logger.error(ex.message);
             return null
         }
     }
@@ -128,6 +139,12 @@ class GroupBl @Autowired constructor(
     }
 
 
+
+    fun updateRolesWhenAccepted(userId: Int, companyId: Int,  accessPersonEntity: AccessPersonEntity?, token: String){
+        val listOfRoles =roleBl.getRolesByUserNoFilters(userId, roleStatus = true);
+        roleBl.createRoleWithCompany(companyId, listOfRoles, accessPersonEntity, token)
+    }
+
     fun updateRolesForThisGroup(groupEntityOfPerson: GroupEntity, roles: MutableList<Int>) {
         val currentRolesOfUser = getRolesByGroupId(groupEntityOfPerson.groupId)
         currentRolesOfUser.forEach {
@@ -142,5 +159,49 @@ class GroupBl @Autowired constructor(
             }
         }
     }
+
+    fun updateRolesForThisGroupInKC(
+        groupEntityOfPerson: GroupEntity, roles: MutableList<Int>, companyId: Int,
+        accessPerson: AccessPersonEntity, currentRoles: List<GroupRoleExtendedPojo>
+    ) {
+        val createList: MutableList<RoleEntity> = mutableListOf()
+        val deleteList: MutableList<RoleEntity> = mutableListOf()
+        println("*******")
+        println(roles)
+        println("---------------------------------------")
+        println(currentRoles.map { it.roleId })
+        println("*******")
+        currentRoles.forEach {
+            if (roles.contains(it.roleId)) {
+                if (!it.status) {
+                    // created
+                    createList.add(
+                        roleBl.getRoleById(it.roleId)
+                    )
+                    println(it.name)
+                }
+            } else {
+                if (it.status) {
+                    deleteList.add(
+                        roleBl.getRoleById(it.roleId)
+                    )
+                    println(it.name)
+                }
+            }
+        }
+
+        println("---------------------------------------")
+
+        roleBl.removeRoleWithCompany(
+            companyId = companyId,
+            roles = deleteList, accessPersonEntity = accessPerson, null
+        );
+        roleBl.createRoleWithCompany(
+            companyId = companyId,
+            roles = createList, accessPersonEntity = accessPerson, null
+        )
+    }
+
+
 
 }

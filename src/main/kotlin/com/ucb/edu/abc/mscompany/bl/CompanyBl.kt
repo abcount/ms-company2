@@ -256,9 +256,17 @@ class CompanyBl @Autowired constructor(
 
     fun updatePermissionsByCompanyAndUserId(requestedChanges: NewInvitationDto, companyId: Int, tokenCreator: String ){
         val groupEntityOfPerson =  groupBl.getGroupEntityByUser(requestedChanges.userId);
+        val currentRoles = groupBl.getRolesByGroupId(groupEntityOfPerson.groupId);
         groupBl.updateRolesForThisGroup(groupEntityOfPerson, requestedChanges.roles);
         permissionBl.updatePermissions(companyId = companyId, requestedChanges, groupEntity = groupEntityOfPerson);
 
+        // check if shouldUpdateIn KC
+        val userEntity = userBl.getUserById(requestedChanges.userId)
+            ?: throw Exception("No user entity founded")
+        if(userEntity.diccCategory == UserAbcCategory.ACTIVE.name){
+
+            groupBl.updateRolesForThisGroupInKC(groupEntityOfPerson, requestedChanges.roles, companyId, userBl.getAccessPersonById(userEntity.accessPersonId), currentRoles = currentRoles);
+        }
     }
 
     fun deleteUserByCompany(companyId:Int, userId: Int){

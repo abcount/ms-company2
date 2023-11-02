@@ -1,20 +1,28 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.RoleDao
+import com.ucb.edu.abc.mscompany.dao.RoleKcDao
 import com.ucb.edu.abc.mscompany.dto.response.RoleSimpleDto
+import com.ucb.edu.abc.mscompany.dto.response.RolesKcDto
+import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.RoleEntity
+import com.ucb.edu.abc.mscompany.entity.RolesKcEntity
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.AbcRoleNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.util.UUID
 import javax.management.relation.Role
 
 @Service
 class RoleBl @Autowired constructor(
-    private val roleDao: RoleDao
+    private val roleDao: RoleDao,
+    private val keycloakBl: KeycloakBl,
+    private val roleKcDao: RoleKcDao
 ){
+    private val defaultRoles: List<String> = listOf("offline_access", "uma_authorization", "default-roles-abcount")
     /**
      * @param name is type of role ei. 'can_do_abc', '***'
      * @param description describes the role ie. 'this user can .....'
@@ -56,6 +64,12 @@ class RoleBl @Autowired constructor(
             return null
         }
     }
+
+    fun getRoleById(roleId: Int): RoleEntity{
+        return roleDao.getRoleById(roleId)
+            ?: throw Exception("Not role founded with id $roleId")
+    }
+
     fun getAllRoles(): MutableList<RoleEntity>{
         return roleDao.getAllRoles().toMutableList()
     }
@@ -145,5 +159,115 @@ class RoleBl @Autowired constructor(
         return listOfSimpleRoleDtoResponse
 
     }
+
+    fun createOrPutRoleInKc(roleName: String, description: String): RolesKcDto {
+        var getRoleFromKc = keycloakBl.getRoleInKc(roleName)
+        if(getRoleFromKc?.id == null){
+            keycloakBl.createRoleInKc(name = roleName, description = description)
+            getRoleFromKc = keycloakBl.getRoleInKc(roleName)
+                ?: throw Exception("Role couldnt be created")
+        }
+        return getRoleFromKc;
+
+    }
+
+//    fun createOrUpdateThisRolesForThisUser(roles: List<RoleEntity>, userUuid: String, token: String){
+//        val currentListOfRoles = keycloakBl.currentRolesInToken(token);
+//        val rolesDesired = roles.map { it.name }
+//        val toDelete = currentListOfRoles.filter { it !in rolesDesired }
+//        val toAdd = rolesDesired.filter { it !in currentListOfRoles }
+//        for
+//    }
+//    fun createRoleByCompanyIdAndUserUuidInKc(roleName: String, description: String, userUuid: String){
+//
+//        val roleKc = createOrPutRoleInKc(roleName, description )
+//        keycloakBl.createRoleInKc()
+//    }
+
+    fun removeRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String?){
+        if(accessPersonEntity == null) throw Exception("Null person");
+        val listOfMaps: MutableList<Map<String, String>> = mutableListOf()
+        for(role in roles){
+            val mapRes = checkRole(companyId, role, token);
+            if(mapRes != null){
+                listOfMaps.add(mapRes)
+            }
+
+
+        }
+        keycloakBl.removeRoleInKcToUserUuid(accessPersonEntity.userUuid, listOfMaps)
+
+    }
+
+
+    fun getOrCreateRoleInLocalDB(role:String, companyId: Int, roleDesc:String, singleRole:String): RolesKcEntity {
+        val listRole =
+            roleKcDao.getRolesByRoleNameAndCompanyId(singleRole, companyId ) ?: throw Exception("Null or empty role kc");
+        if(listRole.size > 1) throw Exception("Duplicated role with company Id")
+
+        if(listRole.isEmpty()){
+            // should create
+            keycloakBl.createRoleInKc(role, roleDesc);
+            val roleInKc = keycloakBl.getRoleInKc(role)
+                ?:throw Exception("Couldn't found role $role in KC DB")
+            val roleKcEntity = RolesKcEntity(roleKcId = 0,
+                uuidRole = roleInKc.id!!,
+                companyId = companyId,
+                completeRole = roleInKc.name!!,
+                roleName = singleRole)
+            roleKcDao.createRoleInKc(roleKcEntity);
+            return roleKcEntity;
+        }else{
+            // found something
+            return listRole[0]
+        }
+    }
+
+    fun createRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String?){
+        if(accessPersonEntity == null) throw Exception("Null person");
+        val listOfMaps: MutableList<Map<String, String>> = mutableListOf()
+        for(role in roles){
+            val mapRes = checkRole(companyId, role, token);
+            if(mapRes != null){
+                listOfMaps.add(mapRes)
+            }
+
+            val mapRes2 = checkRole(0, role, token);
+            if(mapRes2 != null){
+                listOfMaps.add(mapRes2)
+            }
+        }
+        keycloakBl.assignRoleInKcToUserUuid(accessPersonEntity.userUuid, listOfMaps)
+
+
+    }
+    fun checkRole(companyId: Int, role:RoleEntity,  token: String?): Map<String, String>? {
+        var currentRole = role.name
+        if(companyId != 0) {
+            currentRole = "${role.name}.$companyId"
+        }
+        // check if current role is in token
+        if(token != null){
+            if( ! keycloakBl.isThisRoleInCurrentToken(token, currentRole) ){
+                // role is not present in token
+                val roleInDb =  getOrCreateRoleInLocalDB(currentRole, companyId, role.description, role.name);
+                return mapOf(
+                    "name" to roleInDb.completeRole,
+                    "id" to roleInDb.uuidRole
+                )
+
+
+            }
+        }else{
+            val roleInDb =  getOrCreateRoleInLocalDB(currentRole, companyId, role.description, role.name);
+            return mapOf(
+                "name" to currentRole,
+                "id" to roleInDb.uuidRole
+            )
+        }
+        return null;
+    }
+
+
 
 }

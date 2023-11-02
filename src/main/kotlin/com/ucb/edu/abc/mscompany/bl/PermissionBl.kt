@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.InvitationEntity
+import com.ucb.edu.abc.mscompany.entity.UserEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
@@ -44,7 +45,9 @@ class PermissionBl @Autowired constructor(
                 category = GroupCategory.FOUNDER,
                 companyId = companyId,
                 description = "This is the group of founder with all privileges",
-                name = "Fundadores"
+                name = "Fundadores",
+                tokenAuth = tokenAuth,
+                accessPerson = userBl.getAccessPersonEntityEasy(tokenAuth, null)
             ) ?: throw Exception("Couldn't create GROUP entity #PermissionBl.createPermissionsForCompany ")
 
             // create permissions on abc_permissions table iterating list
@@ -91,9 +94,9 @@ class PermissionBl @Autowired constructor(
         }
     }
 
-    fun updateCredentials(token:String, invitation: InvitationEntity, accessPersonEntity:AccessPersonEntity){
+    fun updateCredentials(userEntity: UserEntity,token:String, invitation: InvitationEntity, accessPersonEntity:AccessPersonEntity){
         // updateCredentials
-        val userEntity = userBl.getUserByCompanyIdAndToken(token, invitation.companyId, UserAbcCategory.INACTIVE ,  accessPersonEntity);
+
         userBl.updateUserCategory(userEntity, UserAbcCategory.ACTIVE);
 
         // update permission table
@@ -108,7 +111,16 @@ class PermissionBl @Autowired constructor(
         val invitation = userBl.getPersonalUpdatedInvitations(token, invitationId, accepted,accessPersonEntity )
             ?: return userBl.getPersonalInvitations(token ,accessPersonEntity)
 
-        updateCredentials(token, invitation, accessPersonEntity);
+        if(accepted){
+
+            val userEntity = userBl.getUserByCompanyIdAndToken(token, invitation.companyId, UserAbcCategory.INACTIVE ,  accessPersonEntity);
+
+            updateCredentials(userEntity, token, invitation, accessPersonEntity);
+            // update in KC
+            groupBl.updateRolesWhenAccepted(userId = userEntity.userId, companyId = invitation.companyId, accessPersonEntity, token);
+
+
+        }
 
 
 
