@@ -35,5 +35,8 @@ interface AccountDao {
             "  WHERE account_id = #{accountId} )")
     fun isEditable(accountId: Int): Boolean
 
+    @Select("SELECT * FROM account WHERE account_id = #{accountId}")
+    fun getAccountById(accountId: Int): AccountEntity
+
 
 }

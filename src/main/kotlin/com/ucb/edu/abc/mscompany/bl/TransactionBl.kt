@@ -8,10 +8,12 @@ import com.ucb.edu.abc.mscompany.entity.DebitCreditEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionAccountEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
+import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
 
@@ -32,7 +34,8 @@ class TransactionBl @Autowired constructor(
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
         private val companyBl: CompanyBl,
         private val exchangeRateBl: ExchangeRateBl,
-        private val entityBl: EntityBl
+        private val entityBl: EntityBl,
+        private val transactionAccountBl: TransactionAccountBl
 
 
         ){
@@ -169,7 +172,6 @@ class TransactionBl @Autowired constructor(
         transactionAccountEntity.auxiliaryAccountId = transactionAccountDto.auxiliaryId
         transactionAccountEntity.glosaDetail = transactionAccountDto.glosaDetail
         transactionAccountEntity.documentNumber = transactionAccountDto.documentCode
-        transactionAccountEntity.dueDate = transactionAccountDto.emitedDate
         return transactionAccountEntity
     }
 
@@ -180,6 +182,46 @@ class TransactionBl @Autowired constructor(
         debitCreditEntity.amountCredit = transactionAccountDto.amountCredit
         debitCreditEntity.exchangeRateId = exchangeRateId
         return debitCreditEntity
+    }
+
+    fun getListTransaction(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<ListTransactionDto>{
+        try{
+            val listTransaction = transactionDao.getListTransactions(companyId, subsidiaryId, areaId, transactionTypeId).map{
+                val list = transactionAccountBl.getAllTransactionByTransactionId(it.transactionId)
+                println(list)
+                val total = getTotalDebitCredit(list)
+                ListTransactionDto(
+                    it.transactionNumber,
+                    exchangeRateBl.getExchangeRate(it.exchangeRateId!!),
+                    getStringDate(it.date.time),
+                    it.glosaGeneral,
+                    list,
+                    total[0],
+                    total[1]
+                )
+            }
+            return listTransaction
+        }catch (e: Exception){
+            logger.error("Error al obtener las transacciones", e.message.toString())
+            throw PostgresException("Error al obtener las transacciones ", e.message.toString())
+        }
+    }
+
+
+    fun getStringDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        return sdf.format(date)
+    }
+
+    fun getTotalDebitCredit(list: List<TransactionListDto>): List<Double>{
+        var totalDebit = 0.0
+        var totalCredit = 0.0
+        list.forEach{
+            totalDebit += it.amountDebit
+            totalCredit += it.amountCredit
+        }
+        return listOf(totalDebit, totalCredit)
     }
 
 

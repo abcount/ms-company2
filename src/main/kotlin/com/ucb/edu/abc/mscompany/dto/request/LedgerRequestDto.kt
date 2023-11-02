@@ -1,5 +1,4 @@
 package com.ucb.edu.abc.mscompany.dto.request
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import lombok.AllArgsConstructor
 import lombok.Data
@@ -10,15 +9,12 @@ import java.util.*
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class JournalRequestDto (
+data class LedgerRequestDto(
         var subsidiaries: MutableList<Int>,
         var areas: MutableList<Int>,
         var from: Date,
         var to: Date,
-        var transactionType: Int,
-        var currencies: Int,
-        ){
-
+        var accountsId: MutableList<Int>,
+        var currencies: Int
+) {
 }
-
-

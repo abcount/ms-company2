@@ -1,5 +1,6 @@
 package com.ucb.edu.abc.mscompany.dao
 
+import com.ucb.edu.abc.mscompany.dto.response.CurrencyVoucher
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
@@ -23,4 +24,9 @@ interface ExchangeRateDao {
     @Insert("INSERT INTO exchange_rate (money_name, company_id, currency, abbreviation_name, date) " +
             "VALUES (#{moneyName}, #{companyId}, #{currency}, #{abbreviationName}, #{date})")
     fun createExchangeRate(exchangeRateEntity: ExchangeRateEntity)
+
+    @Select("SELECT e.exchange_rate_id, e.money_name, e.abbreviation_name, e.currency " +
+            "FROM exchange_rate e " +
+            "WHERE exchange_rate_id = #{exchangeRateId}")
+    fun getExchangeRate(exchangeRateId: Int): CurrencyVoucher
 }

@@ -1,5 +1,5 @@
 -- DROP TABLES
-
+/*
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS closing_sheet;
 DROP TABLE IF EXISTS company;
 DROP TABLE IF EXISTS confidential;
 DROP TABLE IF EXISTS confidential_account;
-DROP TABLE IF EXISTS debit_credit;
+
 DROP TABLE IF EXISTS dicc_category;
 DROP TABLE IF EXISTS entity;
 DROP TABLE IF EXISTS exchange_money;
@@ -30,12 +30,21 @@ DROP TABLE IF EXISTS report_file;
 DROP TABLE IF EXISTS role_common;
 DROP TABLE IF EXISTS role_entity;
 DROP TABLE IF EXISTS subsidiary;
-DROP TABLE IF EXISTS transaction;
-DROP TABLE IF EXISTS transaction_account;
+
 DROP TABLE IF EXISTS transaction_type;
 DROP TABLE IF EXISTS exchange;
 DROP TABLE IF EXISTS images_for_all;
+
 DROP TABLE IF EXISTS role_kc;
+
+
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS transaction_account;
+DROP TABLE IF EXISTS debit_credit;
+*/
+
+
+
 
 -- tables
 -- Table: abc_permission
@@ -287,7 +296,7 @@ exchange_rate_id serial NOT NULL,
 money_name varchar(50) NOT NULL,
 company_id int NOT NULL,
 currency decimal(12,2) NOT NULL,
-abbreviation_name int NOT NULL,
+abbreviation_name varchar(10) NOT NULL,
 date timestamp NOT NULL,
 CONSTRAINT exchange_rate_pk PRIMARY KEY (exchange_rate_id)
 );
@@ -445,7 +454,6 @@ account_id int  NOT NULL,
 auxiliary_account_id int  NULL,
 glosa_detail varchar(500)  NULL,
 document_number varchar(20)  NULL,
-due_date date  NULL,
 company_id int  NOT NULL,
 CONSTRAINT transaction_account_pk PRIMARY KEY (transaction_account_id)
 );

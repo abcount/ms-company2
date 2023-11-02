@@ -6,12 +6,17 @@ import lombok.Data
 import lombok.NoArgsConstructor
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.Date
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class JournalResponseDto (
+        var companyName: String,
+        var dateFrom: Date,
+        var dateTo: Date,
+        var currency: String,
         var subsidiaries: MutableList<SubsidiaryDto>
 ){}
 @Data
@@ -43,7 +48,9 @@ data class TransactionDto(
         val registrationDate: LocalDateTime,
         val exchangeRate: BigDecimal,
         val glosaGeneral: String,
-        val accounts: List<AccountDto>
+        val accounts: List<AccountDto>,
+        val totalDebitAmount: BigDecimal,
+        val totalCreditAmount: BigDecimal,
 )
 @Data
 @AllArgsConstructor
