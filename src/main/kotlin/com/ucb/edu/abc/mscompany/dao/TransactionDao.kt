@@ -38,7 +38,7 @@ interface TransactionDao {
 
     fun getTransactionForAreaAndSubsidiary(companyId: Int, subsidiaryId: Int, areaId: Int, from: Date, to: Date, transactionTypeId: Int ): List<TransactionEntity>
 
-    @Select(
+  /*  @Select(
             """
     SELECT 
         a.code_account,
@@ -52,7 +52,7 @@ interface TransactionDao {
         transaction_account ta ON t.transaction_id = ta.transaction_id
     JOIN 
         account a ON ta.account_id = a.account_id
-    LEFT JOIN 
+    LEFT JOIN
         debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
     WHERE 
         t.transaction_id = #{transactionId}
@@ -65,7 +65,30 @@ interface TransactionDao {
     """
     )
     fun getAccountDetailsByTransactionId(transactionId: Long, exchangeRateId: Int): List<AccountDto>
-
+*/
+  @Select(
+          """
+    SELECT 
+        a.code_account,
+        a.name_account,
+        ta.glosa_detail,
+        dc.amount_debit,
+        dc.amount_credit
+    FROM 
+        transaction t
+    JOIN 
+        transaction_account ta ON t.transaction_id = ta.transaction_id
+    JOIN 
+        account a ON ta.account_id = a.account_id
+    JOIN 
+        debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
+    WHERE 
+        t.transaction_id = #{transactionId}
+    AND 
+        dc.exchange_rate_id = #{exchangeRateId}
+    """
+  )
+  fun getAccountDetailsByTransactionId(transactionId: Long, exchangeRateId: Int): List<AccountDto>
 
     @Select("SELECT t.transaction_id,t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
             " FROM transaction t, area a, subsidiary s, area_subsidiary asub " +
