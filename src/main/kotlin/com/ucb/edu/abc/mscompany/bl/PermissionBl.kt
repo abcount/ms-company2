@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
 import com.ucb.edu.abc.mscompany.entity.InvitationEntity
+import com.ucb.edu.abc.mscompany.entity.UserEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
@@ -93,9 +94,9 @@ class PermissionBl @Autowired constructor(
         }
     }
 
-    fun updateCredentials(token:String, invitation: InvitationEntity, accessPersonEntity:AccessPersonEntity){
+    fun updateCredentials(userEntity: UserEntity,token:String, invitation: InvitationEntity, accessPersonEntity:AccessPersonEntity){
         // updateCredentials
-        val userEntity = userBl.getUserByCompanyIdAndToken(token, invitation.companyId, UserAbcCategory.INACTIVE ,  accessPersonEntity);
+
         userBl.updateUserCategory(userEntity, UserAbcCategory.ACTIVE);
 
         // update permission table
@@ -111,7 +112,13 @@ class PermissionBl @Autowired constructor(
             ?: return userBl.getPersonalInvitations(token ,accessPersonEntity)
 
         if(accepted){
-            updateCredentials(token, invitation, accessPersonEntity);
+
+            val userEntity = userBl.getUserByCompanyIdAndToken(token, invitation.companyId, UserAbcCategory.INACTIVE ,  accessPersonEntity);
+
+            updateCredentials(userEntity, token, invitation, accessPersonEntity);
+            // update in KC
+            groupBl.updateRolesWhenAccepted(userId = userEntity.userId, companyId = invitation.companyId, accessPersonEntity, token);
+
 
         }
 

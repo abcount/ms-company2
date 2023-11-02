@@ -108,7 +108,7 @@ interface KeycloakRepository {
                       @PathVariable(value = "user-id") userId: String,
                       @RequestBody body:List<Map<String, *>>)
 
-    @PostMapping(value = ["/admin/realms/\${keycloak.realm}/users/{user-id}/role-mappings/realm"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = ["/admin/realms/\${keycloak.realm}/users/{user-id}/role-mappings/realm"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun removeRoleToUser(@RequestHeader("Authorization") token: String,
                       @PathVariable(value = "user-id") userId: String,
                       @RequestBody body:List<Map<String, *>>)

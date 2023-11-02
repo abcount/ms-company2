@@ -13,6 +13,9 @@ interface RoleDao {
     @Select("SELECT * FROM role_entity WHERE name = #{nameRole}")
     fun getRoleByName(nameRole: String): RoleEntity?
 
+    @Select("SELECT * FROM role_entity WHERE role_id = #{roleId}")
+    fun getRoleById(roleId: Int): RoleEntity?
+
     @Options(useGeneratedKeys = true, keyProperty = "roleId")
     @Insert("INSERT INTO role_entity (name, description, dicc_category, status, date_created, common_id) " +
             " VALUES (#{name}, #{description}, #{diccCategory}, #{status}, #{dateCreated}, #{commonId});")

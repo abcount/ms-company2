@@ -179,7 +179,8 @@ class CompanyApi @Autowired constructor(
     }
 
 
-    @RequestMapping(value = ["/{companyId}/users/{userId}/roles"], method = [RequestMethod.PUT])
+    @RequestMapping(value = ["/{companyId}/users/{userId}/roles"],
+        method = [RequestMethod.PUT])
     fun updateRolesByCompanyIdAndUserId(
         @PathVariable companyId: Int,
         @PathVariable userId: Int,

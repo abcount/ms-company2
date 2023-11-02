@@ -64,6 +64,12 @@ class RoleBl @Autowired constructor(
             return null
         }
     }
+
+    fun getRoleById(roleId: Int): RoleEntity{
+        return roleDao.getRoleById(roleId)
+            ?: throw Exception("Not role founded with id $roleId")
+    }
+
     fun getAllRoles(): MutableList<RoleEntity>{
         return roleDao.getAllRoles().toMutableList()
     }
@@ -178,7 +184,7 @@ class RoleBl @Autowired constructor(
 //        keycloakBl.createRoleInKc()
 //    }
 
-    fun removeRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String){
+    fun removeRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String?){
         if(accessPersonEntity == null) throw Exception("Null person");
         val listOfMaps: MutableList<Map<String, String>> = mutableListOf()
         for(role in roles){
@@ -187,18 +193,16 @@ class RoleBl @Autowired constructor(
                 listOfMaps.add(mapRes)
             }
 
-            val mapRes2 = checkRole(0, role, token);
-            if(mapRes2 != null){
-                listOfMaps.add(mapRes2)
-            }
+
         }
         keycloakBl.removeRoleInKcToUserUuid(accessPersonEntity.userUuid, listOfMaps)
 
     }
 
+
     fun getOrCreateRoleInLocalDB(role:String, companyId: Int, roleDesc:String, singleRole:String): RolesKcEntity {
         val listRole =
-            roleKcDao.getRolesByRoleNameAndCompanyId(role, companyId ) ?: throw Exception("Null or empty role kc");
+            roleKcDao.getRolesByRoleNameAndCompanyId(singleRole, companyId ) ?: throw Exception("Null or empty role kc");
         if(listRole.size > 1) throw Exception("Duplicated role with company Id")
 
         if(listRole.isEmpty()){
@@ -219,7 +223,7 @@ class RoleBl @Autowired constructor(
         }
     }
 
-    fun createRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String){
+    fun createRoleWithCompany(companyId: Int, roles:List<RoleEntity>, accessPersonEntity: AccessPersonEntity?, token: String?){
         if(accessPersonEntity == null) throw Exception("Null person");
         val listOfMaps: MutableList<Map<String, String>> = mutableListOf()
         for(role in roles){
@@ -237,21 +241,29 @@ class RoleBl @Autowired constructor(
 
 
     }
-    fun checkRole(companyId: Int, role:RoleEntity,  token: String): Map<String, String>? {
+    fun checkRole(companyId: Int, role:RoleEntity,  token: String?): Map<String, String>? {
         var currentRole = role.name
         if(companyId != 0) {
             currentRole = "${role.name}.$companyId"
         }
         // check if current role is in token
-        if( ! keycloakBl.isThisRoleInCurrentToken(token, currentRole) ){
-            // role is not present in token
+        if(token != null){
+            if( ! keycloakBl.isThisRoleInCurrentToken(token, currentRole) ){
+                // role is not present in token
+                val roleInDb =  getOrCreateRoleInLocalDB(currentRole, companyId, role.description, role.name);
+                return mapOf(
+                    "name" to roleInDb.completeRole,
+                    "id" to roleInDb.uuidRole
+                )
+
+
+            }
+        }else{
             val roleInDb =  getOrCreateRoleInLocalDB(currentRole, companyId, role.description, role.name);
             return mapOf(
-                "name" to roleInDb.completeRole,
+                "name" to currentRole,
                 "id" to roleInDb.uuidRole
             )
-
-
         }
         return null;
     }

@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.bl
 import com.ucb.edu.abc.mscompany.dao.GroupDao
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
 import com.ucb.edu.abc.mscompany.entity.GroupEntity
+import com.ucb.edu.abc.mscompany.entity.RoleEntity
 import com.ucb.edu.abc.mscompany.entity.TestEntity
 import com.ucb.edu.abc.mscompany.entity.pojos.GroupRoleExtendedPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
@@ -138,6 +139,12 @@ class GroupBl @Autowired constructor(
     }
 
 
+
+    fun updateRolesWhenAccepted(userId: Int, companyId: Int,  accessPersonEntity: AccessPersonEntity?, token: String){
+        val listOfRoles =roleBl.getRolesByUserNoFilters(userId, roleStatus = true);
+        roleBl.createRoleWithCompany(companyId, listOfRoles, accessPersonEntity, token)
+    }
+
     fun updateRolesForThisGroup(groupEntityOfPerson: GroupEntity, roles: MutableList<Int>) {
         val currentRolesOfUser = getRolesByGroupId(groupEntityOfPerson.groupId)
         currentRolesOfUser.forEach {
@@ -151,6 +158,48 @@ class GroupBl @Autowired constructor(
                 }
             }
         }
+    }
+
+    fun updateRolesForThisGroupInKC(
+        groupEntityOfPerson: GroupEntity, roles: MutableList<Int>, companyId: Int,
+        accessPerson: AccessPersonEntity, currentRoles: List<GroupRoleExtendedPojo>
+    ) {
+        val createList: MutableList<RoleEntity> = mutableListOf()
+        val deleteList: MutableList<RoleEntity> = mutableListOf()
+        println("*******")
+        println(roles)
+        println("---------------------------------------")
+        println(currentRoles.map { it.roleId })
+        println("*******")
+        currentRoles.forEach {
+            if (roles.contains(it.roleId)) {
+                if (!it.status) {
+                    // created
+                    createList.add(
+                        roleBl.getRoleById(it.roleId)
+                    )
+                    println(it.name)
+                }
+            } else {
+                if (it.status) {
+                    deleteList.add(
+                        roleBl.getRoleById(it.roleId)
+                    )
+                    println(it.name)
+                }
+            }
+        }
+
+        println("---------------------------------------")
+
+        roleBl.removeRoleWithCompany(
+            companyId = companyId,
+            roles = deleteList, accessPersonEntity = accessPerson, null
+        );
+        roleBl.createRoleWithCompany(
+            companyId = companyId,
+            roles = createList, accessPersonEntity = accessPerson, null
+        )
     }
 
 
