@@ -1,0 +1,209 @@
+{
+    "logo": "",
+    "companyName": "GMMTV",
+    "dateTo": "05/01/2023",
+    "currency": "Bolivianos",
+    "subsidiaries": [
+      {
+        "subsidiaryId": 1,
+        "subsidiaryName": "Sucursal 1",
+        "areas": [
+          {
+            "subsidiaryId": 1,
+            "areaId": 1,
+            "areaName": "Area 1",
+            "accounts": [
+              {
+                "accountCode": "1",
+                "accountName": "Activo",
+                "amount": 200,
+                "children": [
+                  {
+                    "accountCode": "11",
+                    "accountName": "Activo corriente",
+                    "amount": 80,
+                    "children": [
+                      {
+                        "accountCode": "111",
+                        "accountName": "Cuenta corriente",
+                        "amount": 80,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "accountCode": "12",
+                    "accountName": "Activo no corriente",
+                    "amount": 120,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "accountCode": "2",
+                "accountName": "Pasivo",
+                "amount": 150,
+                "children": [
+                  {
+                    "accountCode": "21",
+                    "accountName": "Pasivo corriente",
+                    "amount": 120,
+                    "children": [
+                      {
+                        "accountCode": "211",
+                        "accountName": "Cuenta corriente",
+                        "amount": 100,
+                        "children": []
+                      },
+                      {
+                        "accountCode": "212",
+                        "accountName": "Cuenta f",
+                        "amount": 20,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "accountCode": "22",
+                    "accountName": "Pasivo no corriente",
+                    "amount": 30,
+                    "children": []
+                  }
+                ]
+              }
+            ],
+            "totalActive": 200,
+            "totalPasiveCapital": 150,
+            "totalResult": 50,
+            "totalActiveFinal": 200,
+            "totalResultFinal": 200
+          },
+          {
+            "subsidiaryId": 1,
+            "areaId": 2,
+            "areaName": "Area 2",
+            "accounts": [
+              {
+                "accountCode": "1",
+                "accountName": "Activo",
+                "amount": 200,
+                "children": []
+              },
+              {
+                "accountCode": "2",
+                "accountName": "Pasivo",
+                "amount": 150,
+                "children": []
+              }
+            ],
+            "totalActive": 200,
+            "totalPasiveCapital": 150,
+            "totalResult": 50,
+            "totalActiveFinal": 200,
+            "totalResultFinal": 200
+          }
+        ]
+      },
+      {
+        "subsidiaryId": 2,
+        "subsidiaryName": "Sucursal 1",
+        "areas": [
+          {
+            "subsidiaryId": 2,
+            "areaId": 1,
+            "areaName": "Area 1",
+            "accounts": [
+              {
+                "accountCode": "1",
+                "accountName": "Activo",
+                "amount": 200,
+                "children": [
+                  {
+                    "accountCode": "11",
+                    "accountName": "Activo corriente",
+                    "amount": 80,
+                    "children": [
+                      {
+                        "accountCode": "111",
+                        "accountName": "Cuenta corriente",
+                        "amount": 80,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "accountCode": "12",
+                    "accountName": "Activo no corriente",
+                    "amount": 120,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "accountCode": "2",
+                "accountName": "Pasivo",
+                "amount": 150,
+                "children": [
+                  {
+                    "accountCode": "21",
+                    "accountName": "Pasivo corriente",
+                    "amount": 120,
+                    "children": [
+                      {
+                        "accountCode": "211",
+                        "accountName": "Cuenta corriente",
+                        "amount": 100,
+                        "children": []
+                      },
+                      {
+                        "accountCode": "212",
+                        "accountName": "Cuenta f",
+                        "amount": 20,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "accountCode": "22",
+                    "accountName": "Pasivo no corriente",
+                    "amount": 30,
+                    "children": []
+                  }
+                ]
+              }
+            ],
+            "totalActive": 200,
+            "totalPasiveCapital": 150,
+            "totalResult": 50,
+            "totalActiveFinal": 200,
+            "totalResultFinal": 200
+          },
+          {
+            "subsidiaryId": 2,
+            "areaId": 2,
+            "areaName": "Area 2",
+            "accounts": [
+              {
+                "accountCode": "1",
+                "accountName": "Activo",
+                "amount": 1000,
+                "children": []
+              },
+              {
+                "accountCode": "2",
+                "accountName": "Pasivo",
+                "amount": 150,
+                "children": []
+              }
+            ],
+            "totalActive": 1000,
+            "totalPasiveCapital": 150,
+            "totalResult": 850,
+            "totalActiveFinal": 1000,
+            "totalResultFinal": 1000
+          }
+        ]
+      }
+    ]
+  }
+  

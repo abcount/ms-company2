@@ -1,0 +1,158 @@
+{
+	"companyName": "Company 1",
+	"dateFrom": "2023-02-23",
+	"dateTo": "2023-10-24",
+	"currency": "Bolivianos",
+	"subsidiaries": [
+		{
+			"subsidiaryId": 2,
+			"subsidiary": "Sucursal 1",
+			"areas": [
+				{
+					"areaId": 1,
+					"area": "Area 1",
+					"accounts": [
+						{
+							"accountCode": "1",
+							"accountName": "Activo",
+							"transactions": [
+								{
+									"voucherCode": 1,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 500,
+									"creditAmount": 0,
+									"balances": 500
+								},
+								{
+									"voucherCode": 2,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 100,
+									"creditAmount": 500,
+									"balances": -400
+								}
+							],
+							"totalDebitAmount": 600,
+							"totalCreditAmount": 500,
+							"totalBalances": 100
+						},
+						{
+							"accountCode": "2",
+							"accountName": "Pasivo",
+							"transactions": [
+								{
+									"voucherCode": 1,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 500,
+									"creditAmount": 0,
+									"balances": 500
+								},
+								{
+									"voucherCode": 2,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 100,
+									"creditAmount": 500,
+									"balances": -400
+								}
+							],
+							"totalDebitAmount": 600,
+							"totalCreditAmount": 500,
+							"totalBalances": 100
+						}
+					]
+				},
+				{
+					"areaId": 2,
+					"area": "Area 2",
+					"accounts": [
+						{
+							"accountCode": "1",
+							"accountName": "Activo",
+							"transactions": [
+								{
+									"voucherCode": 1,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 500,
+									"creditAmount": 0,
+									"balances": 500
+								},
+								{
+									"voucherCode": 2,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 100,
+									"creditAmount": 500,
+									"balances": -400
+								}
+							],
+							"totalDebitAmount": 600,
+							"totalCreditAmount": 500,
+							"totalBalances": 100
+						},
+						{
+							"accountCode": "2",
+							"accountName": "Pasivo",
+							"transactions": [
+								{
+									"voucherCode": 1,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 500,
+									"creditAmount": 0,
+									"balances": 500
+								},
+								{
+									"voucherCode": 2,
+									"subdidary": "Sucursal 1",
+									"area": "Area 1",
+									"registrationDate": "23-01-15",
+                                    "transactionType": "INGRESO",
+									"glosaDetail": "Detalle de Glosa",
+									"documentNumber": "12939912",
+									"debitAmount": 100,
+									"creditAmount": 500,
+									"balances": -400
+								}
+							],
+							"totalDebitAmount": 600,
+							"totalCreditAmount": 500,
+							"totalBalances": 100
+						}
+					]
+				}
+			]
+		}
+	]
+}
