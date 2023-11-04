@@ -1,0 +1,10 @@
+POST http://localhost:8080/general/balance/12
+Content-Type: application/json
+
+{
+  "subsidiaries": [2,3],
+  "areas": [2,3],
+  "to": "2024-12-31",
+  "currencies": 72,
+  "responsible": ["Sebastian Belmonte", "Micaela Gordillo", "Juan Neves", "Alejandro Flores"]
+}

@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
+import java.util.Date
 
 @Mapper
 @Component
@@ -37,6 +39,29 @@ interface AccountDao {
 
     @Select("SELECT * FROM account WHERE account_id = #{accountId}")
     fun getAccountById(accountId: Int): AccountEntity
+
+    @Select("SELECT account_id FROM account WHERE code_account = #{codeAccount} AND company_id = #{companyId}")
+    fun getAccountIdBYCode(codeAccount: String, companyId: Int): Int
+
+
+    // obtener balance por cuenta
+    @Select("""
+                SELECT 
+            SUM(dc.amount_debit) - SUM(dc.amount_credit) AS balance
+        FROM 
+            transaction_account AS ta
+        JOIN 
+            transaction AS t ON ta.transaction_id = t.transaction_id
+        JOIN 
+            debit_credit AS dc ON ta.transaction_account_id = dc.debit_credit_id
+        JOIN 
+            exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
+        WHERE 
+            ta.account_id = #{accountId}
+            AND t.date <= #{date}; 
+    """)
+    fun getBalanceByAccount(accountId: Int, date: Date): BigDecimal
+
 
 
 }

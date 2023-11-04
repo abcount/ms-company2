@@ -6,6 +6,7 @@ import com.ucb.edu.abc.mscompany.dto.response.BalanceGeneralResponseDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 class BalanceGeneralApi @Autowired constructor
 (private val balanceGeneralBl: BalanceGeneralBl)
 {
-    /*
-    @PostMapping("/{companyId}")
+
+   @PostMapping("/{companyId}")
     fun getBalanceGeneral(@PathVariable companyId: Int, @RequestBody balanceGeneralRequestDto: BalanceGeneralRequestDto): ResponseEntity<ResponseDto<BalanceGeneralResponseDto>> {
         val balanceGeneralResponseDto = balanceGeneralBl.getBalanceGeneral(companyId, balanceGeneralRequestDto)
 
@@ -31,6 +32,8 @@ class BalanceGeneralApi @Autowired constructor
                     ResponseDto(null, "Error al obtener el balance general", false, e.toString() ))
 
         }
-    }*/
+    }
+
+
 
 }
