@@ -377,22 +377,12 @@ CONSTRAINT invitation_pk PRIMARY KEY (invitation_id)
 CREATE TABLE IF NOT EXISTS report (
 report_id serial NOT NULL,
 date timestamp NOT NULL,
-user_user_id int NOT NULL,
-transaction_type int NOT NULL,
+user_id int NOT NULL,
+company_id int NOT NULL,
+uuid varchar(255) NOT NULL,
 CONSTRAINT report_pk PRIMARY KEY (report_id)
 );
 
-
--- Table: report_file
-CREATE TABLE IF NOT EXISTS report_file (
-report_file_id serial NOT NULL,
-report_id int NOT NULL,
-url Varchar(1000) NOT NULL,
-mime_type Varchar(30) NOT NULL,
-size Varchar(30) NOT NULL,
-date timestamp NOT NULL,
-CONSTRAINT report_file_pk PRIMARY KEY (report_file_id)
-);
 
 
 -- Table: role_common

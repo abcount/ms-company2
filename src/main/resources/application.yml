@@ -53,3 +53,8 @@ keycloak:
             - POST
           patterns:
             - /apia/v1/admin/*
+minio:
+  url: ${MINIO_URL:http://104.248.232.102:9000}
+  bucket: ${MINIO_BUCKET:abcount}
+  access-key: ${MINIO_ACCESS_KEY:gTErsD7Nhh2qUfXlIfIx}
+  secret-key: ${MINIO_SECRET_KEY:d7y2rORndi3wS8mXM3Zmdo3SXNI0VOhrfB7XIkk5}

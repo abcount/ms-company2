@@ -87,11 +87,17 @@
 			<artifactId>kotlinx-coroutines-core</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jetbrains.kotlinx</groupId>
 			<artifactId>kotlinx-coroutines-reactor</artifactId>
 			<version>1.5.2</version>
+		</dependency>
+
+		<!-- MINIO -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>8.3.6</version>
 		</dependency>
 
 	</dependencies>
