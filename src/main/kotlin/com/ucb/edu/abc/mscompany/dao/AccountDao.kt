@@ -57,10 +57,13 @@ interface AccountDao {
         JOIN 
             exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
         WHERE 
-            ta.account_id = #{accountId}
+            ta.account_id = #{accountId} AND
+            dc.exchange_rate_id = #{exchangeId} AND
+            t.area_subsidiary_id = #{areaSubsidiaryId}
+            
             AND t.date <= #{date}; 
     """)
-    fun getBalanceByAccount(accountId: Int, date: Date): BigDecimal
+    fun getBalanceByAccount(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeId: Int): BigDecimal
 
 
 
