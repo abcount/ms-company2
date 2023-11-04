@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.header-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				font-family: 'Roboto', sans-serif;
+				position: relative;
+			}
+			h1 {
+				font-size: 18px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h2 {
+				font-size: 15px;
+				font-weight: 500;
+				color: #757575;
+				margin: 0;
+			}
+			img {
+				height: 50px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			h3 {
+				font-size: 16px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h4 {
+				font-size: 15px;
+				font-weight: 600;
+				color: #757575;
+				margin: 0 0 8px 0;
+			}
+			table {
+				margin-bottom: 15px;
+			}
+			td, th {
+				font-size: 13px;
+				font-weight: 500;
+				color: #383838;
+				border: 1px solid #ededed !important;
+			}
+			.left {
+    		text-align: left;
+			}
+			.right {
+				text-align: right;
+			}
+			.center {
+				text-align: center;
+			}
+			.bold {
+				font-weight: 600 !important;
+			}
+			#account-table td {
+				font-size: 13px;
+			}
+		</style>
+	</head>
+	<body class="pdf-turtle">
+		<div class="header-container">
+			<img alt="logo" src="{{ .logo }}"/>
+			<h1>{{ .title }}</h1>
+			<h2>Empresa {{ .companyName }}</h2>
+			<h2>Al {{ .dateTo }}</h2>
+			<h2>Expresado en {{ .currency }}</h2>
+		</div>
+		{{  range .data }}
+				<table id="account-table">
+				</table>
+				<script>
+					function createAccountRow(account, level) {
+						const table = document.getElementById('account-table');
+						const row = table.insertRow(-1);
+						const cell = row.insertCell(0);
+						cell.colSpan = 10 ;
+						const large = 10 ;
+
+						cell.textContent = `${account.accountCode} ${account.accountName}`;
+						
+						// Agrega el monto
+						const amountCell = row.insertCell(1);
+						amountCell.textContent = account.amount;
+						amountCell.classList.add('right');
+						if(level == 0 ){
+							cell.style.paddingLeft =  10 + 'px';
+							cell.style.fontWeight = 'bold';
+							amountCell.style.fontWeight = '600';
+						} else {
+							cell.style.paddingLeft =  level * 20 + 'px';
+						}
+						if(large != 10) {
+							const newCell = row.insertCell(2);
+							newCell.colSpan = 10 - large;
+						} 
+						
+						// Llama a la función recursivamente para las cuentas hijas
+						if (account.children) {
+							account.children.forEach(child => {
+								createAccountRow(child, level + 1);
+							});
+						}
+					}
+					// Llama a la función para cada cuenta raíz en el JSON
+					var accounts = {{ .accounts }}; // Reemplaza "yourJson" con tu JSON real
+					accounts.forEach(account => {
+						createAccountRow(account, 0);
+					});
+				</script>
+		{{ end }}
+		<table>	
+			<tr>
+				<td class="bold" colspan="2">RESULTADOS</td>
+				<td class="right bold">{{ .amountTotal }}</td>
+			</tr>
+		</table>
+	</body>
+</html>

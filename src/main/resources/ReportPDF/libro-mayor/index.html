@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.header-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				font-family: 'Roboto', sans-serif;
+				position: relative;
+			}
+			h1 {
+				font-size: 18px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h2 {
+				font-size: 15px;
+				font-weight: 500;
+				color: #757575;
+				margin: 0;
+			}
+			h3 {
+				font-size: 16px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h4 {
+				font-size: 15px;
+				font-weight: 600;
+				color: #757575;
+				margin: 0;
+			}
+			table {
+				margin-bottom: 10px;
+			}
+			td, th {
+				font-size: 12px;
+				font-weight: 500 !important;
+				color: #383838;
+				border: 1px solid #ededed !important;
+			}
+			.left {
+    		text-align: left;
+			}
+			.right {
+				text-align: right;
+			}
+			.center {
+				text-align: center;
+			}
+			.bold {
+				font-weight: 600 !important;
+			}
+		</style>
+	</head>
+	<body class="pdf-turtle">
+		<div class="header-container">
+			<h1>Libro Mayor</h1>
+			<h2>Empresa {{ .companyName }}</h2>
+			<h2>Del {{ .dateFrom }} al {{ .dateTo }}</h2>
+			<h2>Expresado en {{ .currency }}</h2>
+		</div>
+		{{  range .subsidiaries }}
+			<h3>{{ .subsidiary }}</h3>
+			{{ range .areas }}
+				<h4>{{ .area }}</h4>
+				{{ range .accounts }}
+					<h4 style="margin-bottom: 8px;">{{ .accountName }}</h4>
+					<table>
+						<tr>
+							<th class="left">Fecha</th>
+							<th>Nro comp</th>
+							<th>Tipo comp</th>
+							<th class="left">Glosa</th>
+							<th>Nro doc</th>
+							<th>Debe</th>
+							<th>Haber</th>
+							<th>Saldos</th>
+						</tr>
+						{{ range .transactions }}
+							<tr>
+								<td>{{ .registrationDate }}</td>
+								<td class="center">{{ .voucherCode }}</td>
+								<td class="center">{{ .transactionType }}</td>
+								<td>{{ .glosaDetail }}</td>
+								<td class="center">{{ .documentNumber }}</td>
+								<td class="right">{{ .debitAmount }}</td>
+								<td class="right">{{ .creditAmount }}</td>
+								<td class="right">{{ .balances }}</td>
+							</tr>
+						{{end}}
+						<tr>
+							<td class="bold" COLSPAN="5">SUMAS Y SALDOS</td>
+							<td class="right bold">{{ .totalDebitAmount }}</td>
+							<td class="right bold">{{ .totalCreditAmount }}</td>
+							<td class="right bold">{{ .totalBalances }}</td>
+						</tr>
+					</table>
+				{{ end }}
+			{{ end }}
+		{{ end }}
+	</body>
+</html>

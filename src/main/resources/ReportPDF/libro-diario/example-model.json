@@ -1,0 +1,92 @@
+{
+	"companyName": "Company 1",
+	"dateFrom": "2023-02-23",
+	"dateTo": "2023-10-24",
+	"currency": "Bolivianos",
+	"subsidiaries": [
+    {
+			"subsidiaryId": 2,
+			"subsidiaryName": "LP",
+			"areas": [
+        {
+					"areaId": 2,
+					"areaName": "AREA1",
+					"transactions": [
+            {
+							"transactionNumber": 1,
+							"transactionType": "INGRESO",
+							"registrationDate": "2023-10-25",
+							"exchangeRate": 0,
+							"glosaGeneral": "Comprobante 1",
+							"accounts": [
+                				{
+									"codeAccount": "31",
+									"nameAccount": "Capital",
+									"glosaDetail": "glosa1",
+									"debitAmount": 100,
+									"creditAmount": 0
+								},
+								{
+									"codeAccount": "32",
+									"nameAccount": "Ajuste al Patrimonio",
+									"glosaDetail": "glosa2",
+									"debitAmount": 0,
+									"creditAmount": 100
+								}
+							],
+							"totalDebitAmount": 100,
+							"totalCreditAmount": 100
+						}
+					]
+				},
+				{
+					"areaId": 3,
+					"areaName": "AREA2",
+					"transactions": []
+				}
+			]
+		},
+		{
+			"subsidiaryId": 3,
+			"subsidiaryName": "CBBA",
+			"areas": [
+				{
+					"areaId": 2,
+					"areaName": "AREA1",
+					"transactions": []
+				},
+				{
+					"areaId": 3,
+					"areaName": "AREA2",
+					"transactions": [
+						{
+							"transactionNumber": 2,
+							"transactionType": "EGRESO",
+							"registrationDate": "2023-10-25",
+							"exchangeRate": 0,
+							"glosaGeneral": "glosa2",
+							"accounts": [
+								{
+									"codeAccount": "31",
+									"nameAccount": "Capital",
+									"glosaDetail": "glosa",
+									"debitAmount": 112,
+									"creditAmount": 0
+								},
+								{
+									"codeAccount": "32",
+									"nameAccount": "Ajuste al Patrimonio",
+									"glosaDetail": "glosa2",
+									"debitAmount": 0,
+									"creditAmount": 112
+								}
+							],
+							"totalDebitAmount": 112,
+							"totalCreditAmount": 112
+						}
+					]
+				}
+			]
+		}
+	]
+}
