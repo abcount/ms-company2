@@ -45,6 +45,7 @@ interface AccountDao {
 
 
     // obtener balance por cuenta
+    // si es pasivo o patrimonio es al revés credit suma y debit resta
     @Select("""
                 SELECT 
             SUM(dc.amount_debit) - SUM(dc.amount_credit) AS balance
@@ -58,12 +59,36 @@ interface AccountDao {
             exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
         WHERE 
             ta.account_id = #{accountId} AND
-            dc.exchange_rate_id = #{exchangeId} AND
-            t.area_subsidiary_id = #{areaSubsidiaryId}
+            t.area_subsidiary_id = #{areaSubsidiaryId} AND
+            dc.exchange_rate_id = er.exchange_rate_id AND
+            er.abbreviation_name = #{exchangeMoneyIso}
             
             AND t.date <= #{date}; 
     """)
-    fun getBalanceByAccount(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeId: Int): BigDecimal
+    fun getBalanceByAccount(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
+
+    @Select("""
+                SELECT 
+             SUM(dc.amount_credit) - SUM(dc.amount_debit)  AS balance
+        FROM 
+            transaction_account AS ta
+        JOIN 
+            transaction AS t ON ta.transaction_id = t.transaction_id
+        JOIN 
+            debit_credit AS dc ON ta.transaction_account_id = dc.debit_credit_id
+        JOIN 
+            exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
+        WHERE 
+            ta.account_id = #{accountId} AND
+            t.area_subsidiary_id = #{areaSubsidiaryId} AND
+            er.abbreviation_name = #{exchangeMoneyIso} AND
+            dc.exchange_rate_id = er.exchange_rate_id 
+            
+            
+            AND t.date <= #{date}; 
+    """)
+    fun getBalancePassive(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
+
 
 
 

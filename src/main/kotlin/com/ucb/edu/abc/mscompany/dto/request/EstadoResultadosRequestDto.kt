@@ -10,7 +10,7 @@ import java.util.*
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class BalanceGeneralRequestDto(
+data class EstadoResultadosRequestDto(
         var subsidiaries: MutableList<Int>,
         var areas: MutableList<Int>,
         var to: Date,
