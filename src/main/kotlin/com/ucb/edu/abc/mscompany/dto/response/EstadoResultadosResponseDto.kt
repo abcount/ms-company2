@@ -15,6 +15,7 @@ data class EstadoResultadosResponseDto(
         var companyName: String,
         var dateTo: Date,
         var currency: String,
+        var responsible: List<String>,
         var subsidiaries: List<SubsidiaryState>
 )
 {
