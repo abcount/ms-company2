@@ -95,7 +95,6 @@ class JournalBl @Autowired constructor(
 
         }
         return transactionDtoList
-
     }
 
     fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDtoPdf{
@@ -110,11 +109,11 @@ class JournalBl @Autowired constructor(
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
                 val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
-                val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
-
-                if(transactionDtoList.isNotEmpty()){
+                if(transactions.isNotEmpty()){
+                    val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
                     areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
                 }
+
             }
 
             subsidiaryDtoList.add(SubsidiaryDtoPDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
@@ -133,7 +132,7 @@ class JournalBl @Autowired constructor(
                 i.transactionNumber,
                 transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
                 convertLocalDateTimeToString(i.date),
-                BigDecimal(0.0),  // Exchange rate value
+                BigDecimal(1),  // Exchange rate value
                 i.glosaGeneral,
                 accountDto,
                 totalDebit,
