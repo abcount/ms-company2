@@ -17,13 +17,16 @@ class JournalBl @Autowired constructor(
         private val subsidiaryDao: SubsidiaryDao,
         private val companyDao: CompanyDao,
         private val areaDao: AreaDao,
-        private val exchangeRateDao: ExchangeRateDao
+        private val exchangeRateDao: ExchangeRateDao,
+        private val exchangeMoneyBl: ExchangeMoneyBl
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
         logger.info("Obteniendo libro diario de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
-        val exchangeRate = exchangeRateDao.getExchangeRateById(journalRequestDto.currencies)
+        //Buscar el tipo de moneda
+
+        val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, journalRequestDto.currencies)
 
         val subsidiaryDtoList = mutableListOf<SubsidiaryDto>()
 
@@ -34,7 +37,7 @@ class JournalBl @Autowired constructor(
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
                 val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
-                val transactionDtoList= transformToTransactionDtoList(transactions,exchangeRate.exchangeRateId)
+                val transactionDtoList= transformToTransactionDtoList(transactions,exchangeMoney.abbreviationName)
 
 
                 areaDtoList.add(AreaDto(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
@@ -43,11 +46,11 @@ class JournalBl @Autowired constructor(
             subsidiaryDtoList.add(SubsidiaryDto(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
         }
 
-        return JournalResponseDto(companyEntity.companyName,journalRequestDto.from,journalRequestDto.to,exchangeRate.moneyName,subsidiaryDtoList)
+        return JournalResponseDto(companyEntity.companyName,journalRequestDto.from,journalRequestDto.to,exchangeMoney.moneyName,subsidiaryDtoList)
     }
 
-    private fun transformToAccountDtoList(transactionId: Long, exchangeRateId: Int): List<AccountDto> {
-        val transactionAccounts = transactionDao.getAccountDetailsByTransactionId(transactionId, exchangeRateId)
+    private fun transformToAccountDtoList(transactionId: Long, exchangeMoneyIso: String): List<AccountDto> {
+        val transactionAccounts = transactionDao.getAccountDetailsByTransactionId(transactionId, exchangeMoneyIso)
         return transactionAccounts.map {
             AccountDto(
                     it.codeAccount,
@@ -59,10 +62,10 @@ class JournalBl @Autowired constructor(
         }
     }
 
-    private fun transformToTransactionDtoList(transactions: List<TransactionEntity>, exchangeRateId: Int): List<TransactionDto> {
+    private fun transformToTransactionDtoList(transactions: List<TransactionEntity>, exchangeMoneyIso: String): List<TransactionDto> {
         val transactionDtoList = mutableListOf<TransactionDto>()
         for (i in transactions) {
-            val accountDto = transformToAccountDtoList(i.transactionId, exchangeRateId)
+            val accountDto = transformToAccountDtoList(i.transactionId, exchangeMoneyIso)
             val totalDebit = accountDto.sumOf { it.debitAmount }
             val totalCredit = accountDto.sumOf { it.creditAmount }
             transactionDtoList.add(TransactionDto(

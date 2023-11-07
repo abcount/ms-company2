@@ -56,5 +56,13 @@ class ExchangeMoneyBl @Autowired constructor(
         return exchangeMoneyEntity
     }
 
-
+    fun getExchangeMoneyByCompanyIdAndISO(companyId: Int, iso: String): ExchangeMoneyEntity{
+        try {
+            logger.info("Obteniendo tipo de cambio por compañia e ISO")
+            return exchangeMoneyDao.getCurrencyByCompanyIdAndAbbreviationName(companyId, iso)
+        } catch (e: Exception) {
+            logger.error("Ocurrio un error al obtener el tipo de cambio por compañia e ISO: ${companyId} - ${iso}")
+            throw PostgresException("Ocurrio un error al obtener el tipo de cambio por compañia e ISO: ${companyId} - ${iso}", e.message.toString())
+        }
+    }
 }

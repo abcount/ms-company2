@@ -17,4 +17,7 @@ interface ExchangeMoneyDao {
 
     @Select("SELECT * FROM exchange_money WHERE company_id = #{companyId}")
     fun getAllCurrenciesByCompanyId(companyId: Int): List<ExchangeMoneyEntity>
+
+    @Select("SELECT * FROM exchange_money WHERE company_id = #{companyId} AND abbreviation_name = #{abbreviationName}")
+    fun getCurrencyByCompanyIdAndAbbreviationName(companyId: Int, abbreviationName: String): ExchangeMoneyEntity
 }
