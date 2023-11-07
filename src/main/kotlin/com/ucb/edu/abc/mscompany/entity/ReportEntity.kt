@@ -10,10 +10,12 @@ import java.sql.Timestamp
 @AllArgsConstructor
 data class ReportEntity(
     val reportId: Int,
-    var date: Timestamp,
+    var date: Timestamp?,
     var userId: Int,
     var companyId: Int,
     var uuid: String,
+    var typeDocument: String,
+    var typeReport: String,
 ){
-    constructor(): this(0, Timestamp(System.currentTimeMillis()), 0, 0, "")
+    constructor(): this(0, Timestamp(System.currentTimeMillis()), 0, 0, "","","")
 }

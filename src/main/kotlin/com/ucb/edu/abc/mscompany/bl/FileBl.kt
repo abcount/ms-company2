@@ -16,13 +16,12 @@ class FileBl @Autowired constructor(
 ){
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    suspend fun generatePDFFile(byteArray: ByteArray, type: String, companyId: Int, header: Map<String, String> ): String{
+    suspend fun generatePDFFile(byteArray: ByteArray, type: String, companyId: Int, header: Map<String, String>, typeReport: String ): String{
         val tokenAuth =  header["authorization"]!!.substring(7)
         val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth, companyId, UserAbcCategory.ACTIVE,null)
         val uuid = UUID.randomUUID().toString() + companyId + "-" + userId
-        val dateTime = System.currentTimeMillis()
-        val url = minioBl.uploadFile(byteArray, uuid, "application/pdf")
-        val reportEntity = ReportEntity(0, Timestamp(dateTime), userId, companyId, uuid)
+        val url = minioBl.uploadFile(byteArray, uuid, type)
+        val reportEntity = reportBl.factoryReportEntity(header, companyId, uuid, "PDF", typeReport)
         reportBl.createReport(reportEntity)
         logger.info("Se genero el archivo $uuid")
         return url

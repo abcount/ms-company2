@@ -6,6 +6,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Service
 class LedgerBl @Autowired constructor(
@@ -15,7 +19,8 @@ class LedgerBl @Autowired constructor(
         private val accountDao: AccountDao,
         private val exchangeRateDao: ExchangeRateDao,
         private val areaDao: AreaDao,
-        private val areaSubsidiaryDao: AreaSubsidiaryDao
+        private val areaSubsidiaryDao: AreaSubsidiaryDao,
+        private val exchangeMoneyBl: ExchangeMoneyBl
 
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
@@ -49,7 +54,7 @@ class LedgerBl @Autowired constructor(
     fun getLedger(companyId: Int, ledgerRequestDto: LedgerRequestDto): LedgerResponseDto {
         logger.info("Obteniendo libro mayor")
         val company = companyDao.getCompanyById(companyId)
-        val currencyName = exchangeRateDao.getExchangeRateById(ledgerRequestDto.currencies)
+        val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, ledgerRequestDto.currencies)
         val subsidiaryLedger= mutableListOf<SubsidiaryLedger>()
 
         for (subsidiary in ledgerRequestDto.subsidiaries){
@@ -83,5 +88,63 @@ class LedgerBl @Autowired constructor(
 
         return LedgerResponseDto(company.companyName, ledgerRequestDto.from, ledgerRequestDto.to, currencyName.moneyName, subsidiaryLedger)
     }
+
+    fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto): LedgerResponseDtoPdf {
+        logger.info("Obteniendo libro mayor")
+        val company = companyDao.getCompanyById(companyId)
+        val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, ledgerRequestDto.currencies)
+        val subsidiaryLedger= mutableListOf<SubsidiaryLedgerPdf>()
+
+        for (subsidiary in ledgerRequestDto.subsidiaries){
+            val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiary)
+            val areaLedger = mutableListOf<AreaLedgerPdf>()
+
+            for (area in ledgerRequestDto.areas){
+                val areaEntity = areaDao.getAreaById(area)
+                val accountLedger = mutableListOf<AccountLedgerPdf>()
+
+                for (account in ledgerRequestDto.accountsId){
+                    val accountEntity = accountDao.getAccountById(account)
+                    val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
+
+
+                    val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies).map{
+                        TransactionLedgerPdf(it.voucherCode, convertDateToStringWithTime(it.registrationDate), it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
+                    }
+
+
+
+                    val totalDebit = transactions.sumOf { it.debitAmount }
+                    val totalCredit = transactions.sumOf { it.creditAmount }
+                    val totalBalances = totalDebit.subtract(totalCredit)
+
+                    if(transactions.isNotEmpty()){
+                        accountLedger.add(AccountLedgerPdf(accountEntity.codeAccount, accountEntity.nameAccount, transactions, totalDebit, totalCredit, totalBalances))
+                    }
+
+                }
+
+                if(accountLedger.isNotEmpty()){
+                    areaLedger.add(AreaLedgerPdf(areaEntity.areaId, areaEntity.areaName, accountLedger))
+                }
+            }
+
+            subsidiaryLedger.add(SubsidiaryLedgerPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaLedger))
+        }
+
+        return LedgerResponseDtoPdf(company.companyName, convertDateToString(ledgerRequestDto.from), convertDateToString(ledgerRequestDto.to), currencyName.moneyName, subsidiaryLedger)
+    }
+
+    fun convertDateToString(date: Date): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        return formatter.format(date)
+    }
+
+    fun convertDateToStringWithTime(date: Date): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        return formatter.format(date)
+    }
+
+
 
 }

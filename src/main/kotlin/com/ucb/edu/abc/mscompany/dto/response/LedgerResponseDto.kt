@@ -47,3 +47,47 @@ data class TransactionLedger(
         var creditAmount: BigDecimal,
         var balances: BigDecimal
 )
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class LedgerResponseDtoPdf(
+        var companyName: String,
+        var dateFrom: String,
+        var dateTo: String,
+        var currency: String,
+        var subsidiaries: List<SubsidiaryLedgerPdf>
+)
+data class SubsidiaryLedgerPdf(
+        val subsidiaryId: Int,
+        val subsidiaryName: String,
+        val areas: List<AreaLedgerPdf>
+){}
+
+
+data class AreaLedgerPdf(
+        var areaId: Int,
+        var area: String,
+        var accounts: List<AccountLedgerPdf>
+)
+data class AccountLedgerPdf(
+        var accountCode: String,
+        var accountName: String,
+        var transactions: List<TransactionLedgerPdf>,
+        var totalDebitAmount: BigDecimal,
+        var totalCreditAmount: BigDecimal,
+        var totalBalances: BigDecimal
+)
+
+data class TransactionLedgerPdf(
+        var voucherCode: Int,
+        var registrationDate: String,
+        var transactionType: String,
+        var glosaDetail: String,
+        var documentNumber: String?,
+        var debitAmount: BigDecimal,
+        var creditAmount: BigDecimal,
+        var balances: BigDecimal
+)
+

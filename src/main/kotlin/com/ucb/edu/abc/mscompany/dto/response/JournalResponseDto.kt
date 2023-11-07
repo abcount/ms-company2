@@ -63,3 +63,49 @@ data class AccountDto(
         val debitAmount: BigDecimal,
         val creditAmount: BigDecimal
 )
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class JournalResponseDtoPdf (
+        var companyName: String,
+        var dateFrom: String,
+        var dateTo: String,
+        var currency: String,
+        var subsidiaries: MutableList<SubsidiaryDtoPDF>
+){}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class SubsidiaryDtoPDF(
+        val subsidiaryId: Int,
+        val subsidiaryName: String,
+        val areas: List<AreaDtoPDF>
+){}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AreaDtoPDF(
+        val areaId: Int,
+        val areaName: String,
+        val transactions: List<TransactionDtoPDF>
+){}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class TransactionDtoPDF(
+        val transactionNumber: Long,
+        val transactionType: String?,
+        val registrationDate: String,
+        val exchangeRate: BigDecimal,
+        val glosaGeneral: String,
+        val accounts: List<AccountDto>,
+        val totalDebitAmount: BigDecimal,
+        val totalCreditAmount: BigDecimal,
+)

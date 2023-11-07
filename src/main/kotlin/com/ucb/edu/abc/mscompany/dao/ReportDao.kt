@@ -11,8 +11,8 @@ interface ReportDao {
 
     @Insert(
         """
-        INSERT INTO report (date, user_id, company_id, uuid)
-        VALUES (#{date}, #{userId}, #{companyId}, #{uuid})
+        INSERT INTO report (date, user_id, company_id, uuid, type_document, type_report)
+        VALUES (now(), #{userId}, #{companyId}, #{uuid}, #{typeDocument}, #{typeReport})
         """
     )
     fun insertReport(reportEntity: ReportEntity)

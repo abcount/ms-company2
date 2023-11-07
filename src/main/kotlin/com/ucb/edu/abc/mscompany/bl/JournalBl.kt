@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
 @Service
 class JournalBl @Autowired constructor(
@@ -92,6 +96,62 @@ class JournalBl @Autowired constructor(
         }
         return transactionDtoList
 
+    }
+
+    fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDtoPdf{
+        logger.info("Obteniendo libro diario de la empresa: $companyId")
+        val companyEntity = companyDao.getCompanyById(companyId)
+        val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, journalRequestDto.currencies)
+        val subsidiaryDtoList = mutableListOf<SubsidiaryDtoPDF>()
+        for (subsidiaryId in journalRequestDto.subsidiaries) {
+            val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
+            val areaDtoList = mutableListOf<AreaDtoPDF>()
+
+            for (areaId in journalRequestDto.areas) {
+                val areaEntity = areaDao.getAreaById(areaId)
+                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
+                val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
+
+                if(transactionDtoList.isNotEmpty()){
+                    areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
+                }
+            }
+
+            subsidiaryDtoList.add(SubsidiaryDtoPDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
+        }
+
+        return JournalResponseDtoPdf(companyEntity.companyName,convertDateToString(journalRequestDto.from),convertDateToString(journalRequestDto.to),exchangeMoney.moneyName,subsidiaryDtoList)
+    }
+
+    private fun transformToTransactionDtoListPDF(transactions: List<TransactionEntity>, exchangeMoneyIso: String): List<TransactionDtoPDF> {
+        val transactionDtoList = mutableListOf<TransactionDtoPDF>()
+        for (i in transactions) {
+            val accountDto = transformToAccountDtoList(i.transactionId, exchangeMoneyIso)
+            val totalDebit = accountDto.sumOf { it.debitAmount }
+            val totalCredit = accountDto.sumOf { it.creditAmount }
+            transactionDtoList.add(TransactionDtoPDF(
+                i.transactionNumber,
+                transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
+                convertLocalDateTimeToString(i.date),
+                BigDecimal(0.0),  // Exchange rate value
+                i.glosaGeneral,
+                accountDto,
+                totalDebit,
+                totalCredit
+            ))
+        }
+        return transactionDtoList
+
+    }
+
+    fun convertDateToString(date: Date): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        return formatter.format(date)
+    }
+
+    fun convertLocalDateTimeToString(localDateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return localDateTime.format(formatter)
     }
 
 
