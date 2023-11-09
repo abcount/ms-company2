@@ -90,6 +90,28 @@ interface AccountDao {
     fun getBalancePassive(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
 
 
+    @Select(
+        """
+            SELECT ac.code_account FROM account ac, company com
+            WHERE com.company_id = #{companyId} 
+            AND ac.company_id = com.company_id
+            AND ac.level = 0
+        """
+    )
+    fun getRootAccounts(companyId: Int): List<String>
+
+    @Select(
+        """
+            SELECT ac.code_account FROM account ac, company com
+            WHERE com.company_id = #{companyId} 
+            AND ac.company_id = com.company_id
+            AND ac.clasificator = false
+        """
+    )
+    fun getMovementAccounts(companyId: Int): List<String>
+
+
+
 
 
 }
