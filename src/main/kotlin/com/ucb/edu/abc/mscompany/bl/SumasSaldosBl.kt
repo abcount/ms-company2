@@ -61,12 +61,12 @@ fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto)
                             val totalBalances = totalDebit.subtract(totalCredit)
                             if (totalBalances >= BigDecimal.ZERO){
                                 accountSumas.add(AccountSumas(accountEntity.codeAccount, accountEntity.nameAccount, totalDebit, totalCredit, totalBalances, BigDecimal.ZERO))
+                                totalBalancesDebitAmount += totalBalances.abs()
                             }
                             else{
                                 accountSumas.add(AccountSumas(accountEntity.codeAccount, accountEntity.nameAccount, totalDebit, totalCredit, BigDecimal.ZERO, totalBalances.abs()))
+                                totalBalancesCreditAmount += totalBalances.abs()
                             }
-                            totalBalancesDebitAmount += totalBalances.abs()
-                            totalBalancesCreditAmount += totalBalances.abs()
                             totalSumsDebitAmount += totalDebit
                             totalSumsCreditAmount += totalCredit
                             logger.info("Total debit: $totalBalancesDebitAmount")
