@@ -22,7 +22,8 @@ class JournalBl @Autowired constructor(
         private val companyDao: CompanyDao,
         private val areaDao: AreaDao,
         private val exchangeRateDao: ExchangeRateDao,
-        private val exchangeMoneyBl: ExchangeMoneyBl
+        private val exchangeMoneyBl: ExchangeMoneyBl,
+        private val exchangeRateBl: ExchangeRateBl
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
@@ -126,13 +127,14 @@ class JournalBl @Autowired constructor(
         val transactionDtoList = mutableListOf<TransactionDtoPDF>()
         for (i in transactions) {
             val accountDto = transformToAccountDtoList(i.transactionId, exchangeMoneyIso)
+            val exchangeRateEntity = exchangeRateBl.getExchangeRate(i.exchangeRateId)
             val totalDebit = accountDto.sumOf { it.debitAmount }
             val totalCredit = accountDto.sumOf { it.creditAmount }
             transactionDtoList.add(TransactionDtoPDF(
                 i.transactionNumber,
                 transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
                 convertLocalDateTimeToString(i.date),
-                BigDecimal(1),  // Exchange rate value
+                BigDecimal(exchangeRateEntity.currency),  // Exchange rate value
                 i.glosaGeneral,
                 accountDto,
                 totalDebit,
