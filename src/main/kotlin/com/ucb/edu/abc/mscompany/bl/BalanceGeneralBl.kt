@@ -9,6 +9,8 @@
     import org.springframework.beans.factory.annotation.Autowired
     import org.springframework.stereotype.Service
     import java.math.BigDecimal
+    import java.text.NumberFormat
+    import java.text.SimpleDateFormat
     import java.util.*
 
     @Service
@@ -151,7 +153,7 @@
                     val areaEntity = areaDao.getAreaById(areaId)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                    var listAccountBalanced= getAccountBalancePDF(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                    var listAccountBalanced= getAccountBalance(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
 
@@ -170,82 +172,45 @@
                         it.accountCode.startsWith("4") || it.accountCode.startsWith("5")
                     }.toMutableList()
 
+                    val listAccount = listAccountBalanced.map{
+                        convertToAccountBalancePDF(it)
+                    }
+
                     areaBalanceDtoList.add(AreaBalancePDF(
                             subsidiaryId,
                             areaEntity.areaId,
                             areaEntity.areaName,
-                            listAccountBalanced,
-                            activeTotal,
-                            totalPassiveCapital,
-                            totalResult,
-                            activeTotal,
-                            totalResult+totalPassiveCapital
+                            listAccount,
+                            getNumber(activeTotal),
+                            getNumber(totalPassiveCapital),
+                            getNumber(totalResult),
+                            getNumber(activeTotal),
+                            getNumber(totalResult+totalPassiveCapital)
                     ))
                 }
 
                 subsidiaryBalanceDtoList.add(SubsidiaryBalancePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
             }
 
-            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, balanceGeneralRequestDto.to.date.toString(), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
         }
 
-        fun getAccountBalancePDF(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountBalancePDF>{
-            var accountBalanceDtoList = mutableListOf<AccountBalancePDF>()
-            var activeAccountId= accountDao.getAccountIdBYCode("1", companyId)
-            var passiveAccountId= accountDao.getAccountIdBYCode("2", companyId)
-            var patrimonyAccountId= accountDao.getAccountIdBYCode("3", companyId)
-            var ingresos = accountDao.getAccountIdBYCode("4", companyId)
-            var gastos = accountDao.getAccountIdBYCode("5", companyId)
 
 
-
-            val activeAccountTree = buildAccountTreePDF(activeAccountId, companyId, to, areaSubsidiaryId, exchangeRateId)
-            val passiveAccountTree = buildAccountTreePDF(passiveAccountId, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val patrimonyAccountTree = buildAccountTreePDF(patrimonyAccountId, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val ingresosAccountTree = buildAccountTreePDF(ingresos, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val gastosAccountTree = buildAccountTreePDF(gastos, companyId,to, areaSubsidiaryId, exchangeRateId)
-
-
-            accountBalanceDtoList.add(activeAccountTree)
-            accountBalanceDtoList.add(passiveAccountTree)
-            accountBalanceDtoList.add(patrimonyAccountTree)
-            accountBalanceDtoList.add(ingresosAccountTree)
-            accountBalanceDtoList.add(gastosAccountTree)
-
-            return accountBalanceDtoList
-
-
+        fun convertToAccountBalancePDF(accountBalance: AccountBalance): AccountBalancePDF {
+            return AccountBalancePDF(accountBalance.accountCode, accountBalance.accountName, getNumber(accountBalance.amount), accountBalance.children.map { convertToAccountBalancePDF(it) })
         }
 
-        private fun buildAccountTreePDF(rootAccountId: Int, companyId: Int,to: Date, areaSubsidiaryId: Int?, exchangeId: String): AccountBalancePDF {
-            // Obtenemos todas las cuentas de la compañía
-            val allAccounts = accountDao.getAccountPlanByCompanyId(companyId).associateBy { it.accountId }
+        fun convertDateToString(date: Date): String {
+            val formatter = SimpleDateFormat("yyyy-MM-dd")
+            return formatter.format(date)
+        }
 
-            // Función recursiva para construir el árbol y sumar montos
-            fun buildTreePDF(accountId: Int): AccountBalancePDF {
-                val currentAccount = allAccounts[accountId] ?: throw IllegalStateException("Account not found for ID: $accountId")
-                val children = allAccounts.values
-                        .filter { it.accountAccountId == accountId }
-                        .map { buildTreePDF(it.accountId) }
-
-                val amount = if (children.isEmpty()) {
-                    //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
-                    /***/
-                    if (currentAccount.codeAccount.startsWith("1") || currentAccount.codeAccount.startsWith("5")){
-                        accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
-
-                    } else {
-                        accountDao.getBalancePassive(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
-                    }
-                    /***/
-                } else {
-                    children.fold(BigDecimal.ZERO) { total, child -> total.add(child.amount) }
-                }
-
-                return AccountBalancePDF(currentAccount.codeAccount, currentAccount.nameAccount, amount, children)
-            }
-
-            return buildTreePDF(rootAccountId)
+        fun getNumber(number: BigDecimal): String{
+            val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+            format.minimumFractionDigits = 2
+            format.maximumFractionDigits = 2
+            return format.format(number)
         }
 
 

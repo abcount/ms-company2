@@ -76,7 +76,7 @@ data class AreaStatePDF(
         var areaId: Int,
         var area: String,
         var accounts: List<AccountStatePDF>,
-        var amountTotal: BigDecimal,
+        var amountTotal: String,
 )
 {
 }
@@ -84,7 +84,7 @@ data class AreaStatePDF(
 data class AccountStatePDF(
         var accountCode: String,
         var accountName: String,
-        var amount: BigDecimal,
+        var amount: String,
         var children: List<AccountStatePDF>, //recursivoxd
 
 )

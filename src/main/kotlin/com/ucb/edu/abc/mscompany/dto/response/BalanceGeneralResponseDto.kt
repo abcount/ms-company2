@@ -82,11 +82,11 @@ data class AreaBalancePDF(
         var areaId: Int,
         var area: String,
         var accounts: List<AccountBalancePDF>,
-        var totalActive: BigDecimal,
-        var totalPassiveCapital: BigDecimal,
-        var totalResult:BigDecimal,
-        var totalActiveFinal: BigDecimal,
-        var totalResultFinal: BigDecimal
+        var totalActive: String,
+        var totalPassiveCapital: String,
+        var totalResult:String,
+        var totalActiveFinal: String,
+        var totalResultFinal: String
 
 )
 {
@@ -95,7 +95,7 @@ data class AreaBalancePDF(
 data class AccountBalancePDF(
         var accountCode: String,
         var accountName: String,
-        var amount: BigDecimal,
+        var amount: String,
         var children: List<AccountBalancePDF>, //recursivoxd
 
 )

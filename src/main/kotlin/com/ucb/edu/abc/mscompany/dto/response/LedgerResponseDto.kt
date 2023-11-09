@@ -3,8 +3,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
-import java.util.Date
 import java.math.BigDecimal
+import java.text.NumberFormat
+import java.util.*
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -75,10 +77,11 @@ data class AccountLedgerPdf(
         var accountCode: String,
         var accountName: String,
         var transactions: List<TransactionLedgerPdf>,
-        var totalDebitAmount: BigDecimal,
-        var totalCreditAmount: BigDecimal,
-        var totalBalances: BigDecimal
-)
+        var totalDebitAmount: String,
+        var totalCreditAmount: String,
+        var totalBalances: String
+){
+}
 
 data class TransactionLedgerPdf(
         var voucherCode: Int,
@@ -86,8 +89,19 @@ data class TransactionLedgerPdf(
         var transactionType: String,
         var glosaDetail: String,
         var documentNumber: String?,
-        var debitAmount: BigDecimal,
-        var creditAmount: BigDecimal,
-        var balances: BigDecimal
-)
+        var debitAmount: String,
+        var creditAmount: String,
+        var balances: String
+){
+
+}
+
+fun getNumber(number: BigDecimal): String{
+    val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+    format.minimumFractionDigits = 2
+    format.maximumFractionDigits = 2
+    return format.format(number)
+}
+
+
 

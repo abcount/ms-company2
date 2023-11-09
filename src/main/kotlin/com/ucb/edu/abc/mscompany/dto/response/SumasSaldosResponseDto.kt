@@ -47,3 +47,44 @@ data class AccountSumas(
     var balancesDebitAmount: BigDecimal,
     var balancesCreditAmount: BigDecimal,
 ){}
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class SumasSaldosResponseDtoPdf (
+        var companyName: String,
+        var dateFrom: Date,
+        var dateTo: Date,
+        var currency: String,
+        var subsidiaries: List<SubsidiarySumasPdf>
+){
+
+}
+
+data class SubsidiarySumasPdf(
+        var subsidiaryId: Int,
+        var subsidiaryName: String,
+        var areas: List<AreaSumasPdf>
+){}
+
+data class AreaSumasPdf(
+        var areaId: Int,
+        var subsidiaryId: Int,
+        var areaName: String,
+        var accounts: List<AccountSumasPdf>,
+        var totalSumsDebitAmount: String,
+        var totalSumsCreditAmount: String,
+        var totalBalancesDebitAmount: String,
+        var totalBalancesCreditAmount: String,
+){}
+
+data class AccountSumasPdf(
+        var accountCode: String,
+        var accountName: String,
+        var sumsDebitAmount: String,
+        var sumsCreditAmount: String,
+        var balancesDebitAmount: String,
+        var balancesCreditAmount: String,
+){}

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,7 +25,7 @@ class SumasSaldosBl @Autowired constructor(
 ) {
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
-fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDto {
+    fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDto {
         logger.info("Obteniendo sumas y saldos")
         val company = companyDao.getCompanyById(companyId)
         val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, sumasSaldosRequestDto.currencies)
@@ -52,7 +53,7 @@ fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto)
                             logger.info("Obteniendo transacciones de la cuenta ${accountEntity.accountId}")
                             val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
                             val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId, areaSubsidiaryId, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, sumasSaldosRequestDto.currencies).map{
-                                TransactionLedgerPdf(it.voucherCode, convertDateToStringWithTime(it.registrationDate), it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
+                                TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                             }
                             logger.info("Transactions: $transactions")
                             val totalDebit = transactions.sumOf { it.debitAmount }
@@ -85,10 +86,16 @@ fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto)
         return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
     }
 
-
-    fun convertDateToStringWithTime(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    fun convertDateToString(date: Date): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
         return formatter.format(date)
+    }
+
+    fun getNumber(number: BigDecimal): String{
+        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return format.format(number)
     }
 
 }
