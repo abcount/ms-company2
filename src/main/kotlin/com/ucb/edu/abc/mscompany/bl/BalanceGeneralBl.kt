@@ -73,7 +73,7 @@
                 subsidiaryBalanceDtoList.add(SubsidiaryBalance(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
             }
 
-            return BalanceGeneralResponseDto(companyEntity.companyName, balanceGeneralRequestDto.to, exchangeMoney.moneyName, subsidiaryBalanceDtoList)
+            return BalanceGeneralResponseDto(companyEntity.companyName, balanceGeneralRequestDto.to, exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
         }
 
         fun getAccountBalance(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountBalance>{

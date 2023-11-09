@@ -15,6 +15,7 @@ data class BalanceGeneralResponseDto(
         var companyName: String,
         var dateTo: Date,
         var currency: String,
+        var responsible: List<String>,
         var subsidiaries: List<SubsidiaryBalance>
 )
 {

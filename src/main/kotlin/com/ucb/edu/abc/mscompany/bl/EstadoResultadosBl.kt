@@ -59,7 +59,7 @@ class EstadoResultadosBl @Autowired constructor(
             subsidiaryStateDtoList.add(SubsidiaryState(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
         }
 
-        return EstadoResultadosResponseDto(companyEntity.companyName, estadoResultadosRequestDto.to, exchangeMoney.moneyName, subsidiaryStateDtoList)
+        return EstadoResultadosResponseDto(companyEntity.companyName, estadoResultadosRequestDto.to, exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
     }
 
     fun getAccountBalance(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountState>{
