@@ -111,5 +111,95 @@ class EstadoResultadosBl @Autowired constructor(
     }
 
 
+    fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDtoPDF {
+        logger.info("Obteniendo el estado de reultados de la empresa: $companyId")
+        val companyEntity = companyDao.getCompanyById(companyId)
+
+        val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, estadoResultadosRequestDto.currencies)
+
+        val subsidiaryStateDtoList= mutableListOf<SubsidiaryStatePDF>()
+        for (subsidiaryId in estadoResultadosRequestDto.subsidiaries) {
+            val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
+            var areaStateDtoList = mutableListOf<AreaStatePDF>()
+            for (areaId in estadoResultadosRequestDto.areas) {
+
+                val areaEntity = areaDao.getAreaById(areaId)
+                val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
+
+                var listAccountState= getAccountBalancePDF(companyId,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+
+
+                val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
+                val gastosTotal = listAccountState.filter { it.accountCode.startsWith("5") }.sumOf { it.amount }
+
+                val totalResult = ingresosTotal - gastosTotal
+
+
+                areaStateDtoList.add(AreaStatePDF(
+                        subsidiaryId,
+                        areaEntity.areaId,
+                        areaEntity.areaName,
+                        listAccountState,
+                        totalResult
+
+                ))
+            }
+
+            subsidiaryStateDtoList.add(SubsidiaryStatePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
+        }
+
+        return EstadoResultadosResponseDtoPDF(companyEntity.companyName, estadoResultadosRequestDto.to.date.toString(), exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
+    }
+
+
+    fun getAccountBalancePDF(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountStatePDF>{
+        var accountStateDtoList = mutableListOf<AccountStatePDF>()
+        var ingresos = accountDao.getAccountIdBYCode("4", companyId)
+        var gastos = accountDao.getAccountIdBYCode("5", companyId)
+
+
+        val ingresosAccountTree = buildAccountTreePDF(ingresos, companyId,to, areaSubsidiaryId, exchangeRateId)
+        val gastosAccountTree = buildAccountTreePDF(gastos, companyId,to, areaSubsidiaryId, exchangeRateId)
+
+        accountStateDtoList.add(ingresosAccountTree)
+        accountStateDtoList.add(gastosAccountTree)
+
+        return accountStateDtoList
+
+
+    }
+
+    private fun buildAccountTreePDF(rootAccountId: Int, companyId: Int,to: Date, areaSubsidiaryId: Int?, exchangeId: String): AccountStatePDF {
+        // Obtenemos todas las cuentas de la compañía
+        val allAccounts = accountDao.getAccountPlanByCompanyId(companyId).associateBy { it.accountId }
+
+        // Función recursiva para construir el árbol y sumar montos
+        fun buildTreePDF(accountId: Int): AccountStatePDF {
+            val currentAccount = allAccounts[accountId] ?: throw IllegalStateException("Account not found for ID: $accountId")
+            val children = allAccounts.values
+                    .filter { it.accountAccountId == accountId }
+                    .map { buildTreePDF(it.accountId) }
+
+            val amount = if (children.isEmpty()) {
+                //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                /***/
+                if (currentAccount.codeAccount.startsWith("1") || currentAccount.codeAccount.startsWith("5")){
+                    accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+
+                } else {
+                    accountDao.getBalancePassive(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                }
+                /***/
+            } else {
+                children.fold(BigDecimal.ZERO) { total, child -> total.add(child.amount) }
+            }
+
+            return AccountStatePDF(currentAccount.codeAccount, currentAccount.nameAccount, amount, children)
+        }
+
+        return buildTreePDF(rootAccountId)
+    }
+
+
 
 }

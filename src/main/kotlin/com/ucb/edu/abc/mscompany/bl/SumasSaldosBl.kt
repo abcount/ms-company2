@@ -85,6 +85,7 @@ fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto)
         return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
     }
 
+
     fun convertDateToStringWithTime(date: Date): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         return formatter.format(date)

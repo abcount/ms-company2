@@ -380,6 +380,8 @@ date timestamp NOT NULL,
 user_id int NOT NULL,
 company_id int NOT NULL,
 uuid varchar(255) NOT NULL,
+type_document varchar(60) NOT NULL,
+type_report varchar(50) NOT NULL,
 CONSTRAINT report_pk PRIMARY KEY (report_id)
 );
 
