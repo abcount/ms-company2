@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Service
@@ -108,6 +110,74 @@ class EstadoResultadosBl @Autowired constructor(
         }
 
         return buildTree(rootAccountId)
+    }
+
+
+    fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDtoPDF {
+        logger.info("Obteniendo el estado de reultados de la empresa: $companyId")
+        val companyEntity = companyDao.getCompanyById(companyId)
+
+        val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, estadoResultadosRequestDto.currencies)
+
+        val subsidiaryStateDtoList= mutableListOf<SubsidiaryStatePDF>()
+        for (subsidiaryId in estadoResultadosRequestDto.subsidiaries) {
+            val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
+            var areaStateDtoList = mutableListOf<AreaStatePDF>()
+            for (areaId in estadoResultadosRequestDto.areas) {
+
+                val areaEntity = areaDao.getAreaById(areaId)
+                val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
+
+                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+
+
+                val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
+                val gastosTotal = listAccountState.filter { it.accountCode.startsWith("5") }.sumOf { it.amount }
+
+                val totalResult = ingresosTotal - gastosTotal
+
+
+                val listAccount = listAccountState.map{
+                    convertAccountStateToPdf(it)
+                }
+
+                areaStateDtoList.add(AreaStatePDF(
+                        subsidiaryId,
+                        areaEntity.areaId,
+                        areaEntity.areaName,
+                        listAccount,
+                        getNumber(totalResult)
+
+                ))
+            }
+
+            subsidiaryStateDtoList.add(SubsidiaryStatePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
+        }
+
+        return EstadoResultadosResponseDtoPDF(companyEntity.companyName, convertDateToString(estadoResultadosRequestDto.to), exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
+    }
+
+    fun convertAccountStateToPdf(account: AccountState): AccountStatePDF{
+        return AccountStatePDF(
+                account.accountCode,
+                account.accountName,
+                getNumber(account.amount),
+                account.children.map{
+                    convertAccountStateToPdf(it)
+                }
+        )
+    }
+
+    fun convertDateToString(date: Date): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        return formatter.format(date)
+    }
+
+    fun getNumber(number: BigDecimal): String{
+        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return format.format(number)
     }
 
 

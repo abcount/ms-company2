@@ -2,7 +2,10 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeRateDao
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
+import com.ucb.edu.abc.mscompany.dto.response.CurrencyDateDto
 import com.ucb.edu.abc.mscompany.dto.response.CurrencyVoucher
+import com.ucb.edu.abc.mscompany.dto.response.ExchangeDateDto
+import com.ucb.edu.abc.mscompany.dto.response.ListExchangeRateDateDto
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
@@ -13,7 +16,8 @@ import java.util.Date
 
 @Service
 class ExchangeRateBl @Autowired constructor(
-    private val exchangeRateDao: ExchangeRateDao
+    private val exchangeRateDao: ExchangeRateDao,
+        private val exchangeMoneyBl: ExchangeMoneyBl
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -82,4 +86,48 @@ class ExchangeRateBl @Autowired constructor(
             throw PostgresException("Error al obtener tipos de cambio por id", e.message.toString())
         }
     }
+
+    fun getListDates(companyId: Int): List<String>{
+        try{
+            logger.info("Obteniendo registro de fechas existentes")
+            return exchangeRateDao.getListDates(companyId)
+        } catch (e: Exception){
+            logger.error("Error al obtener registro de fechas existentes", e)
+            throw PostgresException("Error al obtener registro de fechas existentes", e.message.toString())
+        }
+    }
+
+    fun getExchangeRateByDate(companyId: Int, date:String): List<ExchangeRateEntity>{
+        try{
+            logger.info("Obteniendo tipos de cambio por fecha")
+            return exchangeRateDao.getExchangeRateByDate(companyId, date)
+        } catch (e: Exception){
+            logger.error("Error al obtener tipos de cambio por fecha", e)
+            throw PostgresException("Error al obtener tipos de cambio por fecha", e.message.toString())
+        }
+
+    }
+
+    fun getExchangeRateByDate(companyId: Int): List<ExchangeDateDto>{
+        val listDate = getListDates(companyId)
+        val listCurrencies: List<ExchangeDateDto> = listDate.map {
+            val listExchangeRate = getExchangeRateByDate(companyId, it).map{ currency ->
+                CurrencyDateDto(currency.exchangeRateId, currency.currency,currency.moneyName, currency.abbreviationName)
+            }
+            ExchangeDateDto(it, listExchangeRate)
+        }
+        return listCurrencies
+    }
+
+
+    fun getListExchangeRateGroupByDate(companyId: Int): ListExchangeRateDateDto{
+        val exchangeMoney = exchangeMoneyBl.getAllCurrenciesByCompanyId(companyId)
+        val list = getExchangeRateByDate(companyId)
+        return ListExchangeRateDateDto(exchangeMoney, list)
+
+    }
+
+
+
+
 }

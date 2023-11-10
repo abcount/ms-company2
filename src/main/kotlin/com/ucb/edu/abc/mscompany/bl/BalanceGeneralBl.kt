@@ -9,6 +9,8 @@
     import org.springframework.beans.factory.annotation.Autowired
     import org.springframework.stereotype.Service
     import java.math.BigDecimal
+    import java.text.NumberFormat
+    import java.text.SimpleDateFormat
     import java.util.*
 
     @Service
@@ -133,6 +135,82 @@
             }
 
             return buildTree(rootAccountId)
+        }
+
+
+        fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDtoPDF {
+            logger.info("Obteniendo balance general de la empresa: $companyId")
+            val companyEntity = companyDao.getCompanyById(companyId)
+
+            val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, balanceGeneralRequestDto.currencies)
+
+            val subsidiaryBalanceDtoList= mutableListOf<SubsidiaryBalancePDF>()
+            for (subsidiaryId in balanceGeneralRequestDto.subsidiaries) {
+                val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
+                var areaBalanceDtoList = mutableListOf<AreaBalancePDF>()
+                for (areaId in balanceGeneralRequestDto.areas) {
+
+                    val areaEntity = areaDao.getAreaById(areaId)
+                    val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
+
+                    var listAccountBalanced= getAccountBalance(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+
+
+
+                    //BALANCE GENERAL
+                    val activeTotal = listAccountBalanced.filter { it.accountCode.startsWith("1") }.sumOf { it.amount }
+                    val passiveTotal = listAccountBalanced.filter { it.accountCode.startsWith("2") }.sumOf { it.amount }
+                    val patrimonyTotal = listAccountBalanced.filter { it.accountCode.startsWith("3") }.sumOf { it.amount }
+                    val ingresosTotal = listAccountBalanced.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
+                    val gastosTotal = listAccountBalanced.filter { it.accountCode.startsWith("5") }.sumOf { it.amount }
+
+                    val totalResult = ingresosTotal - gastosTotal
+
+                    val totalPassiveCapital = passiveTotal + patrimonyTotal
+
+                    listAccountBalanced = listAccountBalanced.filterNot {
+                        it.accountCode.startsWith("4") || it.accountCode.startsWith("5")
+                    }.toMutableList()
+
+                    val listAccount = listAccountBalanced.map{
+                        convertToAccountBalancePDF(it)
+                    }
+
+                    areaBalanceDtoList.add(AreaBalancePDF(
+                            subsidiaryId,
+                            areaEntity.areaId,
+                            areaEntity.areaName,
+                            listAccount,
+                            getNumber(activeTotal),
+                            getNumber(totalPassiveCapital),
+                            getNumber(totalResult),
+                            getNumber(activeTotal),
+                            getNumber(totalResult+totalPassiveCapital)
+                    ))
+                }
+
+                subsidiaryBalanceDtoList.add(SubsidiaryBalancePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
+            }
+
+            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+        }
+
+
+
+        fun convertToAccountBalancePDF(accountBalance: AccountBalance): AccountBalancePDF {
+            return AccountBalancePDF(accountBalance.accountCode, accountBalance.accountName, getNumber(accountBalance.amount), accountBalance.children.map { convertToAccountBalancePDF(it) })
+        }
+
+        fun convertDateToString(date: Date): String {
+            val formatter = SimpleDateFormat("yyyy-MM-dd")
+            return formatter.format(date)
+        }
+
+        fun getNumber(number: BigDecimal): String{
+            val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+            format.minimumFractionDigits = 2
+            format.maximumFractionDigits = 2
+            return format.format(number)
         }
 
 

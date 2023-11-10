@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.ExchangeRateBl
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
+import com.ucb.edu.abc.mscompany.dto.response.ListExchangeRateDateDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import org.slf4j.LoggerFactory
@@ -50,6 +51,16 @@ class ExchangeRateApi @Autowired constructor(
         return ResponseEntity.ok(
             ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
     }
+
+    @GetMapping("/list/{companyId}")
+    fun getAllExchangeRateGroupByDate(@PathVariable companyId: Int): ResponseEntity<ResponseDto<ListExchangeRateDateDto>>{
+        logger.info("Obteniendo tipos de cambio")
+        val listExchange = exchangeRateBl.getListExchangeRateGroupByDate(companyId)
+        return ResponseEntity.ok(
+            ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
+    }
+
+
 
 
 

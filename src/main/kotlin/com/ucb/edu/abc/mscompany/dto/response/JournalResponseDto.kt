@@ -103,9 +103,21 @@ data class TransactionDtoPDF(
         val transactionNumber: Long,
         val transactionType: String?,
         val registrationDate: String,
-        val exchangeRate: BigDecimal,
+        val exchangeRate: String,
         val glosaGeneral: String,
-        val accounts: List<AccountDto>,
-        val totalDebitAmount: BigDecimal,
-        val totalCreditAmount: BigDecimal,
+        val accounts: List<AccountDtoPDF>,
+        val totalDebitAmount: String,
+        val totalCreditAmount: String,
+)
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AccountDtoPDF(
+        val codeAccount: String,
+        val nameAccount: String,
+        val glosaDetail: String,
+        val debitAmount: String,
+        val creditAmount: String
 )

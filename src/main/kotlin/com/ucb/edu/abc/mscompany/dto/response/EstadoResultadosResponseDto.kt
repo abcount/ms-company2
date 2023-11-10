@@ -49,6 +49,49 @@ data class AccountState(
 {
 }
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class EstadoResultadosResponseDtoPDF(
+        var companyName: String,
+        var dateTo: String,
+        var currency: String,
+        var responsible: List<String>,
+        var subsidiaries: List<SubsidiaryStatePDF>
+)
+{
+}
+
+data class SubsidiaryStatePDF(
+        var subsidiaryId: Int,
+        var subsidiaryName: String,
+        var areas: List<AreaStatePDF>
+){
+
+}
+
+data class AreaStatePDF(
+        var subsidiaryId: Int,
+        var areaId: Int,
+        var area: String,
+        var accounts: List<AccountStatePDF>,
+        var amountTotal: String,
+)
+{
+}
+
+data class AccountStatePDF(
+        var accountCode: String,
+        var accountName: String,
+        var amount: String,
+        var children: List<AccountStatePDF>, //recursivoxd
+
+)
+{
+}
+
+
 
 
 

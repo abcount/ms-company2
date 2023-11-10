@@ -6,6 +6,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -69,7 +71,6 @@ class LedgerBl @Autowired constructor(
                     val accountEntity = accountDao.getAccountById(account)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-
                     val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies)
 
 
@@ -109,7 +110,7 @@ class LedgerBl @Autowired constructor(
 
 
                     val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies).map{
-                        TransactionLedgerPdf(it.voucherCode, convertDateToStringWithTime(it.registrationDate), it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
+                        TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                     }
 
 
@@ -118,8 +119,12 @@ class LedgerBl @Autowired constructor(
                     val totalCredit = transactions.sumOf { it.creditAmount }
                     val totalBalances = totalDebit.subtract(totalCredit)
 
+                    val transactionPdf = transactions.map {
+                        TransactionLedgerPdf(it.voucherCode, convertDateToString(it.registrationDate), it.transactionType, it.glosaDetail, it.documentNumber, getNumber(it.debitAmount), getNumber(it.creditAmount), getNumber(it.balances))
+                    }
+
                     if(transactions.isNotEmpty()){
-                        accountLedger.add(AccountLedgerPdf(accountEntity.codeAccount, accountEntity.nameAccount, transactions, totalDebit, totalCredit, totalBalances))
+                        accountLedger.add(AccountLedgerPdf(accountEntity.codeAccount, accountEntity.nameAccount, transactionPdf, getNumber(totalDebit), getNumber(totalCredit), getNumber(totalCredit)))
                     }
 
                 }
@@ -143,6 +148,13 @@ class LedgerBl @Autowired constructor(
     fun convertDateToStringWithTime(date: Date): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         return formatter.format(date)
+    }
+
+    fun getNumber(number: BigDecimal): String{
+        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return format.format(number)
     }
 
 

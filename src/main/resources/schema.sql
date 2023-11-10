@@ -183,9 +183,9 @@ CONSTRAINT auxiliary_account_pk PRIMARY KEY (auxiliary_account_id)
 
 -- Table: closing_sheet
 CREATE TABLE IF NOT EXISTS closing_sheet (
-balance_sheet_id serial NOT NULL,
+closing_sheet_id serial NOT NULL,
 company_id int NOT NULL,
-user_user_id int NOT NULL,
+user_id int NOT NULL,
 description Varchar(30) NOT NULL,
 date timestamp NOT NULL,
 CONSTRAINT closing_sheet_pk PRIMARY KEY (balance_sheet_id)
@@ -380,6 +380,8 @@ date timestamp NOT NULL,
 user_id int NOT NULL,
 company_id int NOT NULL,
 uuid varchar(255) NOT NULL,
+type_document varchar(60) NOT NULL,
+type_report varchar(50) NOT NULL,
 CONSTRAINT report_pk PRIMARY KEY (report_id)
 );
 

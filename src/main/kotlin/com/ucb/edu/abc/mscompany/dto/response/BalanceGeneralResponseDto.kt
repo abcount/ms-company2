@@ -55,5 +55,53 @@ data class AccountBalance(
 }
 
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class BalanceGeneralResponseDtoPDF(
+        var companyName: String,
+        var dateTo: String,
+        var currency: String,
+        var responsible: List<String>,
+        var subsidiaries: List<SubsidiaryBalancePDF>
+)
+{
+}
+
+data class SubsidiaryBalancePDF(
+        var subsidiaryId: Int,
+        var subsidiaryName: String,
+        var areas: List<AreaBalancePDF>
+){
+
+}
+
+data class AreaBalancePDF(
+        var subsidiaryId: Int,
+        var areaId: Int,
+        var area: String,
+        var accounts: List<AccountBalancePDF>,
+        var totalActive: String,
+        var totalPassiveCapital: String,
+        var totalResult:String,
+        var totalActiveFinal: String,
+        var totalResultFinal: String
+
+)
+{
+}
+
+data class AccountBalancePDF(
+        var accountCode: String,
+        var accountName: String,
+        var amount: String,
+        var children: List<AccountBalancePDF>, //recursivoxd
+
+)
+{
+}
+
+
 
 

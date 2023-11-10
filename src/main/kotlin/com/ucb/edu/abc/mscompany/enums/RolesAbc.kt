@@ -20,8 +20,14 @@ enum class RolesAbc(
     CAN_EDIT_PERMISSIONS("Modificar permisos de usuarios"),
     CAN_ACCESS_CONFIGURATION("Acceder a la configuración de la empresa"),
 
-    CAN_CLOSE_ANY("Puede cerrar un documento contablemente"),
-    CAN_REOPEN_ANY("Puede reabri un documento contable"),
+    //CAN_CLOSE_ANY("Puede cerrar un documento contablemente"),
+    //CAN_REOPEN_ANY("Puede reabri un documento contable"),
+    CAN_ACCESS_EGRESO("Acceso a comprobantes de tipo egreso"),
+    CAN_ACCESS_INGRESO("Acceso a comprobantes de tipo ingreso"),
+    CAN_ACCESS_TRASPASO("Acceso a comprobantes de tipo traspaso"),
+    CAN_ACCESS_CIERRE("Acceso a comprobantes de tipo cierre"),
+    CAN_ACCESS_APERTURA("Acceso a comprobantes de tipo apertura"),
+
 
 
 

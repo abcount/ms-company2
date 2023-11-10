@@ -55,6 +55,16 @@
 			.bold {
 				font-weight: 600 !important;
 			}
+			.responsible {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 4%;
+				text-align: center;
+			}
+			.responsible h2 {
+				margin: 60px 20px 10px 20px;
+				border-top: #cdcdcd 1px solid !important;
+			}
 		</style>
 	</head>
 	<body class="pdf-turtle">
@@ -102,5 +112,10 @@
 					</table>
 			{{ end }}
 		{{ end }}
+		<div class="responsible">
+			{{ range .responsible }}
+			<h2>{{ . }}</h2>
+			{{ end }}
+		</div>
 	</body>
 </html>

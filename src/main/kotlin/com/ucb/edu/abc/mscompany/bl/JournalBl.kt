@@ -9,10 +9,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 
 @Service
 class JournalBl @Autowired constructor(
@@ -22,7 +23,8 @@ class JournalBl @Autowired constructor(
         private val companyDao: CompanyDao,
         private val areaDao: AreaDao,
         private val exchangeRateDao: ExchangeRateDao,
-        private val exchangeMoneyBl: ExchangeMoneyBl
+        private val exchangeMoneyBl: ExchangeMoneyBl,
+        private val exchangeRateBl: ExchangeRateBl
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
@@ -126,22 +128,34 @@ class JournalBl @Autowired constructor(
         val transactionDtoList = mutableListOf<TransactionDtoPDF>()
         for (i in transactions) {
             val accountDto = transformToAccountDtoList(i.transactionId, exchangeMoneyIso)
+            val exchangeRateEntity = exchangeRateBl.getExchangeRate(i.exchangeRateId)
             val totalDebit = accountDto.sumOf { it.debitAmount }
             val totalCredit = accountDto.sumOf { it.creditAmount }
+            val accountDtoPDF = accountDto.map {
+                AccountDtoPDF(
+                    it.codeAccount,
+                    it.nameAccount,
+                    it.glosaDetail,
+                    getNumber(it.debitAmount),
+                    getNumber(it.creditAmount)
+                )
+            }
             transactionDtoList.add(TransactionDtoPDF(
                 i.transactionNumber,
                 transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
                 convertLocalDateTimeToString(i.date),
-                BigDecimal(1),  // Exchange rate value
+                getNumber(BigDecimal(exchangeRateEntity.currency)),  // Exchange rate value
                 i.glosaGeneral,
-                accountDto,
-                totalDebit,
-                totalCredit
+                accountDtoPDF,
+                getNumber(totalDebit),
+                getNumber(totalCredit)
             ))
         }
         return transactionDtoList
 
     }
+
+
 
     fun convertDateToString(date: Date): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
@@ -151,6 +165,13 @@ class JournalBl @Autowired constructor(
     fun convertLocalDateTimeToString(localDateTime: LocalDateTime): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         return localDateTime.format(formatter)
+    }
+
+    fun getNumber(number: BigDecimal): String{
+        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return format.format(number)
     }
 
 
