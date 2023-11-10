@@ -26,4 +26,6 @@ class FileBl @Autowired constructor(
         logger.info("Se genero el archivo $uuid")
         return url
     }
+
+
 }

@@ -14,6 +14,7 @@ import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.InvitationState
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import com.ucb.edu.abc.mscompany.exception.PostgresException
+import kotlinx.coroutines.runBlocking
 import org.apache.ibatis.exceptions.PersistenceException
 
 import org.slf4j.Logger
@@ -26,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
+import java.util.UUID
 
 
 @Service
@@ -38,7 +39,8 @@ class CompanyBl @Autowired constructor(
     private val permissionBl: PermissionBl,
     private val groupBl: GroupBl,
     private val roleBl: RoleBl,
-    private val imageService: ImageService
+    private val imageService: ImageService,
+    private val minioBl: MinioBl
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -169,14 +171,24 @@ class CompanyBl @Autowired constructor(
     }
 
 // font > https://stackoverflow.com/questions/69088235/how-to-insert-multipartfile-photo-into-db-as-base64-string-in-java-spring-boot-a
-    fun saveThisFileWithId(companyId: Int, image: MultipartFile, category: String) {
+ fun saveThisFileWithId(companyId: Int, image: MultipartFile, category: String) {
         //var bites = Base64.encodeBase64(image.bytes)
         val fileEntity = FileEntity(
             imageContent = image.bytes,
             ownerId = companyId,
             categoryOwner = category,
+            uuidFile = UUID.randomUUID().toString() + "-" + companyId + "-IC",
         )
+
         fileDao.createImage(fileEntity)
+        // create file in Minio
+        runBlocking {
+            createFileInMinio(fileEntity, image) // This is valid within runBlocking
+        }
+
+    }
+    suspend fun createFileInMinio(fileEntity: FileEntity, image: MultipartFile){
+        minioBl.uploadFile(image.bytes, name = fileEntity.uuidFile, contentType = image.contentType.toString() )
     }
 
 

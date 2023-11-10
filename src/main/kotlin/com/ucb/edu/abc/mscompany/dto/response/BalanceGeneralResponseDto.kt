@@ -61,6 +61,7 @@ data class AccountBalance(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class BalanceGeneralResponseDtoPDF(
         var companyName: String,
+        var logo :String? = "",
         var dateTo: String,
         var currency: String,
         var responsible: List<String>,

@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ucb.edu.abc.mscompany.bl.CompanyBl
+import com.ucb.edu.abc.mscompany.bl.MinioBl
 import com.ucb.edu.abc.mscompany.bl.RoleBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.request.NewInvitationDto
@@ -24,12 +25,13 @@ import javax.annotation.Resource
 class TestApi @Autowired constructor(
     private val companyBl: CompanyBl,
     private val userBl: UserBl,
-    private val rolesBl: RoleBl
+    private val rolesBl: RoleBl,
+    private val minioBl: MinioBl
 ) {
     val objectMapper = jacksonObjectMapper()
 
 
-
+    // ===================== DONE =========================
 
     @RequestMapping(value = ["/company/{id}"] , method = [RequestMethod.GET])
     fun getUserByCompanyAndToken(@PathVariable id:Int, @RequestHeader headers: Map<String, String>): ResponseDto<*> {
@@ -70,5 +72,10 @@ class TestApi @Autowired constructor(
     ): Any{
         return companyBl.updatePermissionsByCompanyAndUserId(requestedChanges = body, companyId = companyId, "")
 
+    }
+
+    @RequestMapping(value = ["url/{uuid}"], method = [RequestMethod.GET])
+    fun getUrl(@PathVariable uuid:String):String?{
+        return minioBl.getPreSignedUrlV2(uuid)
     }
 }
