@@ -73,7 +73,7 @@ class TransactionBl @Autowired constructor(
          *
          */
 
-        if(transactionDto.transactionTypeId == 1){
+        if(transactionDto.transactionTypeId == 4){
             logger.info("Abriendo contabilidad de la empresa $companyId")
             companyDao.updateStatusCompany(companyId,true)
         }
