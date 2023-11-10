@@ -81,9 +81,62 @@ class SumasSaldosBl @Autowired constructor(
             }
             subsidiarySumas.add(SubsidiarySumas(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaSumas))
         }
-
-
         return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
+    }
+
+    fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDtoPdf {
+        logger.info("Obteniendo sumas y saldos")
+        val company = companyDao.getCompanyById(companyId)
+        val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, sumasSaldosRequestDto.currencies)
+        val subsidiarySumas = mutableListOf<SubsidiarySumasPdf>()
+        val rootAccounts = accountDao.getRootAccounts(companyId)
+        logger.info("Root accounts: $rootAccounts")
+        val movementAccounts = accountDao.getMovementAccounts(companyId)
+        logger.info("Movement accounts: $movementAccounts")
+        for (subsidiary in sumasSaldosRequestDto.subsidiaries){
+            val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiary)
+            val areaSumas = mutableListOf<AreaSumasPdf>()
+            for (area in sumasSaldosRequestDto.areas){
+                var totalSumsDebitAmount = BigDecimal.ZERO
+                var totalSumsCreditAmount = BigDecimal.ZERO
+                var totalBalancesDebitAmount = BigDecimal.ZERO
+                var totalBalancesCreditAmount = BigDecimal.ZERO
+                val areaEntity = areaDao.getAreaById(area)
+                val accountSumas = mutableListOf<AccountSumasPdf>()
+                for (accountCode in rootAccounts){
+                    for (movementAccount in movementAccounts){
+                        if (movementAccount.get(0).toString() == accountCode.toString()){
+                            logger.info("Obteniendo id de la cuenta $movementAccount")
+                            val accountId = accountDao.getAccountIdBYCode(movementAccount, companyId)
+                            val accountEntity = accountDao.getAccountById(accountId)
+                            logger.info("Obteniendo transacciones de la cuenta ${accountEntity.accountId}")
+                            val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
+                            val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId, areaSubsidiaryId, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, sumasSaldosRequestDto.currencies).map{
+                                TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
+                            }
+                            logger.info("Transactions: $transactions")
+                            val totalDebit = transactions.sumOf { it.debitAmount }
+                            logger.info("Total debit: $totalDebit")
+                            val totalCredit = transactions.sumOf { it.creditAmount }
+                            val totalBalances = totalDebit.subtract(totalCredit)
+                            if (totalBalances >= BigDecimal.ZERO){
+                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount, getNumber(totalDebit), getNumber(totalDebit), getNumber(totalDebit), getNumber(BigDecimal.ZERO)))
+                                totalBalancesDebitAmount += totalBalances.abs()
+                            }
+                            else{
+                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount, getNumber(totalDebit), getNumber(totalDebit), getNumber(BigDecimal.ZERO), getNumber(totalBalances.abs())))
+                                totalBalancesCreditAmount += totalBalances.abs()
+                            }
+                            totalSumsDebitAmount += totalDebit
+                            totalSumsCreditAmount += totalCredit
+                        }
+                    }
+                }
+                areaSumas.add(AreaSumasPdf(areaEntity.areaId, subsidiaryEntity.subsidiaryId, areaEntity.areaName, accountSumas, getNumber(totalSumsDebitAmount), getNumber(totalSumsCreditAmount), getNumber(totalBalancesDebitAmount), getNumber(totalBalancesCreditAmount)))
+            }
+            subsidiarySumas.add(SubsidiarySumasPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaSumas))
+        }
+        return SumasSaldosResponseDtoPdf(company.companyName, convertDateToString(sumasSaldosRequestDto.from), convertDateToString(sumasSaldosRequestDto.to), currencyName.moneyName, subsidiarySumas)
     }
 
     fun convertDateToString(date: Date): String {

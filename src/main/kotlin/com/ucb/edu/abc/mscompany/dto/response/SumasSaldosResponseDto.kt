@@ -55,8 +55,8 @@ data class AccountSumas(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SumasSaldosResponseDtoPdf (
         var companyName: String,
-        var dateFrom: Date,
-        var dateTo: Date,
+        var dateFrom: String,
+        var dateTo: String,
         var currency: String,
         var subsidiaries: List<SubsidiarySumasPdf>
 ){
