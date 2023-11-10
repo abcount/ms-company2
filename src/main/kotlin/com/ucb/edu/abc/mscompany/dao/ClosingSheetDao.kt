@@ -13,7 +13,7 @@ interface ClosingSheetDao {
     @Insert(
         """
             INSERT INTO closing_sheet (company_id,user_id,description, date) 
-            VALUES ( #{companyId},#{userId}, #{description}, #{date})
+            VALUES ( #{companyId},#{userId}, #{description}, now())
         """
     )
     fun createClosing(closing: ClosingSheetEntity)

@@ -10,15 +10,15 @@ import java.time.LocalDateTime
 @NoArgsConstructor
 class ClosingSheetEntity
 (
+
    var closingSheetId: Int,
    var companyId: Int,
    var userId: Int,
    var description: String,
-   var status: Boolean,
    var date: LocalDateTime,
 
 ) {
-    constructor(): this(0, 0, 0, "", true ,LocalDateTime.now())
+    constructor(): this(0, 0, 0, "",LocalDateTime.now())
 
 
 

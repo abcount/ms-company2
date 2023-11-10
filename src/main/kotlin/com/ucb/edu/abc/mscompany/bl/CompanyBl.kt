@@ -84,6 +84,7 @@ class CompanyBl @Autowired constructor(
         companyEntity.numberRegistration = companyDto.numberRegistration
         companyEntity.numberEmployee = companyDto.numberEmployee
         companyEntity.rubro = companyDto.rubro
+        companyEntity.status= true
         companyEntity.openingDate = LocalDate.parse(companyDto.openingDate, DateTimeFormatter.ofPattern(formatDate))
         return companyEntity
     }

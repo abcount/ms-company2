@@ -22,13 +22,17 @@ data class CompanyEntity (
         var ciRepresentative: String,
         var numberRegistration: String,
         var numberEmployee: String,
-        var rubro: String
+        var rubro: String,
+        var status: Boolean
 
 ){
-    constructor(): this(0,"","","","",null, LocalDate.now(),"","","","","","","")
+    constructor(): this(0,"","","","",null, LocalDate.now(),"","","","","","","", true)
 
     override fun toString(): String {
-        return "CompanyEntity(companyId=$companyId, companyName='$companyName', diccCategory='$diccCategory', nit='$nit', address='$address', logoUuid=${logoUuid?.contentToString()}, openingDate=$openingDate, emailRepresentative='$emailRepresentative', numberRepresentative='$numberRepresentative', legalRepresentative='$legalRepresentative', ciRepresentative='$ciRepresentative', numberRegistration='$numberRegistration', numberEmployee='$numberEmployee', rubro='$rubro')"
+        return "CompanyEntity(companyId=$companyId, companyName='$companyName', diccCategory='$diccCategory', nit='$nit', " +
+                "address='$address', logoUuid=${logoUuid?.contentToString()}, openingDate=$openingDate, emailRepresentative='$emailRepresentative', " +
+                "numberRepresentative='$numberRepresentative', legalRepresentative='$legalRepresentative', ciRepresentative='$ciRepresentative'," +
+                " numberRegistration='$numberRegistration', numberEmployee='$numberEmployee', rubro='$rubro', status=$status)"
     }
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
