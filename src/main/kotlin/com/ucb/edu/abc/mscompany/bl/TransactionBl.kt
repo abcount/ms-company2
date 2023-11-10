@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.TransactionAccountDto
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.*
+import com.ucb.edu.abc.mscompany.entity.ClosingSheetEntity
 import com.ucb.edu.abc.mscompany.entity.DebitCreditEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionAccountEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
@@ -23,6 +24,7 @@ class TransactionBl @Autowired constructor(
         private val transactionAccountDao: TransactionAccountDao,
         private val debitCreditDao: DebitCreditDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
+        private val closingSheetDao: ClosingSheetDao,
         private val transactionTypeBl: TransactionTypeBl,
         private val userBl: UserBl,
         private val subsidiaryBl: SubsidiaryBl,
@@ -48,6 +50,16 @@ class TransactionBl @Autowired constructor(
         logger.info("Guardando transaccion")
         if (transactionDto.totalCredit != transactionDto.totalDebit){
             throw Exception("El total de creditos y debitos no coinciden")
+        }
+
+        /**
+         *
+         * CIERRE DE GESTION
+         *
+         **/
+        if( transactionDto.transactionTypeId == 4){
+            val closingSheetEntity = convertClosingSheetEntity(companyId,userId)
+            closingSheetDao.createClosing(closingSheetEntity)
         }
         val transactionEntity = factoryTransaction(transactionDto, companyId, userId)
         transactionDao.create(transactionEntity)
@@ -222,6 +234,18 @@ class TransactionBl @Autowired constructor(
             totalCredit += it.amountCredit
         }
         return listOf(totalDebit, totalCredit)
+    }
+
+    fun convertClosingSheetEntity(companyId: Int, userId: Int) : ClosingSheetEntity{
+        val closingSheetEntity = ClosingSheetEntity()
+        val date= LocalDateTime.now()
+        closingSheetEntity.companyId=companyId
+        closingSheetEntity.userId=userId
+        closingSheetEntity.description= "Cierre de contabilidad de la empresa $companyId en fecha $date"
+        closingSheetEntity.date=date
+        closingSheetEntity.status=true
+
+        return closingSheetEntity
     }
 
 
