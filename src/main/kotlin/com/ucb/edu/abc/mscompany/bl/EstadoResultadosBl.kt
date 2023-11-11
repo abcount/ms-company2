@@ -21,9 +21,10 @@ class EstadoResultadosBl @Autowired constructor(
         private val accountDao: AccountDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
+        private val companyBl: CompanyBl
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     fun getEstadoResultados(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDto {
         logger.info("Obteniendo el estado de reultados de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
@@ -113,10 +114,10 @@ class EstadoResultadosBl @Autowired constructor(
     }
 
 
-    fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDtoPDF {
+    suspend fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDtoPDF {
         logger.info("Obteniendo el estado de reultados de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
-
+        val url = companyBl.getUrlImageByCompanyId(companyId)
         val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, estadoResultadosRequestDto.currencies)
 
         val subsidiaryStateDtoList= mutableListOf<SubsidiaryStatePDF>()
@@ -154,7 +155,7 @@ class EstadoResultadosBl @Autowired constructor(
             subsidiaryStateDtoList.add(SubsidiaryStatePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
         }
 
-        return EstadoResultadosResponseDtoPDF(companyEntity.companyName, convertDateToString(estadoResultadosRequestDto.to), exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
+        return EstadoResultadosResponseDtoPDF(companyEntity.companyName, url,convertDateToString(estadoResultadosRequestDto.to), exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
     }
 
     fun convertAccountStateToPdf(account: AccountState): AccountStatePDF{

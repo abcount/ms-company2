@@ -23,16 +23,17 @@ data class CompanyEntity (
         var numberRegistration: String,
         var numberEmployee: String,
         var rubro: String,
-        var status: Boolean
+        var status: Boolean,
+        var uuid: String
 
 ){
-    constructor(): this(0,"","","","",null, LocalDate.now(),"","","","","","","", true)
+    constructor(): this(0,"","","","",null, LocalDate.now(),"","","","","","","", true,"")
 
     override fun toString(): String {
         return "CompanyEntity(companyId=$companyId, companyName='$companyName', diccCategory='$diccCategory', nit='$nit', " +
                 "address='$address', logoUuid=${logoUuid?.contentToString()}, openingDate=$openingDate, emailRepresentative='$emailRepresentative', " +
                 "numberRepresentative='$numberRepresentative', legalRepresentative='$legalRepresentative', ciRepresentative='$ciRepresentative'," +
-                " numberRegistration='$numberRegistration', numberEmployee='$numberEmployee', rubro='$rubro', status=$status)"
+                " numberRegistration='$numberRegistration', numberEmployee='$numberEmployee', rubro='$rubro', status=$status, uuid='$uuid')"
     }
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

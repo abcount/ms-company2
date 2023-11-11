@@ -22,9 +22,10 @@
             private val exchangeMoneyBl: ExchangeMoneyBl,
             private val accountDao: AccountDao,
             private val areaSubsidiaryDao: AreaSubsidiaryDao,
+            private val companyBl: CompanyBl
     ) {
 
-        private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
         fun getBalanceGeneral(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDto {
             logger.info("Obteniendo balance general de la empresa: $companyId")
             val companyEntity = companyDao.getCompanyById(companyId)
@@ -138,10 +139,10 @@
         }
 
 
-        fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDtoPDF {
+        suspend fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDtoPDF {
             logger.info("Obteniendo balance general de la empresa: $companyId")
             val companyEntity = companyDao.getCompanyById(companyId)
-
+            val url = companyBl.getUrlImageByCompanyId(companyId)
             val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, balanceGeneralRequestDto.currencies)
 
             val subsidiaryBalanceDtoList= mutableListOf<SubsidiaryBalancePDF>()
@@ -192,7 +193,7 @@
                 subsidiaryBalanceDtoList.add(SubsidiaryBalancePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
             }
 
-            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, url,convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
         }
 
 

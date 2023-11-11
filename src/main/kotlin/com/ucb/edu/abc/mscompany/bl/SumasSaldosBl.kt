@@ -21,9 +21,10 @@ class SumasSaldosBl @Autowired constructor(
     private val exchangeRateDao: ExchangeRateDao,
     private val areaDao: AreaDao,
     private val areaSubsidiaryDao: AreaSubsidiaryDao,
-    private val exchangeMoneyBl: ExchangeMoneyBl
+    private val exchangeMoneyBl: ExchangeMoneyBl,
+        private val companyBl: CompanyBl
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     fun getSumasSaldos(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDto {
         logger.info("Obteniendo sumas y saldos")
@@ -84,9 +85,10 @@ class SumasSaldosBl @Autowired constructor(
         return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
     }
 
-    fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDtoPdf {
+    suspend fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDtoPdf {
         logger.info("Obteniendo sumas y saldos")
         val company = companyDao.getCompanyById(companyId)
+        val url = companyBl.getUrlImageByCompanyId(companyId)
         val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, sumasSaldosRequestDto.currencies)
         val subsidiarySumas = mutableListOf<SubsidiarySumasPdf>()
         val rootAccounts = accountDao.getRootAccounts(companyId)
@@ -136,7 +138,7 @@ class SumasSaldosBl @Autowired constructor(
             }
             subsidiarySumas.add(SubsidiarySumasPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaSumas))
         }
-        return SumasSaldosResponseDtoPdf(company.companyName, convertDateToString(sumasSaldosRequestDto.from), convertDateToString(sumasSaldosRequestDto.to), currencyName.moneyName, subsidiarySumas)
+        return SumasSaldosResponseDtoPdf(company.companyName,url, convertDateToString(sumasSaldosRequestDto.from), convertDateToString(sumasSaldosRequestDto.to), currencyName.moneyName, subsidiarySumas)
     }
 
     fun convertDateToString(date: Date): String {

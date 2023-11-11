@@ -22,7 +22,8 @@ class LedgerBl @Autowired constructor(
         private val exchangeRateDao: ExchangeRateDao,
         private val areaDao: AreaDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
-        private val exchangeMoneyBl: ExchangeMoneyBl
+        private val exchangeMoneyBl: ExchangeMoneyBl,
+        private val companyBl: CompanyBl
 
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
@@ -90,9 +91,10 @@ class LedgerBl @Autowired constructor(
         return LedgerResponseDto(company.companyName, ledgerRequestDto.from, ledgerRequestDto.to, currencyName.moneyName, subsidiaryLedger)
     }
 
-    fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto): LedgerResponseDtoPdf {
+    suspend fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto): LedgerResponseDtoPdf {
         logger.info("Obteniendo libro mayor")
         val company = companyDao.getCompanyById(companyId)
+        val url = companyBl.getUrlImageByCompanyId(companyId)
         val currencyName = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, ledgerRequestDto.currencies)
         val subsidiaryLedger= mutableListOf<SubsidiaryLedgerPdf>()
 
@@ -112,8 +114,6 @@ class LedgerBl @Autowired constructor(
                     val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies).map{
                         TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                     }
-
-
 
                     val totalDebit = transactions.sumOf { it.debitAmount }
                     val totalCredit = transactions.sumOf { it.creditAmount }
@@ -137,7 +137,7 @@ class LedgerBl @Autowired constructor(
             subsidiaryLedger.add(SubsidiaryLedgerPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaLedger))
         }
 
-        return LedgerResponseDtoPdf(company.companyName, convertDateToString(ledgerRequestDto.from), convertDateToString(ledgerRequestDto.to), currencyName.moneyName, subsidiaryLedger)
+        return LedgerResponseDtoPdf(company.companyName, convertDateToString(ledgerRequestDto.from),url, convertDateToString(ledgerRequestDto.to), currencyName.moneyName, subsidiaryLedger)
     }
 
     fun convertDateToString(date: Date): String {

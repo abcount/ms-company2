@@ -30,7 +30,7 @@ class CompanyApi @Autowired constructor(
 ){
     val objectMapper = jacksonObjectMapper()
     @PostMapping("")
-    fun handleFileUpload(request: HttpServletRequest, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
+    suspend fun handleFileUpload(request: HttpServletRequest, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
         val multipartRequest = request as? MultipartHttpServletRequest
                 ?: return ResponseDto("No se ha recibido un archivo","",false,"")
 

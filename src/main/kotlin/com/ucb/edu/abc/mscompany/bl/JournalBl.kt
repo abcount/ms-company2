@@ -24,7 +24,9 @@ class JournalBl @Autowired constructor(
         private val areaDao: AreaDao,
         private val exchangeRateDao: ExchangeRateDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
-        private val exchangeRateBl: ExchangeRateBl
+        private val exchangeRateBl: ExchangeRateBl,
+        private val companyBl: CompanyBl,
+        private val transactionTypeBl: TransactionTypeBl,
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
@@ -99,11 +101,13 @@ class JournalBl @Autowired constructor(
         return transactionDtoList
     }
 
-    fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDtoPdf{
+    suspend fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDtoPdf{
         logger.info("Obteniendo libro diario de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
+        val url = companyBl.getUrlImageByCompanyId(companyId)
         val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, journalRequestDto.currencies)
         val subsidiaryDtoList = mutableListOf<SubsidiaryDtoPDF>()
+        var type = transactionTypeBl.getTransactionTypeNameById(journalRequestDto.transactionType)
         for (subsidiaryId in journalRequestDto.subsidiaries) {
             val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
             val areaDtoList = mutableListOf<AreaDtoPDF>()
@@ -111,17 +115,17 @@ class JournalBl @Autowired constructor(
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
                 val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
-                if(transactions.isNotEmpty()){
-                    val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
-                    areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
-                }
-
+                val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
+                areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
             }
 
             subsidiaryDtoList.add(SubsidiaryDtoPDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
         }
 
-        return JournalResponseDtoPdf(companyEntity.companyName,convertDateToString(journalRequestDto.from),convertDateToString(journalRequestDto.to),exchangeMoney.moneyName,subsidiaryDtoList)
+        return JournalResponseDtoPdf(
+                companyEntity.companyName,convertDateToString(journalRequestDto.from),
+                url,type,
+                convertDateToString(journalRequestDto.to),exchangeMoney.moneyName,subsidiaryDtoList)
     }
 
     private fun transformToTransactionDtoListPDF(transactions: List<TransactionEntity>, exchangeMoneyIso: String): List<TransactionDtoPDF> {

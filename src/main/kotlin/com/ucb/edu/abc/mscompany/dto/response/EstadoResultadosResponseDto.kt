@@ -55,6 +55,7 @@ data class AccountState(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EstadoResultadosResponseDtoPDF(
         var companyName: String,
+        var logo: String,
         var dateTo: String,
         var currency: String,
         var responsible: List<String>,
