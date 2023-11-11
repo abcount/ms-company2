@@ -89,8 +89,8 @@ class AccessPersonBl @Autowired constructor(
     private fun factoryAccessPersonEntity(userKc: KeycloakUserDto): AccessPersonEntity {
         val apE = AccessPersonEntity()
         apE.username = userKc.username;
-        apE.lastName = userKc.lastName;
-        apE.firstName = userKc.firstName;
+        //apE.lastName = userKc.lastName;
+        //apE.firstName = userKc.firstName;
         apE.email = userKc.email!!;
         val stamp = Timestamp(userKc.createdTimestamp)
         apE.dateCreation = Date(stamp.time)
@@ -99,6 +99,12 @@ class AccessPersonBl @Autowired constructor(
         if (userKc.attributes != null){
             if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
                 apE.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+            if( !userKc.attributes!!["last_name"].isNullOrEmpty()){
+                apE.lastName = userKc.attributes!!["last_name"]!![0]
+            }
+            if( !userKc.attributes!!["first_name"].isNullOrEmpty()){
+                apE.firstName = userKc.attributes!!["first_name"]!![0]
             }
         }
         if(userKc.enabled == true){
