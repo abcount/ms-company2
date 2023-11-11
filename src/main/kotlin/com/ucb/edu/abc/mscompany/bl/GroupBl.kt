@@ -9,6 +9,8 @@ import com.ucb.edu.abc.mscompany.entity.pojos.GroupRoleExtendedPojo
 import com.ucb.edu.abc.mscompany.enums.GroupCategory
 import com.ucb.edu.abc.mscompany.enums.RolesAbc
 import com.ucb.edu.abc.mscompany.exception.AbcGroupNotFoundException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -82,8 +84,11 @@ class GroupBl @Autowired constructor(
 
                 }
 
-                // create role in kc
-                roleBl.createRoleWithCompany(companyId, roleEntity, accessPerson, tokenAuth);
+                // create role in kc for company
+                GlobalScope.launch {
+                    roleBl.createRoleWithCompany(companyId, roleEntity, accessPerson, tokenAuth);
+                }
+
 
 
                 // end of creation
