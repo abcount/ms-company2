@@ -24,7 +24,8 @@ import java.time.format.DateTimeFormatter
 @NoArgsConstructor
 class AccessPersonBl @Autowired constructor(
     private val keycloakBl: KeycloakBl,
-    private val accessPersonDao: AccessPersonDao
+    private val accessPersonDao: AccessPersonDao,
+    private val imageService: ImageService
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -74,7 +75,7 @@ class AccessPersonBl @Autowired constructor(
                 id = itemAp.accessPersonId.toInt(),
                 userName = itemAp.username,
                 fullName = itemAp.firstName + " "+ itemAp.lastName,
-                imagePath =  "http://localhost:8080/users/1/images/profile"
+                imagePath = imageService.getImageForUser(itemAp.accessPersonId.toInt()) ?: "" //  "http://localhost:8080/users/1/images/profile"
             )
         }
     }

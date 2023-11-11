@@ -199,9 +199,9 @@
             }
 
 
-            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, logo = urlSigned,  convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            //return BalanceGeneralResponseDtoPDF(companyEntity.companyName, logo = urlSigned,  convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
 
-            // emer return BalanceGeneralResponseDtoPDF(companyEntity.companyName, url,convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, url,convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
 
         }
 
