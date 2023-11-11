@@ -19,18 +19,22 @@ class ConfigCompany @Autowired constructor(
         private val accountBl: AccountBl,
         private val exchangeBl: ExchangeBl,
     private val userBl: UserBl,
-    private val permissionBl: PermissionBl
+    private val permissionBl: PermissionBl,
+        private val fileBl: FileBl
 ){
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun createCompany(createCompanyDto: CreateCompanyDto, tokenAuth: String, image: MultipartFile): Int {
+    suspend fun createCompany(createCompanyDto: CreateCompanyDto, tokenAuth: String, image: MultipartFile): Int {
         //Crear la compañia y devolver los datos de compañia
         val companyEntity = companyBl.factoryCompany(createCompanyDto.enterprise, "MM-dd-yyyy", image)
+        val uuid = fileBl.uploadImage(image)
+        companyEntity.uuid = uuid
         val companyId = companyBl.create(companyEntity)
-        
+
         // update Alan: convert file into Base 64 and save into new table 
         companyBl.saveThisFileWithId(companyId, image, "COMPANY-PROFILE-IMAGE")
+
 
         //Crear Sucursales y areas
         var listOfAreasSubsidiary = mutableListOf<Int>()
@@ -78,6 +82,8 @@ class ConfigCompany @Autowired constructor(
         accountBl.createAccountPlan(createCompanyDto.accountablePlan, companyId)
         return companyId
     }
+
+
 
 
 

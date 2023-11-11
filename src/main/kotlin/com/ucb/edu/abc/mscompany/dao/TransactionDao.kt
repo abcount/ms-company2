@@ -94,14 +94,15 @@ interface TransactionDao {
   )
   fun getAccountDetailsByTransactionId(transactionId: Long, exchangeMoneyIso: String): List<AccountDto>
 
-    @Select("SELECT t.transaction_id,t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
-            " FROM transaction t, area a, subsidiary s, area_subsidiary asub " +
-            " WHERE t.company_id = #{companyId} AND" +
-            " t.area_subsidiary_id = asub.area_subsidiary_id AND " +
-            " asub.area_id = #{areaId} AND" +
-            " asub.subsidiary_id = #{subsidiaryId} AND" +
-            " t.transaction_type_id = #{transactionTypeId} " +
-            " GROUP BY t.transaction_id")
+    @Select("SELECT t.transaction_id, t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
+            " FROM transaction t" +
+            " INNER JOIN area_subsidiary asub ON t.area_subsidiary_id = asub.area_subsidiary_id" +
+            " INNER JOIN area a ON asub.area_id = a.area_id" +
+            " INNER JOIN subsidiary s ON asub.subsidiary_id = s.subsidiary_id" +
+            " WHERE t.company_id = #{companyId}" +
+            " AND a.area_id = #{areaId}" +
+            " AND s.subsidiary_id = #{subsidiaryId}" +
+            " AND t.transaction_type_id = #{transactionTypeId}")
     fun getListTransactions(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<TransactionViewPojo>
 
 

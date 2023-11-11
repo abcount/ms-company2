@@ -19,12 +19,12 @@ interface CompanyDao {
             INSERT INTO company (
                 company_name, dicc_category, nit, address, logo_uuid, 
                 opening_date, email_representative, number_representative, legal_representative,
-                ci_representative, number_registration, number_employee, rubro
+                ci_representative, number_registration, number_employee, rubro, status, uuid
             ) 
             VALUES (
                 #{companyName}, #{diccCategory}, #{nit}, #{address}, #{logoUuid}, #{openingDate}, 
                 #{emailRepresentative}, #{numberRepresentative}, #{legalRepresentative},
-                #{ciRepresentative}, #{numberRegistration}, #{numberEmployee}, #{rubro}
+                #{ciRepresentative}, #{numberRegistration}, #{numberEmployee}, #{rubro}, #{status}, #{uuid}
             )
             """
     )
@@ -76,7 +76,16 @@ interface CompanyDao {
     @Select("SELECT company_name FROM company WHERE company_id = #{companyId}")
     fun getNameCompany(companyId: Int): String
 
+    // get Company status by companyId
+    @Select("SELECT status FROM company WHERE company_id = #{companyId}")
+    fun getStatusCompany(companyId: Int): Boolean
 
+    // update status by companyId
+    @Update("UPDATE company SET status = #{status} WHERE company_id = #{companyId}")
+    fun updateStatusCompany(companyId: Int, status: Boolean)
+
+    @Select("SELECT uuid FROM company WHERE company_id = #{companyId}")
+    fun getUuidCompany(companyId: Int): String
 
 
 

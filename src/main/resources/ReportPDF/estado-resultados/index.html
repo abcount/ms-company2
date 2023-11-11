@@ -74,10 +74,17 @@
 			margin: 60px 20px 10px 20px;
 			border-top: #cdcdcd 1px solid !important;
 		}
+		img {
+			height: 50px;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
 	</style>
 </head>
 <body class="pdf-turtle">
 <div class="header-container">
+	<img alt="logo" src="{{ .logo }}"/>
 	<h1>Estado de resultados</h1>
 	<h2>Empresa {{ .companyName }}</h2>
 	<h2> Del {{.dateFrom }} Al {{ .dateTo }}</h2>

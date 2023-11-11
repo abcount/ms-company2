@@ -52,14 +52,22 @@
 			.bold {
 				font-weight: 600 !important;
 			}
+			img {
+				height: 50px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
 		</style>
 	</head>
 	<body class="pdf-turtle">
 		<div class="header-container">
+			<img alt="logo" src="{{ .logo }}"/>
 			<h1>Libro Diario</h1>
 			<h2>Empresa {{ .companyName }}</h2>
 			<h2>Del {{ .dateFrom }} al {{ .dateTo }}</h2>
 			<h2>Expresado en {{ .currency }}</h2>
+			<h2>{{ .transactionType }}</h2>
 		</div>
 		{{  range .subsidiaries }}
 			<h3>{{ .subsidiaryName }}</h3>

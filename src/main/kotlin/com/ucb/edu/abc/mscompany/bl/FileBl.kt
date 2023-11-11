@@ -5,6 +5,7 @@ import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import java.util.UUID
 
@@ -28,4 +29,10 @@ class FileBl @Autowired constructor(
     }
 
 
+    suspend fun uploadImage(multipartFile: MultipartFile): String{
+        val uuid = UUID.randomUUID().toString()
+        minioBl.uploadFile(multipartFile.bytes, uuid, multipartFile.contentType!!)
+        logger.info("Se genero el archivo $uuid")
+        return uuid
+    }
 }

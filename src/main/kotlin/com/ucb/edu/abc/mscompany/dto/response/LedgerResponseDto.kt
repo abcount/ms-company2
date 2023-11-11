@@ -57,6 +57,7 @@ data class TransactionLedger(
 data class LedgerResponseDtoPdf(
         var companyName: String,
         var dateFrom: String,
+        var logo: String,
         var dateTo: String,
         var currency: String,
         var subsidiaries: List<SubsidiaryLedgerPdf>
@@ -96,12 +97,6 @@ data class TransactionLedgerPdf(
 
 }
 
-fun getNumber(number: BigDecimal): String{
-    val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-    format.minimumFractionDigits = 2
-    format.maximumFractionDigits = 2
-    return format.format(number)
-}
 
 
 

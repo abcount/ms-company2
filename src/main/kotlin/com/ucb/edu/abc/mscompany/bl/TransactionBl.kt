@@ -4,6 +4,7 @@ import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.TransactionAccountDto
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.*
+import com.ucb.edu.abc.mscompany.entity.ClosingSheetEntity
 import com.ucb.edu.abc.mscompany.entity.DebitCreditEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionAccountEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
@@ -23,6 +24,7 @@ class TransactionBl @Autowired constructor(
         private val transactionAccountDao: TransactionAccountDao,
         private val debitCreditDao: DebitCreditDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
+        private val closingSheetDao: ClosingSheetDao,
         private val transactionTypeBl: TransactionTypeBl,
         private val userBl: UserBl,
         private val subsidiaryBl: SubsidiaryBl,
@@ -33,6 +35,7 @@ class TransactionBl @Autowired constructor(
         private val accountBl: AccountBl,
         private val auxiliaryAccountBl: AuxiliaryAccountBl,
         private val companyBl: CompanyBl,
+        private val companyDao: CompanyDao,
         private val exchangeRateBl: ExchangeRateBl,
         private val entityBl: EntityBl,
         private val transactionAccountBl: TransactionAccountBl
@@ -49,6 +52,33 @@ class TransactionBl @Autowired constructor(
         if (transactionDto.totalCredit != transactionDto.totalDebit){
             throw Exception("El total de creditos y debitos no coinciden")
         }
+
+        /**
+         *
+         * CIERRE DE GESTION
+         *
+         **/
+
+        if( transactionDto.transactionTypeId == 5){
+            logger.info("Cerrando contabilidad de la empresa $companyId")
+            val closingSheetEntity = convertClosingSheetEntity(companyId,userId)
+            closingSheetDao.createClosing(closingSheetEntity)
+            companyDao.updateStatusCompany(companyId,false)
+
+        }
+
+        /**
+         *
+         * APERTURA DE GESTION
+         *
+         */
+
+        if(transactionDto.transactionTypeId == 4){
+            logger.info("Abriendo contabilidad de la empresa $companyId")
+            companyDao.updateStatusCompany(companyId,true)
+        }
+
+
         val transactionEntity = factoryTransaction(transactionDto, companyId, userId)
         transactionDao.create(transactionEntity)
 
@@ -73,6 +103,13 @@ class TransactionBl @Autowired constructor(
         //Obteniendo los datos sueltos del response
         transactionalVoucherDto.transactionNumber = (transactionDao.getLastTransactionNumber(companyId)?:0) + 1
         transactionalVoucherDto.companyName = companyBl.getCompanyName(companyId)
+
+        logger.info("Verificando el cierre de contabilidad de la empresa $companyId")
+
+        transactionalVoucherDto.isOpen = companyDao.getStatusCompany(companyId)
+
+        if (!transactionalVoucherDto.isOpen) {logger.info("La contabilidad de la empresa $companyId esta cerrada")
+        } else {logger.info("La contabilidad de la empresa $companyId esta abierta")}
 
         //Obteniendo la lista de transactionType
         transactionalVoucherDto.transactionType = transactionTypeBl.getAllTransactionType()
@@ -222,6 +259,17 @@ class TransactionBl @Autowired constructor(
             totalCredit += it.amountCredit
         }
         return listOf(totalDebit, totalCredit)
+    }
+
+    fun convertClosingSheetEntity(companyId: Int, userId: Int) : ClosingSheetEntity{
+        val closingSheetEntity = ClosingSheetEntity()
+        val date= LocalDateTime.now()
+        closingSheetEntity.companyId=companyId
+        closingSheetEntity.userId=userId
+        closingSheetEntity.description= "Cierre de contabilidad de la empresa $companyId en fecha $date"
+        closingSheetEntity.date=date
+
+        return closingSheetEntity
     }
 
 

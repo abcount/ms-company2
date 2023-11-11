@@ -26,7 +26,6 @@ DROP TABLE IF EXISTS group_role;
 DROP TABLE IF EXISTS group_role_common;
 DROP TABLE IF EXISTS invitation;
 DROP TABLE IF EXISTS report;
-DROP TABLE IF EXISTS report_file;
 DROP TABLE IF EXISTS role_common;
 DROP TABLE IF EXISTS role_entity;
 DROP TABLE IF EXISTS subsidiary;
@@ -188,7 +187,7 @@ company_id int NOT NULL,
 user_id int NOT NULL,
 description Varchar(30) NOT NULL,
 date timestamp NOT NULL,
-CONSTRAINT closing_sheet_pk PRIMARY KEY (balance_sheet_id)
+CONSTRAINT closing_sheet_pk PRIMARY KEY (closing_sheet_id)
 );
 
 
@@ -208,6 +207,8 @@ ci_representative varchar(20) NOT NULL,
 number_registration varchar(50) NOT NULL,
 number_employee varchar(50) NOT NULL,
 rubro varchar(50) NOT NULL,
+status boolean NOT NULL,
+uuid varchar(255) NOT NULL,
 CONSTRAINT company_pk PRIMARY KEY (company_id)
 );
 

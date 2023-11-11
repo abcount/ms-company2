@@ -41,6 +41,7 @@ class CompanyBl @Autowired constructor(
     private val roleBl: RoleBl,
     private val imageService: ImageService,
     private val minioBl: MinioBl
+
 ) {
     @Value("\${server.port}")
     lateinit var port: String
@@ -86,6 +87,7 @@ class CompanyBl @Autowired constructor(
         companyEntity.numberRegistration = companyDto.numberRegistration
         companyEntity.numberEmployee = companyDto.numberEmployee
         companyEntity.rubro = companyDto.rubro
+        companyEntity.status= true
         companyEntity.openingDate = LocalDate.parse(companyDto.openingDate, DateTimeFormatter.ofPattern(formatDate))
         return companyEntity
     }
@@ -289,7 +291,11 @@ class CompanyBl @Autowired constructor(
     fun cancelInvitation(invitationId: Int, userId: Int){
         userBl.updateUserStatusAndCategory(userId, UserAbcCategory.DISABLED, status = false);
         invitationBl.changeStateOfInvitation(invitationId, InvitationState.CANCELED);
+    }
 
+    suspend fun getUrlImageByCompanyId(companyId: Int): String {
+        val uuid = companyDao.getUuidCompany(companyId)
+        return minioBl.getPreSignedUrl(uuid)
     }
 
 }

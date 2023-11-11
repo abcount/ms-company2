@@ -71,6 +71,8 @@ data class AccountDto(
 data class JournalResponseDtoPdf (
         var companyName: String,
         var dateFrom: String,
+        var logo: String,
+        var transactionType: String,
         var dateTo: String,
         var currency: String,
         var subsidiaries: MutableList<SubsidiaryDtoPDF>

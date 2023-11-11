@@ -24,4 +24,14 @@ class TransactionTypeBl @Autowired constructor(
         }
     }
 
+    fun getTransactionTypeNameById(transactionTypeId: Int): String {
+        try {
+            logger.info("Obteniendo tipos de transacciones por id de compañia")
+            return transactionTypeDao.getTransactionTypeNameById(transactionTypeId)
+        } catch (e: Exception) {
+            logger.error("Error al obtener tipos de transacciones por id de compañia", e)
+            throw PostgresException("Error al obtener tipos de transacciones", e.message.toString())
+        }
+    }
+
 }

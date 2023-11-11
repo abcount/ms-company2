@@ -148,7 +148,7 @@ class AccountBl @Autowired constructor(
         accountablePlanDto.report = account.report
         accountablePlanDto.classificator = account.clasificator
         accountablePlanDto.level = account.level
-        accountablePlanDto.editable = isEditable(account.accountId)
+        accountablePlanDto.editable = false
         return accountablePlanDto
     }
 
