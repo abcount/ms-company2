@@ -6,6 +6,7 @@ import com.ucb.edu.abc.mscompany.entity.TransactionTypeEntity
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
+import java.util.Date
 
 
 @Data
@@ -16,6 +17,7 @@ data class TransactionalVoucherDto(
     var transactionNumber: Int,
     var companyName: String,
     var isOpen: Boolean,
+    var lastClosing: Date,
     var transactionType: List<TransactionTypeEntity>,
     var subsidiaries: List<Subsidiary>,
     var areas: List<Area>,
@@ -24,7 +26,7 @@ data class TransactionalVoucherDto(
     var auxiliar: List<Auxiliary>,
     var entities: List<EntityForTransaction>
 ){
-    constructor(): this(0, "",true, listOf(), listOf(), listOf(), listOf(), listOf(), listOf(), listOf())
+    constructor(): this(0, "",true, Date() ,listOf(), listOf(), listOf(), listOf(), listOf(), listOf(), listOf())
 }
 
 @Data
