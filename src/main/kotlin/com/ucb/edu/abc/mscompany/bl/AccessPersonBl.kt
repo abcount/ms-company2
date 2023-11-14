@@ -24,7 +24,8 @@ import java.time.format.DateTimeFormatter
 @NoArgsConstructor
 class AccessPersonBl @Autowired constructor(
     private val keycloakBl: KeycloakBl,
-    private val accessPersonDao: AccessPersonDao
+    private val accessPersonDao: AccessPersonDao,
+    private val imageService: ImageService
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -74,7 +75,7 @@ class AccessPersonBl @Autowired constructor(
                 id = itemAp.accessPersonId.toInt(),
                 userName = itemAp.username,
                 fullName = itemAp.firstName + " "+ itemAp.lastName,
-                imagePath =  "http://localhost:8080/users/1/images/profile"
+                imagePath = imageService.getImageForUser(itemAp.accessPersonId.toInt()) ?: "" //  "http://localhost:8080/users/1/images/profile"
             )
         }
     }
@@ -89,8 +90,8 @@ class AccessPersonBl @Autowired constructor(
     private fun factoryAccessPersonEntity(userKc: KeycloakUserDto): AccessPersonEntity {
         val apE = AccessPersonEntity()
         apE.username = userKc.username;
-        apE.lastName = userKc.lastName;
-        apE.firstName = userKc.firstName;
+        //apE.lastName = userKc.lastName;
+        //apE.firstName = userKc.firstName;
         apE.email = userKc.email!!;
         val stamp = Timestamp(userKc.createdTimestamp)
         apE.dateCreation = Date(stamp.time)
@@ -99,6 +100,12 @@ class AccessPersonBl @Autowired constructor(
         if (userKc.attributes != null){
             if( !userKc.attributes!!["birthday"].isNullOrEmpty()){
                 apE.birthday = LocalDate.parse(userKc.attributes!!["birthday"]!![0], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }
+            if( !userKc.attributes!!["last_name"].isNullOrEmpty()){
+                apE.lastName = userKc.attributes!!["last_name"]!![0]
+            }
+            if( !userKc.attributes!!["first_name"].isNullOrEmpty()){
+                apE.firstName = userKc.attributes!!["first_name"]!![0]
             }
         }
         if(userKc.enabled == true){

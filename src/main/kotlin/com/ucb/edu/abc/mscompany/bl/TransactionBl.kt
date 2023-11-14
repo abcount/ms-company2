@@ -59,13 +59,9 @@ class TransactionBl @Autowired constructor(
          *
          **/
 
-        if( transactionDto.transactionTypeId == 5){
-            logger.info("Cerrando contabilidad de la empresa $companyId")
-            val closingSheetEntity = convertClosingSheetEntity(companyId,userId)
-            closingSheetDao.createClosing(closingSheetEntity)
-            companyDao.updateStatusCompany(companyId,false)
+        //if( transactionDto.transactionTypeId == 5){ }
 
-        }
+
 
         /**
          *
@@ -104,9 +100,17 @@ class TransactionBl @Autowired constructor(
         transactionalVoucherDto.transactionNumber = (transactionDao.getLastTransactionNumber(companyId)?:0) + 1
         transactionalVoucherDto.companyName = companyBl.getCompanyName(companyId)
 
+
         logger.info("Verificando el cierre de contabilidad de la empresa $companyId")
 
         transactionalVoucherDto.isOpen = companyDao.getStatusCompany(companyId)
+
+        val lastClosingDate = getLastClosingSheet(companyId)
+
+
+        if (lastClosingDate != null) {
+            transactionalVoucherDto.lastClosing= lastClosingDate
+        }
 
         if (!transactionalVoucherDto.isOpen) {logger.info("La contabilidad de la empresa $companyId esta cerrada")
         } else {logger.info("La contabilidad de la empresa $companyId esta abierta")}
@@ -261,16 +265,13 @@ class TransactionBl @Autowired constructor(
         return listOf(totalDebit, totalCredit)
     }
 
-    fun convertClosingSheetEntity(companyId: Int, userId: Int) : ClosingSheetEntity{
-        val closingSheetEntity = ClosingSheetEntity()
-        val date= LocalDateTime.now()
-        closingSheetEntity.companyId=companyId
-        closingSheetEntity.userId=userId
-        closingSheetEntity.description= "Cierre de contabilidad de la empresa $companyId en fecha $date"
-        closingSheetEntity.date=date
+    fun getLastClosingSheet(companyId: Int): Date{
 
-        return closingSheetEntity
+        return closingSheetDao.getLastClosing(companyId) ?: companyDao.getOpeningDate(companyId)
+
     }
+
+
 
 
 

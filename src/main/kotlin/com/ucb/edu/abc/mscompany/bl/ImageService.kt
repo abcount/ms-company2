@@ -1,14 +1,19 @@
 package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.FileDao
+import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import kotlin.math.log
 
 @Service
 class ImageService @Autowired constructor(
-    private val fileDao: FileDao
+    private val fileDao: FileDao,
+    private val minioBl: MinioBl
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
     @Value("\${server.port}")
     lateinit var port: String
 
@@ -45,5 +50,16 @@ class ImageService @Autowired constructor(
         }
 
         return null;
+    }
+    fun getImageCompanySigned(companyId:Int): String? {
+        logger.info("Request a company image signed companyId=$companyId")
+        val fileEntity = fileDao.getImageByIdAndCategory(categoryOwner ="COMPANY-PROFILE-IMAGE", ownerId = companyId);
+        if(fileEntity.isNullOrEmpty()){
+            logger.error("Couldn't get file related to companyId=$companyId")
+            return null
+        }
+        logger.info("Founded url signed with uuid= ${fileEntity[0].uuidFile}")
+
+        return minioBl.getPreSignedUrlV2(fileEntity[0].uuidFile)
     }
 }

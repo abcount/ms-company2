@@ -28,6 +28,7 @@ class FileBl @Autowired constructor(
         return url
     }
 
+
     suspend fun uploadImage(multipartFile: MultipartFile): String{
         val uuid = UUID.randomUUID().toString() + ".png"
         minioBl.uploadFile(multipartFile.bytes, uuid, multipartFile.contentType!!)

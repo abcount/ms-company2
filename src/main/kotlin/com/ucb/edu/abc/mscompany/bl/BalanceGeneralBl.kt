@@ -23,6 +23,7 @@
             private val exchangeMoneyBl: ExchangeMoneyBl,
             private val accountDao: AccountDao,
             private val areaSubsidiaryDao: AreaSubsidiaryDao,
+            private val imageService: ImageService,
             private val companyBl: CompanyBl
     ) {
 
@@ -140,6 +141,10 @@
 
         suspend fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDtoPDF {
             logger.info("Obteniendo balance general de la empresa: $companyId")
+
+            // >>>>> get url signed
+            val urlSigned = imageService.getImageCompanySigned(companyId);
+            // <<<< get url signed
             val companyEntity = companyDao.getCompanyById(companyId)
             val url = companyBl.getUrlImageByCompanyId(companyId)
             val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, balanceGeneralRequestDto.currencies)
@@ -186,7 +191,11 @@
                 subsidiaryBalanceDtoList.add(SubsidiaryBalancePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
             }
 
+
+            //return BalanceGeneralResponseDtoPDF(companyEntity.companyName, logo = urlSigned,  convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+
             return BalanceGeneralResponseDtoPDF(companyEntity.companyName, url,convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+
         }
 
 

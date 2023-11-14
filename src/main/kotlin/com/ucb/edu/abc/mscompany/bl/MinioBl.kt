@@ -72,4 +72,21 @@ class MinioBl @Autowired constructor(
             throw Exception("hubo un error ${ex.message}")
         }
     }
+
+    fun getPreSignedUrlV2(filename: String): String?{
+        return try {
+            minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
+                    .bucket(bucketName)
+                    .`object`(filename)
+                    .expiry(60 * 60 * 24) // one day
+                    .build()
+            )
+
+        }catch (ex: Exception){
+            logger.error("hubo un error ${ex.message}")
+            null
+        }
+    }
 }

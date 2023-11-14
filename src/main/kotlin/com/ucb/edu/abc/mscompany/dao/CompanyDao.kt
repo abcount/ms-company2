@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
 import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
+import java.util.Date
 
 @Mapper
 @Component
@@ -86,6 +87,10 @@ interface CompanyDao {
 
     @Select("SELECT uuid FROM company WHERE company_id = #{companyId}")
     fun getUuidCompany(companyId: Int): String
+
+    // obtener el openning date
+    @Select("SELECT opening_date FROM company WHERE company_id = #{companyId}")
+    fun getOpeningDate(companyId: Int): Date
 
 
 
