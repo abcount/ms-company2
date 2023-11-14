@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.ExchangeRateBl
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
+import com.ucb.edu.abc.mscompany.dto.request.UpdateExchangeRate
 import com.ucb.edu.abc.mscompany.dto.response.ListExchangeRateDateDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -59,6 +61,15 @@ class ExchangeRateApi @Autowired constructor(
         return ResponseEntity.ok(
             ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
     }
+
+    @PutMapping("")
+    fun updateExchangeRate(@RequestBody listExchangeRate: List<UpdateExchangeRate>): ResponseEntity<ResponseDto<String>>{
+        logger.info("Actualizando tipos de cambio")
+        exchangeRateBl.updateListExchangeRate(listExchangeRate)
+        return ResponseEntity.ok(
+            ResponseDto("", "Tipo de cambio actualizado correctamente", true, "" ))
+    }
+
 
 
 

@@ -1,10 +1,12 @@
 package com.ucb.edu.abc.mscompany.dao
 
+import com.ucb.edu.abc.mscompany.dto.request.UpdateExchangeRate
 import com.ucb.edu.abc.mscompany.dto.response.CurrencyVoucher
 import com.ucb.edu.abc.mscompany.entity.ExchangeRateEntity
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
 
 @Mapper
@@ -38,4 +40,7 @@ interface ExchangeRateDao {
 
     @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId} AND date::date = TO_DATE(#{date}, 'YYYY-MM-DD')")
     fun getExchangeRateByDate(companyId: Int, date: String): List<ExchangeRateEntity>
+
+    @Update("UPDATE exchange_rate SET currency = #{currency} WHERE exchange_rate_id = #{exchangeRateId}")
+    fun updateExchangeRate(updateExchangeRate: UpdateExchangeRate)
 }

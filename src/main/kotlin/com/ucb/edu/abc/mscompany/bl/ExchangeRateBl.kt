@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.ExchangeRateDao
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
+import com.ucb.edu.abc.mscompany.dto.request.UpdateExchangeRate
 import com.ucb.edu.abc.mscompany.dto.response.CurrencyDateDto
 import com.ucb.edu.abc.mscompany.dto.response.CurrencyVoucher
 import com.ucb.edu.abc.mscompany.dto.response.ExchangeDateDto
@@ -125,6 +126,21 @@ class ExchangeRateBl @Autowired constructor(
         val list = getExchangeRateByDate(companyId)
         return ListExchangeRateDateDto(exchangeMoney, list)
 
+    }
+
+    fun updateExchangeRate(updateExchangeRate: UpdateExchangeRate){
+        try{
+            exchangeRateDao.updateExchangeRate(updateExchangeRate)
+        }catch (e: Exception){
+            logger.error("Error al actualizar tipos de cambio", e)
+            throw PostgresException("Error al actualizar tipos de cambio", e.message.toString())
+        }
+    }
+
+    fun updateListExchangeRate(listExchangeRate: List<UpdateExchangeRate>){
+        for (exchangeRate in listExchangeRate){
+            updateExchangeRate(exchangeRate)
+        }
     }
 
 
