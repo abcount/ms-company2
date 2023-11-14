@@ -20,7 +20,7 @@ class FileBl @Autowired constructor(
     suspend fun generatePDFFile(byteArray: ByteArray, type: String, companyId: Int, header: Map<String, String>, typeReport: String ): String{
         val tokenAuth =  header["authorization"]!!.substring(7)
         val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth, companyId, UserAbcCategory.ACTIVE,null)
-        val uuid = UUID.randomUUID().toString() + companyId + "-" + userId
+        val uuid = UUID.randomUUID().toString() + companyId + "-" + userId + ".pdf"
         val url = minioBl.uploadFile(byteArray, uuid, type)
         val reportEntity = reportBl.factoryReportEntity(header, companyId, uuid, "PDF", typeReport)
         reportBl.createReport(reportEntity)
@@ -29,7 +29,7 @@ class FileBl @Autowired constructor(
     }
 
     suspend fun uploadImage(multipartFile: MultipartFile): String{
-        val uuid = UUID.randomUUID().toString()
+        val uuid = UUID.randomUUID().toString() + ".png"
         minioBl.uploadFile(multipartFile.bytes, uuid, multipartFile.contentType!!)
         logger.info("Se genero el archivo $uuid")
         return uuid

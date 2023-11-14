@@ -107,7 +107,7 @@ class SumasSaldosBl @Autowired constructor(
                 val accountSumas = mutableListOf<AccountSumasPdf>()
                 for (accountCode in rootAccounts){
                     for (movementAccount in movementAccounts){
-                        if (movementAccount.get(0).toString() == accountCode.toString()){
+                        if (movementAccount[0].toString() == accountCode.toString()){
                             logger.info("Obteniendo id de la cuenta $movementAccount")
                             val accountId = accountDao.getAccountIdBYCode(movementAccount, companyId)
                             val accountEntity = accountDao.getAccountById(accountId)

@@ -282,6 +282,7 @@ class CompanyBl @Autowired constructor(
     }
 
     suspend fun getUrlImageByCompanyId(companyId: Int): String {
+        logger.info("get url image by company id")
         val uuid = companyDao.getUuidCompany(companyId)
         return minioBl.getPreSignedUrl(uuid)
     }

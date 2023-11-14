@@ -4,6 +4,7 @@
     import com.ucb.edu.abc.mscompany.dto.request.BalanceGeneralRequestDto
     import com.ucb.edu.abc.mscompany.dto.request.JournalRequestDto
     import com.ucb.edu.abc.mscompany.dto.response.*
+    import com.ucb.edu.abc.mscompany.entity.AccountEntity
     import org.slf4j.Logger
     import org.slf4j.LoggerFactory
     import org.springframework.beans.factory.annotation.Autowired
@@ -88,12 +89,13 @@
             var gastos = accountDao.getAccountIdBYCode("5", companyId)
 
 
+            val allAccounts = accountDao.getAccountPlanByCompanyId(companyId).associateBy { it.accountId }
 
-            val activeAccountTree = buildAccountTree(activeAccountId, companyId, to, areaSubsidiaryId, exchangeRateId)
-            val passiveAccountTree = buildAccountTree(passiveAccountId, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val patrimonyAccountTree = buildAccountTree(patrimonyAccountId, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val ingresosAccountTree = buildAccountTree(ingresos, companyId,to, areaSubsidiaryId, exchangeRateId)
-            val gastosAccountTree = buildAccountTree(gastos, companyId,to, areaSubsidiaryId, exchangeRateId)
+            val activeAccountTree = buildAccountTree(activeAccountId, companyId, to, areaSubsidiaryId, exchangeRateId, allAccounts)
+            val passiveAccountTree = buildAccountTree(passiveAccountId, companyId,to, areaSubsidiaryId, exchangeRateId, allAccounts)
+            val patrimonyAccountTree = buildAccountTree(patrimonyAccountId, companyId,to, areaSubsidiaryId, exchangeRateId, allAccounts)
+            val ingresosAccountTree = buildAccountTree(ingresos, companyId,to, areaSubsidiaryId, exchangeRateId, allAccounts)
+            val gastosAccountTree = buildAccountTree(gastos, companyId,to, areaSubsidiaryId, exchangeRateId, allAccounts)
 
 
             accountBalanceDtoList.add(activeAccountTree)
@@ -107,10 +109,7 @@
 
         }
 
-        private fun buildAccountTree(rootAccountId: Int, companyId: Int,to: Date, areaSubsidiaryId: Int?, exchangeId: String): AccountBalance {
-            // Obtenemos todas las cuentas de la compañía
-            val allAccounts = accountDao.getAccountPlanByCompanyId(companyId).associateBy { it.accountId }
-
+        private fun buildAccountTree(rootAccountId: Int, companyId: Int,to: Date, areaSubsidiaryId: Int?, exchangeId: String, allAccounts: Map<Int, AccountEntity>): AccountBalance {
             // Función recursiva para construir el árbol y sumar montos
             fun buildTree(accountId: Int): AccountBalance {
                 val currentAccount = allAccounts[accountId] ?: throw IllegalStateException("Account not found for ID: $accountId")
@@ -144,20 +143,14 @@
             val companyEntity = companyDao.getCompanyById(companyId)
             val url = companyBl.getUrlImageByCompanyId(companyId)
             val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, balanceGeneralRequestDto.currencies)
-
             val subsidiaryBalanceDtoList= mutableListOf<SubsidiaryBalancePDF>()
             for (subsidiaryId in balanceGeneralRequestDto.subsidiaries) {
                 val subsidiaryEntity = subsidiaryDao.getSubsidiaryById(subsidiaryId)
                 var areaBalanceDtoList = mutableListOf<AreaBalancePDF>()
                 for (areaId in balanceGeneralRequestDto.areas) {
-
                     val areaEntity = areaDao.getAreaById(areaId)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
-
                     var listAccountBalanced= getAccountBalance(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
-
-
-
                     //BALANCE GENERAL
                     val activeTotal = listAccountBalanced.filter { it.accountCode.startsWith("1") }.sumOf { it.amount }
                     val passiveTotal = listAccountBalanced.filter { it.accountCode.startsWith("2") }.sumOf { it.amount }

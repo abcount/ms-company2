@@ -28,35 +28,44 @@ class PDFTurtleBl @Autowired constructor(
     private val uri = "http://104.248.232.102:8000/api/pdf/from/html-template/render"
 
     suspend fun getPDF(footer: String, header: String, body: String, model: Any): ByteArray? {
-        logger.info("getPDF")
-        var pdfRequestDto = PDFRequestDto()
-        pdfRequestDto.footerHtmlTemplate = footer
-        pdfRequestDto.headerHtmlTemplate = header
-        pdfRequestDto.htmlTemplate = body
-        pdfRequestDto.model = model
-        pdfRequestDto.options = OptionDto(
-            false,
-            "Letter",
-            MarginDto(25, 25, 25, 25)
-        )
-        pdfRequestDto.templateEngine = "golang"
-        val headers = HttpHeaders()
-        headers.set("Content-Type", "application/json")
-        val entity = HttpEntity(pdfRequestDto, headers)
-        val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-        val response: Deferred<ResponseEntity<ByteArray>> = coroutineScope.async {
-            val restTemplate = RestTemplate()
-            restTemplate.exchange(
-                uri,
-                HttpMethod.POST,
-                entity,
-                ByteArray::class.java
+        try{
+            logger.info("getPDF")
+            var pdfRequestDto = PDFRequestDto()
+            pdfRequestDto.footerHtmlTemplate = footer
+            pdfRequestDto.headerHtmlTemplate = header
+            pdfRequestDto.htmlTemplate = body
+            pdfRequestDto.model = model
+            pdfRequestDto.options = OptionDto(
+                false,
+                "Letter",
+                MarginDto(25, 25, 25, 25)
             )
-        }
-        if(response.await().statusCodeValue != 200) throw Exception("Error al generar el PDF")
+            pdfRequestDto.templateEngine = "golang"
+            val headers = HttpHeaders()
+            headers.set("Content-Type", "application/json")
+            val entity = HttpEntity(pdfRequestDto, headers)
+            val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-        return response.await().body
+            val response = coroutineScope.async {
+                val restTemplate = RestTemplate()
+                restTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    entity,
+                    ByteArray::class.java
+                )
+            }.await()
+            logger.info("response: ${response.statusCodeValue}")
+            if(response.statusCodeValue != 200){
+                logger.error("Error al generar el PDF")
+                throw Exception("Error al generar el PDF")
+            }
+
+            return response.body
+        } catch (ex: Exception){
+            logger.error("Error al generar el PDF" + ex.message)
+            throw Exception("Error al generar el PDF")
+        }
     }
 
     fun readHtmlToString(resource: String): String {
