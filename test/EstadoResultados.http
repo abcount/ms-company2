@@ -1,9 +1,10 @@
-POST http://localhost:8080/general/estado-resultados/11
+POST http://localhost:8080/general/estado-resultados/1
 Content-Type: application/json
 
 {
-  "subsidiaries": [23],
-  "areas": [27],
+  "subsidiaries": [1,2],
+  "areas": [1,2],
+  "from": "2020-01-01",
   "to": "2024-12-31",
   "currencies": "BOL",
   "responsible": ["Sebastian Belmonte", "Micaela Gordillo", "Juan Neves", "Alejandro Flores"]

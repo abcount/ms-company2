@@ -13,6 +13,7 @@ import java.util.*
 data class EstadoResultadosRequestDto(
         var subsidiaries: MutableList<Int>,
         var areas: MutableList<Int>,
+        var from: Date,
         var to: Date,
         var currencies: String,
         var responsible: MutableList<String>

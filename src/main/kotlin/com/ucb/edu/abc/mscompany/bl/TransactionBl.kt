@@ -53,21 +53,6 @@ class TransactionBl @Autowired constructor(
             throw Exception("El total de creditos y debitos no coinciden")
         }
 
-        /**
-         *
-         * CIERRE DE GESTION
-         *
-         **/
-
-        //if( transactionDto.transactionTypeId == 5){ }
-
-
-
-        /**
-         *
-         * APERTURA DE GESTION
-         *
-         */
 
         if(transactionDto.transactionTypeId == 4){
             logger.info("Abriendo contabilidad de la empresa $companyId")
@@ -79,15 +64,20 @@ class TransactionBl @Autowired constructor(
         transactionDao.create(transactionEntity)
 
         //registrar en transaction Account
-        transactionDto.transactions.forEach {
-            val transactionAccountEntity = factoryTransactionAccount(it)
-            transactionAccountEntity.transactionId = transactionEntity.transactionId
-            transactionAccountEntity.companyId = companyId
+        if(!transactionDto.ajuste){
+            logger.info("Registrando transaccion sin ajuste")
+            transactionDto.transactions.forEach {
+                val transactionAccountEntity = factoryTransactionAccount(it)
+                transactionAccountEntity.transactionId = transactionEntity.transactionId
+                transactionAccountEntity.companyId = companyId
+                transactionAccountDao.create(transactionAccountEntity)
+                val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId, transactionDto.currencyId)
+                debitCreditDao.create(debitCreditEntity)
+            }
+        }else{
 
-            transactionAccountDao.create(transactionAccountEntity)
-            val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId, transactionDto.currencyId)
-            debitCreditDao.create(debitCreditEntity)
         }
+
     }
 
 
@@ -196,9 +186,9 @@ class TransactionBl @Autowired constructor(
         val transactionEntity = TransactionEntity()
         transactionEntity.transactionTypeId = transactionDto.transactionTypeId
         transactionEntity.transactionNumber= (transactionDao.getLastTransactionNumber(companyId)?.plus(1)?:1).toLong()
-        //transactionEntity.transactionNumber= transactionDto.transactionNumber
         transactionEntity.glosaGeneral = transactionDto.glosaGeneral
-        transactionEntity.date= LocalDateTime.now()
+        transactionEntity.date= transactionDto.date
+        transactionEntity.ajuste= transactionDto.ajuste
         transactionEntity.exchangeRateId = transactionDto.currencyId
         transactionEntity.areaSubsidiaryId = areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)
         transactionEntity.companyId = companyId

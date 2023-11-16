@@ -40,7 +40,7 @@ class EstadoResultadosBl @Autowired constructor(
                 val areaEntity = areaDao.getAreaById(areaId)
                 val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.from,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
                 val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
@@ -65,24 +65,23 @@ class EstadoResultadosBl @Autowired constructor(
         return EstadoResultadosResponseDto(companyEntity.companyName, estadoResultadosRequestDto.to, exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
     }
 
-    fun getAccountBalance(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountState>{
+    fun getAccountBalance(companyId: Int, from:Date ,to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountState>{
         var accountStateDtoList = mutableListOf<AccountState>()
         var ingresos = accountDao.getAccountIdBYCode("4", companyId)
         var gastos = accountDao.getAccountIdBYCode("5", companyId)
 
         
-        val ingresosAccountTree = buildAccountTree(ingresos, companyId,to, areaSubsidiaryId, exchangeRateId)
-        val gastosAccountTree = buildAccountTree(gastos, companyId,to, areaSubsidiaryId, exchangeRateId)
+        val ingresosAccountTree = buildAccountTree(ingresos, companyId,from,to, areaSubsidiaryId, exchangeRateId)
+        val gastosAccountTree = buildAccountTree(gastos, companyId,from,to, areaSubsidiaryId, exchangeRateId)
         
         accountStateDtoList.add(ingresosAccountTree)
         accountStateDtoList.add(gastosAccountTree)
 
         return accountStateDtoList
 
-
     }
 
-    private fun buildAccountTree(rootAccountId: Int, companyId: Int,to: Date, areaSubsidiaryId: Int?, exchangeId: String): AccountState {
+    private fun buildAccountTree(rootAccountId: Int, companyId: Int,from:Date,to: Date, areaSubsidiaryId: Int?, exchangeId: String): AccountState {
         // Obtenemos todas las cuentas de la compañía
         val allAccounts = accountDao.getAccountPlanByCompanyId(companyId).associateBy { it.accountId }
 
@@ -97,10 +96,10 @@ class EstadoResultadosBl @Autowired constructor(
                 //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
                 /***/
                 if (currentAccount.codeAccount.startsWith("1") || currentAccount.codeAccount.startsWith("5")){
-                    accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                    accountDao.getStateByAccount(accountId,from,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
 
                 } else {
-                    accountDao.getBalancePassive(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                    accountDao.getStatePassive(accountId,from,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
                 }
                 /***/
             } else {
@@ -129,7 +128,7 @@ class EstadoResultadosBl @Autowired constructor(
                 val areaEntity = areaDao.getAreaById(areaId)
                 val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.from,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
                 val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }

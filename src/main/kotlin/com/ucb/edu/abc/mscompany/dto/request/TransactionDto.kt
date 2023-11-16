@@ -5,6 +5,7 @@ import lombok.Data
 import lombok.NoArgsConstructor
 import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.Date
 
 
@@ -17,6 +18,8 @@ data class TransactionDto(
         var currencyId: Int,
         var transactionTypeId: Int,
         var areaId: Int,
+        var date: LocalDateTime,
+        var ajuste: Boolean,
         var glosaGeneral: String,
         var transactions: List<TransactionAccountDto>,
         var totalDebit: BigDecimal,

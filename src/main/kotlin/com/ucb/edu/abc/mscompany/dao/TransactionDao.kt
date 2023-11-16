@@ -17,8 +17,8 @@ interface TransactionDao {
     @Options(useGeneratedKeys = true, keyProperty = "transactionId")
     @Insert(
             """
-    INSERT INTO transaction ( transaction_type_id, transaction_number, glosa_general, date, exchange_rate_id, area_subsidiary_id, company_id,user_id)
-    VALUES ( #{transactionTypeId}, #{transactionNumber}, #{glosaGeneral}, #{date}, #{exchangeRateId}, #{areaSubsidiaryId}, #{companyId}, #{userId})
+    INSERT INTO transaction ( transaction_type_id, transaction_number, glosa_general, date, exchange_rate_id, area_subsidiary_id, company_id,user_id,ajuste)
+    VALUES ( #{transactionTypeId}, #{transactionNumber}, #{glosaGeneral}, #{date}, #{exchangeRateId}, #{areaSubsidiaryId}, #{companyId}, #{userId}, #{ajuste})
     """
     )
 
