@@ -434,6 +434,7 @@ exchange_rate_id int NOT NULL,
 area_subsidiary_id int NOT NULL,
 company_id int NOT NULL,
 user_id int NOT NULL,
+ajuste boolean NOT NULL,
 CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 );
 
