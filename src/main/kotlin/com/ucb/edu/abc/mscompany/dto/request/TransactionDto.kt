@@ -18,7 +18,7 @@ data class TransactionDto(
         var currencyId: String,
         var transactionTypeId: Int,
         var areaId: Int,
-        var date: Date,
+        var date: String,
         var ajuste: Boolean,
         var glosaGeneral: String,
         var transactions: List<TransactionAccountDto>,

@@ -50,11 +50,14 @@ class TransactionBl @Autowired constructor(
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
 
     fun saveTransaction(companyId: Int, transactionDto: TransactionDto, headers: Map<String, String>){
-        var date=transactionDto.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val exchange= exchangeRateDao.getExchangeByCompanyIdAndAbbreviationName(companyId, transactionDto.currencyId, date)
-                ?: throw Exception("No se encontro el tipo de cambio")
 
-        val exchangeList= exchangeRateDao.getExchangeList(companyId, date)
+        val exchange = exchangeRateDao.getExchangeByCompanyIdAndAbbreviationName(
+                companyId,
+                transactionDto.currencyId,
+                transactionDto.date)
+
+        val exchangeList = exchangeRateDao.getExchangeList(companyId, transactionDto.date) // Pasar LocalDate
+
         val tokenAuth =  headers["authorization"]!!.substring(7)
         val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth,   companyId, UserAbcCategory.ACTIVE,null)
 
@@ -85,8 +88,7 @@ class TransactionBl @Autowired constructor(
                 val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId, exchange.exchangeRateId)
                 debitCreditDao.create(debitCreditEntity)
             }else {
-                val transactionCurrencyToBobRate = exchange.currency
-                val isTransactionInBob = transactionDto.currencyId.equals("BOB", ignoreCase = true)
+                val isTransactionInBob = transactionDto.currencyId.equals("BOL", ignoreCase = true)
 
                 val amountInBobDebit: BigDecimal
                 val amountInBobCredit: BigDecimal
@@ -95,7 +97,6 @@ class TransactionBl @Autowired constructor(
                     amountInBobDebit = it.amountDebit
                     amountInBobCredit = it.amountCredit
                 } else {
-                    // Asumiendo que it.amountDebit y it.amountCredit son BigDecimal
                     val amountDebit = it.amountDebit.toDouble()
                     val amountCredit = it.amountCredit.toDouble()
                     val transactionCurrencyToBobRate = exchange.currency.toDouble()
@@ -110,14 +111,24 @@ class TransactionBl @Autowired constructor(
                         debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId
                         debitCreditEntity.exchangeRateId = otherExchange.exchangeRateId
 
-                        // Asumiendo que amountInBobDebit y amountInBobCredit son BigDecimal
                         val amountDebit = amountInBobDebit.toDouble()
                         val amountCredit = amountInBobCredit.toDouble()
                         val otherExchangeRate = otherExchange.currency.toDouble()
+                        logger.info("******")
+                        logger.info("amountDebit: $amountDebit")
+                        logger.info("amountCredit: $amountCredit")
+                        logger.info("otherExchangeRate: $otherExchangeRate")
+                        logger.info("******")
+                        debitCreditEntity.amountDebit = (amountDebit / otherExchangeRate).toBigDecimal()
+                        debitCreditEntity.amountCredit = (amountCredit / otherExchangeRate).toBigDecimal()
 
-                        debitCreditEntity.amountDebit = (amountDebit / otherExchangeRate).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-                        debitCreditEntity.amountCredit = (amountCredit / otherExchangeRate).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-
+                        debitCreditDao.create(debitCreditEntity)
+                    }else{
+                        val debitCreditEntity = DebitCreditEntity()
+                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId
+                        debitCreditEntity.exchangeRateId = otherExchange.exchangeRateId
+                        debitCreditEntity.amountDebit = amountInBobDebit
+                        debitCreditEntity.amountCredit = amountInBobCredit
                         debitCreditDao.create(debitCreditEntity)
                     }
                 }
@@ -188,7 +199,7 @@ class TransactionBl @Autowired constructor(
                     it.exchangeRateId,
                     it.moneyName,
                     it.abbreviationName,
-                    it.currency
+                    it.currency.toDouble()
             )
         }
         transactionalVoucherDto.currencies = exchangeList
@@ -236,7 +247,7 @@ class TransactionBl @Autowired constructor(
         transactionEntity.transactionTypeId = transactionDto.transactionTypeId
         transactionEntity.transactionNumber= (transactionDao.getLastTransactionNumber(companyId)?.plus(1)?:1).toLong()
         transactionEntity.glosaGeneral = transactionDto.glosaGeneral
-        transactionEntity.date = transactionDto.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+        transactionEntity.date = LocalDateTime.now()
         transactionEntity.ajuste= transactionDto.ajuste
         transactionEntity.exchangeRateId = exchangeRateId
         transactionEntity.areaSubsidiaryId = areaSubsidiaryDao.findAreaSubsidiaryId(transactionDto.subsidiaryId, transactionDto.areaId)

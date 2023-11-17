@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter
 @RestController
 @RequestMapping("/exchangeRate")
 class ExchangeRateApi @Autowired constructor(
-    private val exchangeRateBl: ExchangeRateBl
+        private val exchangeRateBl: ExchangeRateBl
 ){
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -44,7 +44,7 @@ class ExchangeRateApi @Autowired constructor(
         }
         val message =  if(data) "Ya existen registros de tipos de cambio el día $date" else "No existen registros de tipos de cambio el día $date"
         return ResponseEntity.ok(
-            ResponseDto(data, message, true, "" ))
+                ResponseDto(data, message, true, "" ))
     }
 
     @PostMapping("/{companyId}")
@@ -53,11 +53,11 @@ class ExchangeRateApi @Autowired constructor(
         val exist = exchangeRateBl.existRegisterByDay(companyId, createExchangeRatDto.date)
         if(exist) {
             return ResponseEntity.ok(
-                ResponseDto(false, "Ya existen registros de tipos de cambio el día de hoy", false, ""))
+                    ResponseDto(false, "Ya existen registros de tipos de cambio el día de hoy", false, ""))
         }
         exchangeRateBl.createExchangeRateList(createExchangeRatDto.exchange, companyId, createExchangeRatDto.date)
         return ResponseEntity.ok(
-            ResponseDto("", "Tipo de cambio creado correctamente", true, "" ))
+                ResponseDto("", "Tipo de cambio creado correctamente", true, "" ))
     }
 
     @GetMapping("/{companyId}")
@@ -65,7 +65,7 @@ class ExchangeRateApi @Autowired constructor(
         logger.info("Obteniendo tipos de cambio")
         val listExchange = exchangeRateBl.getAllExchangeRateByCompanyId(companyId)
         return ResponseEntity.ok(
-            ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
+                ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
     }
 
     @GetMapping("/list/{companyId}")
@@ -73,7 +73,7 @@ class ExchangeRateApi @Autowired constructor(
         logger.info("Obteniendo tipos de cambio")
         val listExchange = exchangeRateBl.getListExchangeRateGroupByDate(companyId)
         return ResponseEntity.ok(
-            ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
+                ResponseDto(listExchange, "Datos obtenidos con exito", true, "" ))
     }
 
     @PutMapping("")
@@ -81,7 +81,7 @@ class ExchangeRateApi @Autowired constructor(
         logger.info("Actualizando tipos de cambio")
         exchangeRateBl.updateListExchangeRate(listExchangeRate)
         return ResponseEntity.ok(
-            ResponseDto("", "Tipo de cambio actualizado correctamente", true, "" ))
+                ResponseDto("", "Tipo de cambio actualizado correctamente", true, "" ))
     }
 
 
