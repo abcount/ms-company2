@@ -52,11 +52,12 @@ interface ExchangeRateDao {
     fun updateExchangeRate(updateExchangeRate: UpdateExchangeRate)
 
 
-    @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId} AND abbreviation_name = #{abbreviationName} AND date =#{date}")
-    fun getExchangeByCompanyIdAndAbbreviationName(companyId: Int, abbreviationName: String, date: LocalDateTime): ExchangeRateEntity
+    @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId} AND abbreviation_name = #{abbreviationName} AND date::date = TO_DATE(#{date}, 'YYYY-MM-DD')")
+    fun getExchangeByCompanyIdAndAbbreviationName(companyId: Int, abbreviationName: String, date: String): ExchangeRateEntity
 
-    @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId} AND date =#{date}")
-    fun getExchangeList(companyId: Int, date: LocalDateTime): List<ExchangeRateEntity>
+
+    @Select("SELECT * FROM exchange_rate WHERE company_id = #{companyId} AND date::date = TO_DATE(#{date}, 'YYYY-MM-DD')")
+    fun getExchangeList(companyId: Int, date: String): List<ExchangeRateEntity>
 
 
 }
