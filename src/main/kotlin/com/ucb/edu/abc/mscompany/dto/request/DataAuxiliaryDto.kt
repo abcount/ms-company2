@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.util.Date
 
 @Data
 @NoArgsConstructor
@@ -35,7 +38,16 @@ data class EntityDataDto(
 data class ExchangeDto(
         val moneyName: String,
         val abbreviationName: String,
-        val currency: Double
+        val currency: BigDecimal
+)
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class CreateExchangeRatDto(
+        val date: LocalDate,
+        val exchange: List<ExchangeDto>
 )
 
 

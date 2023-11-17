@@ -34,7 +34,7 @@ class ExchangeRateBl @Autowired constructor(
         }
     }
 
-    fun createExchangeRateList(exchangeRateList: List<ExchangeDto>, companyId: Int){
+    fun createExchangeRateList(exchangeRateList: List<ExchangeDto>, companyId: Int, date: LocalDate){
         for (exchange in exchangeRateList){
             val exchangeRateEntity = ExchangeRateEntity(
                 0,
@@ -42,7 +42,7 @@ class ExchangeRateBl @Autowired constructor(
                 companyId,
                 exchange.currency,
                 exchange.abbreviationName,
-                Timestamp(Date().time)
+                Timestamp.valueOf(date.atStartOfDay())
             )
             createExchangeRate(exchangeRateEntity)
         }

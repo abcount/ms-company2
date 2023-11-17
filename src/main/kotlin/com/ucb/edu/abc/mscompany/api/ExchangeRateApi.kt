@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.api
 
 import com.ucb.edu.abc.mscompany.bl.ExchangeRateBl
+import com.ucb.edu.abc.mscompany.dto.request.CreateExchangeRatDto
 import com.ucb.edu.abc.mscompany.dto.request.ExchangeDto
 import com.ucb.edu.abc.mscompany.dto.request.UpdateExchangeRate
 import com.ucb.edu.abc.mscompany.dto.response.ListExchangeRateDateDto
@@ -47,14 +48,14 @@ class ExchangeRateApi @Autowired constructor(
     }
 
     @PostMapping("/{companyId}")
-    fun createExchangeRate(@PathVariable companyId: Int, @RequestBody exchangeRateDto: List<ExchangeDto>): ResponseEntity<ResponseDto<*>>{
+    fun createExchangeRate(@PathVariable companyId: Int, @RequestBody createExchangeRatDto: CreateExchangeRatDto): ResponseEntity<ResponseDto<*>>{
         logger.info("Creando tipos de cambio")
-        val exist = exchangeRateBl.existRegister(companyId)
+        val exist = exchangeRateBl.existRegisterByDay(companyId, createExchangeRatDto.date)
         if(exist) {
             return ResponseEntity.ok(
                 ResponseDto(false, "Ya existen registros de tipos de cambio el día de hoy", false, ""))
         }
-        exchangeRateBl.createExchangeRateList(exchangeRateDto, companyId)
+        exchangeRateBl.createExchangeRateList(createExchangeRatDto.exchange, companyId)
         return ResponseEntity.ok(
             ResponseDto("", "Tipo de cambio creado correctamente", true, "" ))
     }
