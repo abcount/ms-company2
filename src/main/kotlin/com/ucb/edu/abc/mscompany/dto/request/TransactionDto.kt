@@ -15,10 +15,10 @@ import java.util.Date
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TransactionDto(
         var subsidiaryId: Int,
-        var currencyId: Int,
+        var currencyId: String,
         var transactionTypeId: Int,
         var areaId: Int,
-        var date: LocalDateTime,
+        var date: Date,
         var ajuste: Boolean,
         var glosaGeneral: String,
         var transactions: List<TransactionAccountDto>,
@@ -39,4 +39,4 @@ data class TransactionAccountDto (
         var glosaDetail: String,
         var documentCode: String?,
 
-)
+        )
