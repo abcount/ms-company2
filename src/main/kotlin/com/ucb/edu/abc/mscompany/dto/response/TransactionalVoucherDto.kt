@@ -6,6 +6,7 @@ import com.ucb.edu.abc.mscompany.entity.TransactionTypeEntity
 import lombok.AllArgsConstructor
 import lombok.Data
 import lombok.NoArgsConstructor
+import java.math.BigDecimal
 import java.util.Date
 
 
@@ -70,7 +71,7 @@ data class CurrencyVoucher(
     val exchangeRateId: Int,
     val moneyName: String,
     val abbreviationName: String,
-    val currency: Double
+    val currency: BigDecimal
 )
 
 @Data

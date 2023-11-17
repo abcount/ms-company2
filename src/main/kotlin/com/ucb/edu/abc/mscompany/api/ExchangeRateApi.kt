@@ -55,7 +55,7 @@ class ExchangeRateApi @Autowired constructor(
             return ResponseEntity.ok(
                 ResponseDto(false, "Ya existen registros de tipos de cambio el día de hoy", false, ""))
         }
-        exchangeRateBl.createExchangeRateList(createExchangeRatDto.exchange, companyId)
+        exchangeRateBl.createExchangeRateList(createExchangeRatDto.exchange, companyId, createExchangeRatDto.date)
         return ResponseEntity.ok(
             ResponseDto("", "Tipo de cambio creado correctamente", true, "" ))
     }

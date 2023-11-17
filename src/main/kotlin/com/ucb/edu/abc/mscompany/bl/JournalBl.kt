@@ -148,7 +148,7 @@ class JournalBl @Autowired constructor(
                 i.transactionNumber,
                 transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
                 convertLocalDateTimeToString(i.date),
-                getNumber(BigDecimal(exchangeRateEntity.currency)),  // Exchange rate value
+                getNumber(exchangeRateEntity.currency),  // Exchange rate value
                 i.glosaGeneral,
                 accountDtoPDF,
                 getNumber(totalDebit),
