@@ -199,7 +199,7 @@ class TransactionBl @Autowired constructor(
                     it.exchangeRateId,
                     it.moneyName,
                     it.abbreviationName,
-                    it.currency.toDouble()
+                    it.currency
             )
         }
         transactionalVoucherDto.currencies = exchangeList
