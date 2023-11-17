@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.util.Date
 
 @Service
@@ -33,7 +34,7 @@ class ExchangeRateBl @Autowired constructor(
         }
     }
 
-    fun createExchangeRateList(exchangeRateList: List<ExchangeDto>, companyId: Int){
+    fun createExchangeRateList(exchangeRateList: List<ExchangeDto>, companyId: Int, date: LocalDate){
         for (exchange in exchangeRateList){
             val exchangeRateEntity = ExchangeRateEntity(
                 0,
@@ -41,7 +42,7 @@ class ExchangeRateBl @Autowired constructor(
                 companyId,
                 exchange.currency,
                 exchange.abbreviationName,
-                Timestamp(Date().time)
+                Timestamp.valueOf(date.atStartOfDay())
             )
             createExchangeRate(exchangeRateEntity)
         }
@@ -60,7 +61,7 @@ class ExchangeRateBl @Autowired constructor(
     fun getAllExchangeRateByCompanyIdAndDate(companyId: Int): List<ExchangeRateEntity>{
         try {
             logger.info("Obteniendo todos los tipos de cambio por compañia y fecha")
-            return exchangeRateDao.getAllExchangeRateByCompanyIdAndDate(companyId)
+            return exchangeRateDao.getAllExchangeRateByCompanyIdToday(companyId)
         } catch (e: Exception){
             logger.error("Error al obtener todos los tipos de cambio por compañia y fecha", e)
             throw PostgresException("Error al obtener todos los tipos de cambio por compañia y fecha", e.message.toString())
@@ -71,7 +72,17 @@ class ExchangeRateBl @Autowired constructor(
     fun existRegister(companyId: Int): Boolean{
         try {
             logger.info("Verificando si existen registros de tipos de cambio")
-            return exchangeRateDao.getAllExchangeRateByCompanyIdAndDate(companyId).isNotEmpty()
+            return exchangeRateDao.getAllExchangeRateByCompanyIdToday(companyId).isNotEmpty()
+        } catch (e: Exception){
+            logger.error("Error al verificar si existen registros de tipos de cambio", e)
+            throw PostgresException("Error al verificar si existen registros de tipos de cambio", e.message.toString())
+        }
+    }
+
+    fun existRegisterByDay(companyId: Int, date: LocalDate): Boolean{
+        try {
+            logger.info("Verificando si existen registros de tipos de cambio")
+            return exchangeRateDao.getAllExchangeRateByCompanyIdAndDate(companyId, date).isNotEmpty()
         } catch (e: Exception){
             logger.error("Error al verificar si existen registros de tipos de cambio", e)
             throw PostgresException("Error al verificar si existen registros de tipos de cambio", e.message.toString())
