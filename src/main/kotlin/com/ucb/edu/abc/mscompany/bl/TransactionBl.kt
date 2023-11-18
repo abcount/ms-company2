@@ -277,11 +277,11 @@ class TransactionBl @Autowired constructor(
     fun getListTransaction(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<ListTransactionDto>{
         try{
             val listTransaction = transactionDao.getListTransactions(companyId, subsidiaryId, areaId, transactionTypeId).map{
-                val list = transactionAccountBl.getAllTransactionByTransactionId(it.transactionId)
+                val list = transactionAccountBl.getAllTransactionByTransactionId(it.transactionId, it.exchangeRateId)
                 ListTransactionDto(
                         it.transactionNumber,
                         it.transactionId,
-                        exchangeRateBl.getExchangeRate(it.exchangeRateId!!),
+                        exchangeRateBl.getExchangeRate(it.exchangeRateId),
                         getStringDate(it.date.time),
                         it.glosaGeneral,
                         list,
@@ -291,7 +291,7 @@ class TransactionBl @Autowired constructor(
             }
             return listTransaction
         }catch (e: Exception){
-            logger.error("Error al obtener las transacciones", e.message.toString())
+            logger.error("Error al obtener las transacciones ", e.message.toString())
             throw PostgresException("Error al obtener las transacciones ", e.message.toString())
         }
     }

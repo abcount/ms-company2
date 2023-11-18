@@ -13,10 +13,10 @@ class TransactionAccountBl @Autowired constructor(
 ){
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun getAllTransactionByTransactionId(transactionId: Int): List<TransactionListDto>{
+    fun getAllTransactionByTransactionId(transactionId: Int, exchangeRateId: Int): List<TransactionListDto>{
         try{
             logger.info("Obteniendo todas las transacciones por id de transaccion")
-            return transactionAccountDao.getTransactionAccount(transactionId)
+            return transactionAccountDao.getTransactionAccount(transactionId, exchangeRateId)
         } catch (e: Exception){
             logger.error("Error al obtener todas las transacciones por id de transaccion", e)
             throw PostgresException("Error al obtener todas las transacciones por id de transaccion", e.message.toString())

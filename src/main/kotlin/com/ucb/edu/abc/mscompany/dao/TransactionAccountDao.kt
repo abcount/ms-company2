@@ -26,13 +26,15 @@ interface TransactionAccountDao {
     @Select("SELECT a.account_id, a.code_account, a.name_account, e.entity_id, e.entity_name, " +
             "     aux.auxiliary_account_id as auxiliaryId, aux.code_account, " +
             "     dc.amount_debit, dc.amount_credit, ta.glosa_detail, ta.document_number as documentCode " +
-            "FROM transaction_account ta " +
+            "FROM transaction_account ta" +
             "         LEFT JOIN account a ON ta.account_id = a.account_id " +
             "         LEFT JOIN entity e ON ta.entity_id = e.entity_id " +
             "         LEFT JOIN auxiliary_account aux ON ta.auxiliary_account_id = aux.auxiliary_account_id " +
             "         LEFT JOIN debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id " +
-            "WHERE ta.transaction_id = #{transactionAccountId}")
-    fun getTransactionAccount(transactionAccountId: Int): List<TransactionListDto>
+            "         LEFT JOIN exchange_rate er ON dc.exchange_rate_id = er.exchange_rate_id " +
+            "WHERE ta.transaction_id = #{transactionAccountId} " +
+            "AND er.exchange_rate_id = #{exchangeRateId}")
+    fun getTransactionAccount(transactionAccountId: Int, exchangeRateId: Int): List<TransactionListDto>
 
 
     @Select("SELECT a.account_id, a.code_account, a.name_account, e.entity_id, e.entity_name, " +
