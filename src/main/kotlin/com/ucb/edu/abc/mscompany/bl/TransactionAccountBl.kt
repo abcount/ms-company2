@@ -23,4 +23,14 @@ class TransactionAccountBl @Autowired constructor(
         }
     }
 
+    fun getAllTransactionByTransactionIdAndCurrencyIso(transactionId: Int, currencyIso: String): List<TransactionListDto>{
+        try{
+            logger.info("Obteniendo todas las transacciones por id de transaccion y iso de moneda")
+            return transactionAccountDao.getTransactionAccountByCurrencyIso(transactionId, currencyIso)
+        } catch (e: Exception){
+            logger.error("Error al obtener todas las transacciones por id de transaccion y iso de moneda", e)
+            throw PostgresException("Error al obtener todas las transacciones por id de transaccion y iso de moneda", e.message.toString())
+        }
+    }
+
 }

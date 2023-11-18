@@ -22,7 +22,6 @@ class JournalBl @Autowired constructor(
         private val subsidiaryDao: SubsidiaryDao,
         private val companyDao: CompanyDao,
         private val areaDao: AreaDao,
-        private val exchangeRateDao: ExchangeRateDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
         private val exchangeRateBl: ExchangeRateBl,
         private val companyBl: CompanyBl,
@@ -78,7 +77,7 @@ class JournalBl @Autowired constructor(
             val totalCredit = accountDto.sumOf { it.creditAmount }
             transactionDtoList.add(TransactionDto(
                     i.transactionNumber,
-                    transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
+                    transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId.toInt()),
                     i.date,
                     BigDecimal(0.0),  // Exchange rate value
                     i.glosaGeneral,
@@ -146,7 +145,7 @@ class JournalBl @Autowired constructor(
             }
             transactionDtoList.add(TransactionDtoPDF(
                 i.transactionNumber,
-                transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId),
+                transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId.toInt()),
                 convertLocalDateTimeToString(i.date),
                 getNumber(exchangeRateEntity.currency),  // Exchange rate value
                 i.glosaGeneral,

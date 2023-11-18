@@ -154,6 +154,16 @@ class ExchangeRateBl @Autowired constructor(
         }
     }
 
+    fun getExchangeRateByDateAndIso(companyId: Int, date: String, iso:String): ExchangeRateEntity{
+        try {
+            logger.info("Obteniendo tipo de cambio por fecha y iso")
+            return exchangeRateDao.getExchangeByCompanyIdAndAbbreviationName(companyId, iso, date)
+        } catch (e: Exception){
+            logger.error("Error al obtener tipos de cambio por fecha y iso", e)
+            throw PostgresException("Error al obtener tipos de cambio por fecha y iso", e.message.toString())
+        }
+    }
+
 
 
 

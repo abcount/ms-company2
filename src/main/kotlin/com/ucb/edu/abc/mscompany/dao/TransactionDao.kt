@@ -141,6 +141,7 @@ interface TransactionDao {
     )
     fun getLedgerTransactions(companyId: Int, accountId: Int, areaSubsidiaryId: Int?, from: Date, to: Date, exchangeRateIso: String): List<TransactionLedger>
 
-
+    @Select("SELECT * FROM transaction WHERE transaction_id = #{transactionId}")
+    fun getTransactionById(transactionId: Int): TransactionEntity?
 
 }

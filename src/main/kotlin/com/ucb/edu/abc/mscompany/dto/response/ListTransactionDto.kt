@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ListTransactionDto(
     var transactionNumber: Int,
+    var transactionId: Int,
     var currency: CurrencyVoucher,
     var date: String,
     var glosaGeneral: String,

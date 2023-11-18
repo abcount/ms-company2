@@ -31,7 +31,7 @@ data class TransactionDto(
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TransactionAccountDto (
-        var accountId: Long,
+        var accountId: Int,
         var entityId: Int?,
         var auxiliaryId: Int?,
         var amountDebit: BigDecimal,

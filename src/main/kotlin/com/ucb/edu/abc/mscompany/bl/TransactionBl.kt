@@ -4,22 +4,21 @@ import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.TransactionAccountDto
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.*
-import com.ucb.edu.abc.mscompany.entity.ClosingSheetEntity
 import com.ucb.edu.abc.mscompany.entity.DebitCreditEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionAccountEntity
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
 import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
+import com.ucb.edu.abc.mscompany.exception.EmptyResponseException
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Service
@@ -85,7 +84,7 @@ class TransactionBl @Autowired constructor(
             transactionAccountEntity.companyId = companyId
             transactionAccountDao.create(transactionAccountEntity)
             if(!transactionDto.ajuste){
-                val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId, exchange.exchangeRateId)
+                val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId.toLong(), exchange.exchangeRateId)
                 debitCreditDao.create(debitCreditEntity)
             }else {
                 val isTransactionInBob = transactionDto.currencyId.equals("BOL", ignoreCase = true)
@@ -108,7 +107,7 @@ class TransactionBl @Autowired constructor(
                 for (otherExchange in exchangeList) {
                     if (otherExchange.exchangeRateId != exchange.exchangeRateId) {
                         val debitCreditEntity = DebitCreditEntity()
-                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId
+                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId.toLong()
                         debitCreditEntity.exchangeRateId = otherExchange.exchangeRateId
 
                         val amountDebit = amountInBobDebit.toDouble()
@@ -125,7 +124,7 @@ class TransactionBl @Autowired constructor(
                         debitCreditDao.create(debitCreditEntity)
                     }else{
                         val debitCreditEntity = DebitCreditEntity()
-                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId
+                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId.toLong()
                         debitCreditEntity.exchangeRateId = otherExchange.exchangeRateId
                         debitCreditEntity.amountDebit = amountInBobDebit
                         debitCreditEntity.amountCredit = amountInBobCredit
@@ -244,7 +243,7 @@ class TransactionBl @Autowired constructor(
 
     fun factoryTransaction(transactionDto: TransactionDto, companyId: Int, userId: Int, exchangeRateId: Int): TransactionEntity{
         val transactionEntity = TransactionEntity()
-        transactionEntity.transactionTypeId = transactionDto.transactionTypeId
+        transactionEntity.transactionTypeId = transactionDto.transactionTypeId.toLong()
         transactionEntity.transactionNumber= (transactionDao.getLastTransactionNumber(companyId)?.plus(1)?:1).toLong()
         transactionEntity.glosaGeneral = transactionDto.glosaGeneral
         transactionEntity.date = LocalDateTime.now()
@@ -259,7 +258,7 @@ class TransactionBl @Autowired constructor(
     fun factoryTransactionAccount(transactionAccountDto: TransactionAccountDto): TransactionAccountEntity{
         val transactionAccountEntity = TransactionAccountEntity()
         transactionAccountEntity.entityId = transactionAccountDto.entityId
-        transactionAccountEntity.accountId = transactionAccountDto.accountId
+        transactionAccountEntity.accountId = transactionAccountDto.accountId.toLong()
         transactionAccountEntity.auxiliaryAccountId = transactionAccountDto.auxiliaryId
         transactionAccountEntity.glosaDetail = transactionAccountDto.glosaDetail
         transactionAccountEntity.documentNumber = transactionAccountDto.documentCode
@@ -279,16 +278,15 @@ class TransactionBl @Autowired constructor(
         try{
             val listTransaction = transactionDao.getListTransactions(companyId, subsidiaryId, areaId, transactionTypeId).map{
                 val list = transactionAccountBl.getAllTransactionByTransactionId(it.transactionId)
-                println(list)
-                val total = getTotalDebitCredit(list)
                 ListTransactionDto(
                         it.transactionNumber,
+                        it.transactionId,
                         exchangeRateBl.getExchangeRate(it.exchangeRateId!!),
                         getStringDate(it.date.time),
                         it.glosaGeneral,
                         list,
-                        total[0],
-                        total[1]
+                        list.sumOf {tr -> tr.amountDebit },
+                        list.sumOf {tr -> tr.amountCredit }
                 )
             }
             return listTransaction
@@ -305,14 +303,9 @@ class TransactionBl @Autowired constructor(
         return sdf.format(date)
     }
 
-    fun getTotalDebitCredit(list: List<TransactionListDto>): List<Double>{
-        var totalDebit = 0.0
-        var totalCredit = 0.0
-        list.forEach{
-            totalDebit += it.amountDebit
-            totalCredit += it.amountCredit
-        }
-        return listOf(totalDebit, totalCredit)
+    fun getStringDateFromLocalDateTime(localDateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return localDateTime.format(formatter)
     }
 
     fun getLastClosingSheet(companyId: Int): Date{
@@ -320,6 +313,44 @@ class TransactionBl @Autowired constructor(
         return closingSheetDao.getLastClosing(companyId) ?: companyDao.getOpeningDate(companyId)
 
     }
+
+    fun getTransactionByIdAndCurrency(companyId: Int, transactionId: Int, currency: String): ListTransactionDto {
+        val transactionEntity = getTransactionById(transactionId)
+        val dateString = getStringDateFromLocalDateTime(transactionEntity.date)
+        val exchangeRateEntity = exchangeRateBl.getExchangeRateByDateAndIso(companyId, dateString, currency)
+        val listTransaction = transactionAccountBl.getAllTransactionByTransactionIdAndCurrencyIso(transactionId, currency)
+        return ListTransactionDto(
+                transactionEntity.transactionNumber.toInt(),
+                transactionEntity.transactionId.toInt(),
+                CurrencyVoucher(
+                        exchangeRateEntity.exchangeRateId,
+                        exchangeRateEntity.moneyName,
+                        exchangeRateEntity.abbreviationName,
+                        exchangeRateEntity.currency
+                ),
+                dateString,
+                transactionEntity.glosaGeneral,
+                listTransaction,
+                listTransaction.sumOf { tr -> tr.amountDebit },
+                listTransaction.sumOf { tr -> tr.amountCredit }
+        )
+    }
+
+    fun getTransactionById(transactionId: Int): TransactionEntity{
+        try {
+            val transactionEntity = transactionDao.getTransactionById(transactionId)
+            if(transactionEntity == null){
+                logger.error("No se encontro la transaccion")
+                throw EmptyResponseException("No se encontro la transaccion")
+            }
+            return transactionEntity
+        }catch (e: Exception){
+            logger.error("Error al obtener la transaccion", e.message.toString())
+            throw PostgresException("Error al obtener la transaccion", e.message.toString())
+        }
+    }
+
+
 
 
 

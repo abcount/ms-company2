@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 data class TransactionEntity(
         var transactionId: Long,
-        var transactionTypeId: Int,
+        var transactionTypeId: Long,
         var transactionNumber: Long,
         var glosaGeneral: String,
         var date: LocalDateTime,

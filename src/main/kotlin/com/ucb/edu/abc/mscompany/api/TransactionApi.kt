@@ -35,6 +35,16 @@ class TransactionApi @Autowired constructor(
             ResponseDto(listTransaction, "Datos obtenidos con exito", true, "" ))
     }
 
+    @GetMapping("/currency/{companyId}")
+    fun getTransactionWithCurrency(
+            @PathVariable companyId: Int,
+            @RequestParam transactionId: Int,
+            @RequestParam currency: String): ResponseEntity<ResponseDto<*>>{
+        val transaction = transactionBl.getTransactionByIdAndCurrency(companyId, transactionId, currency)
+        return ResponseEntity.ok(
+            ResponseDto(transaction, "Datos obtenidos con exito", true, "" ))
+    }
+
 
 
 }
