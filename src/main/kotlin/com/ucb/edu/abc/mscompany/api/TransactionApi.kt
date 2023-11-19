@@ -1,5 +1,7 @@
 package com.ucb.edu.abc.mscompany.api
 
+import com.ucb.edu.abc.mscompany.bl.FileBl
+import com.ucb.edu.abc.mscompany.bl.PDFTurtleBl
 import com.ucb.edu.abc.mscompany.bl.TransactionBl
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/transactional/voucher")
 class TransactionApi @Autowired constructor(
         private val transactionBl: TransactionBl,
+        private val pdfTurtleBl: PDFTurtleBl,
+        private val fileBl: FileBl
 ) {
     @PostMapping("/{companyId}")
     fun saveTransaction(@PathVariable companyId: Int, @RequestBody transactionDto: TransactionDto, @RequestHeader headers: Map<String, String>): ResponseDto<String> {
@@ -44,6 +48,23 @@ class TransactionApi @Autowired constructor(
         return ResponseEntity.ok(
             ResponseDto(transaction, "Datos obtenidos con exito", true, "" ))
     }
+
+    @GetMapping("/pdf/{companyId}")
+    suspend fun getPDFTransaction(
+            @PathVariable companyId: Int,
+            @RequestParam transactionId: Int,
+            @RequestParam currency: String,
+            @RequestHeader headers: Map<String,String>): ResponseEntity<ResponseDto<*>>{
+        val transaction = transactionBl.getPDFTransaction(companyId, transactionId, currency)
+        val footer = pdfTurtleBl.readHtmlToString("ReportPDF/transaction/footer.html")
+        val header = pdfTurtleBl.readHtmlToString("ReportPDF/transaction/header.html")
+        val body = pdfTurtleBl.readHtmlToString("ReportPDF/transaction/index.html")
+        val pdf = pdfTurtleBl.getPDF(footer, header, body, transaction)
+        val url = fileBl.generatePDFFile(pdf!!, "application/pdf", companyId, headers, "Comprobante Diario" )
+        return ResponseEntity.ok(
+            ResponseDto(url, "Datos obtenidos con exito", true, "" ))
+    }
+
 
 
 

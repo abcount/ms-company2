@@ -1,5 +1,6 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.config.FormatDataClass
 import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.TransactionAccountDto
 import com.ucb.edu.abc.mscompany.dto.request.TransactionDto
@@ -42,7 +43,9 @@ class TransactionBl @Autowired constructor(
         private val companyDao: CompanyDao,
         private val exchangeRateBl: ExchangeRateBl,
         private val entityBl: EntityBl,
-        private val transactionAccountBl: TransactionAccountBl
+        private val transactionAccountBl: TransactionAccountBl,
+        private val areaSubsidiaryBl: AreaSubsidiaryBl,
+        private val format: FormatDataClass
 
 
 ){
@@ -348,6 +351,50 @@ class TransactionBl @Autowired constructor(
             logger.error("Error al obtener la transaccion", e.message.toString())
             throw PostgresException("Error al obtener la transaccion", e.message.toString())
         }
+    }
+
+    suspend fun getPDFTransaction(companyId: Int, transactionId: Int, currency: String): ListTransactionDtoPdf{
+        val logoUrl = companyBl.getUrlImageByCompanyId(companyId)
+        val stringToday = getStringDateFromLocalDateTime(LocalDateTime.now())
+        val transactionEntity = getTransactionById(transactionId)
+        val areaSubsidiaryData = areaSubsidiaryBl.getAreaAndSubsidiaryNameById(transactionEntity.areaSubsidiaryId!!)
+        val dateString = getStringDateFromLocalDateTime(transactionEntity.date)
+        val exchangeRateEntity = exchangeRateBl.getExchangeRateByDateAndIso(companyId, dateString, currency)
+        val transaction = transactionAccountBl.getAllTransactionByTransactionIdAndCurrencyIso(transactionId, currency)
+        val listTransaction = transaction.map {
+            TransactionListDtoPdf(
+                    it.accountId,
+                    it.accountCode,
+                    it.nameAccount,
+                    it.entityId,
+                    it.entityName,
+                    it.auxiliaryId,
+                    it.codeAccount,
+                    format.getNumber(it.amountDebit.toBigDecimal()),
+                    format.getNumber(it.amountCredit.toBigDecimal()),
+                    it.glosaDetail,
+                    it.documentCode
+            )
+        }
+        return ListTransactionDtoPdf(
+                logoUrl,
+                stringToday,
+                areaSubsidiaryData.subsidiaryName,
+                areaSubsidiaryData.areaName,
+                transactionEntity.transactionNumber.toInt(),
+                transactionEntity.transactionId.toInt(),
+                CurrencyVoucher(
+                        exchangeRateEntity.exchangeRateId,
+                        exchangeRateEntity.moneyName,
+                        exchangeRateEntity.abbreviationName,
+                        exchangeRateEntity.currency
+                ),
+                dateString,
+                transactionEntity.glosaGeneral,
+                listTransaction,
+                format.getNumber(transaction.sumOf { tr -> tr.amountDebit }.toBigDecimal()),
+                format.getNumber(transaction.sumOf { tr -> tr.amountCredit }.toBigDecimal())
+        )
     }
 
 

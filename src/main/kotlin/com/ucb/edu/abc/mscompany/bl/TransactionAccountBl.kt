@@ -2,6 +2,7 @@ package com.ucb.edu.abc.mscompany.bl
 
 import com.ucb.edu.abc.mscompany.dao.TransactionAccountDao
 import com.ucb.edu.abc.mscompany.dto.response.TransactionListDto
+import com.ucb.edu.abc.mscompany.dto.response.TransactionListDtoPdf
 import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,5 +33,7 @@ class TransactionAccountBl @Autowired constructor(
             throw PostgresException("Error al obtener todas las transacciones por id de transaccion y iso de moneda", e.message.toString())
         }
     }
+
+
 
 }

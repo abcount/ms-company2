@@ -37,3 +37,40 @@ data class TransactionListDto(
     var glosaDetail: String,
     var documentCode: String?
 )
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ListTransactionDtoPdf(
+        var logo: String,
+        var today: String,
+        var subsidiaryName: String,
+        var areaName: String,
+        var transactionNumber: Int,
+        var transactionId: Int,
+        var currency: CurrencyVoucher,
+        var date: String,
+        var glosaGeneral: String,
+        var transactions: List<TransactionListDtoPdf>,
+        var totalDebit: String,
+        var totalCredit: String
+)
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class TransactionListDtoPdf(
+        var accountId: Int,
+        var accountCode: String,
+        var nameAccount: String,
+        var entityId: Int?,
+        var entityName: String?,
+        var auxiliaryId: Int?,
+        var codeAccount: String?,
+        var amountDebit: String,
+        var amountCredit: String,
+        var glosaDetail: String,
+        var documentCode: String?
+)

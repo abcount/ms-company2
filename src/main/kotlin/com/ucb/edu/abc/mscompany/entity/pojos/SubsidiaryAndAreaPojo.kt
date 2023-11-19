@@ -19,3 +19,11 @@ data class SubsidiaryAndAreaPojo(
     var permissionId: Int?,
 ) {
 }
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+data class DataSubsidiary(
+        var areaName: String,
+        var subsidiaryName: String,
+)

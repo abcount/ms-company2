@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.AreaSubsidiaryEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.DataSubsidiary
 import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
@@ -40,6 +41,13 @@ interface AreaSubsidiaryDao {
         AND c.company_id = #{companyId}
     """)
     fun findByCompanyId(companyId: Int):List<SubsidiaryAndAreaPojo>
+
+    @Select("SELECT a.area_name, sub.subsidiary_name " +
+            "FROM area_subsidiary as ars " +
+            "JOIN area a ON ars.area_id = a.area_id " +
+            "JOIN subsidiary sub ON ars.subsidiary_id = sub.subsidiary_id " +
+            "WHERE ars.area_subsidiary_id = #{id}" )
+    fun findAreaAndSubsidiaryById(id: Int): DataSubsidiary
 
 
 }

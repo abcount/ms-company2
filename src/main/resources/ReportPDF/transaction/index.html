@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<style>
+		* {
+			font-family: 'Roboto', sans-serif;
+		}
+		.header-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			position: relative;
+			height: 50px;
+			margin-bottom: 15px;
+		}
+		img {
+			height: 50px;
+			width: 100px;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		h1 {
+			font-size: 18px;
+			font-weight: 600;
+			color: #383838;
+			margin: 0;
+		}
+		h2 {
+			font-size: 15px;
+			font-weight: 500;
+			color: #757575;
+			margin: 5px 0px;
+		}
+		table {
+			width: 100%;
+			border: 1px solid #ededed !important;
+			margin-bottom: 15px;
+		}
+		td, th {
+			font-size: 13px;
+			font-weight: 500 !important;
+			color: #383838;
+			padding: 5px 10px;
+		}
+		.text-light {
+			font-weight: 400 !important;
+		}
+		.center {
+			text-align: center ;
+		}
+		.right {
+			text-align: right;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header-container">
+		<img src={{ .logo }} />
+		<h1>Comprobante de Contabilidad</h1>
+		<h2>{{ .today }}</h2>
+	</div>
+	<h2>Sucursal: {{ .subsidiaryName }}	</h2>
+	<h2 style="margin-bottom: 15px;">Área: {{ .areaName }}</h2>
+	<table rules=all>
+		<tr>
+			<td>Fecha</td>
+			<td>{{ .date }}</td>
+			<td>t/c</td>
+			<td>{{ .currency.currency }}</td>
+			<td>{{ .transactionType }}</td>
+			<td>Número: {{ .transactionNumber }}</td>
+		</tr>
+		<tr>
+			<td colspan="6" class="text-light">CONCEPTO: {{ .glosaGeneral }}</td>
+		<tr>
+	</table>
+	<table rules=all>
+		<tr>
+			<td colspan="2"></td>
+			<td colspan="2" class="center">{{ .currency.moneyName }}</td>
+		</tr>
+		<tr>
+			<td>Cuenta</td>
+			<td>Nombre de la Cuenta/Descrpción</td>
+			<td>Debe</td>
+			<td>Haber</td>
+		</tr>
+		{{ range .transactions }}
+			<tr>
+				<td>{{ .accountCode }}</td>
+				<td>
+					{{ .documentCode }}
+					<br>
+					{{ .glosaDetail }}
+				</td>
+				<td class="right">{{ .amountDebit }}</td>
+				<td class="right">{{ .amountCredit }}</td>
+			</tr>
+		{{ end }}
+		<tr>
+			<td colspan="2">SUMAS</td>
+			<td class="right">{{ .totalDebit }}</td>
+			<td class="right">{{ .totalCredit }}</td>
+		<tr>
+	</table>
+	<table style="margin-top: 20px;" rules=all>
+		<tr style="height: 50px;">
+			<td style="width: 25%;"></td>
+			<td style="width: 25%;"></td>
+			<td style="width: 25%;"></td>
+			<td style="width: 25%;">
+				<br>
+				<br>
+				Firma/Sello
+				<br>
+				Nombre
+			</td>
+		</tr>
+		<tr style="height: 30px;">
+			<td>Asistente contable</td>
+			<td></td>
+			<td>Contador general</td>
+			<td> C.I. N</td>
+		</tr>
+	</table>
+</body>
+
+</html>

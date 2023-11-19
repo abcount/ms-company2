@@ -7,6 +7,7 @@ import com.ucb.edu.abc.mscompany.dto.response.AreaDtoRes
 import com.ucb.edu.abc.mscompany.dto.response.SubsidiaryDtoRes
 
 import com.ucb.edu.abc.mscompany.entity.AreaSubsidiaryEntity
+import com.ucb.edu.abc.mscompany.entity.pojos.DataSubsidiary
 import com.ucb.edu.abc.mscompany.entity.pojos.SubsidiaryAndAreaPojo
 import org.apache.ibatis.exceptions.PersistenceException
 import org.slf4j.LoggerFactory
@@ -83,6 +84,16 @@ class AreaSubsidiaryBl @Autowired constructor(
 
     fun getAreaSubIdByCompany( areaId: Int, subsidiaryId: Int): Int? {
         return areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryId, areaId)
+    }
+
+    fun getAreaAndSubsidiaryNameById(areaSubsidiaryId: Int): DataSubsidiary {
+        try{
+            logger.info("Obteniendo area y sucursal por id")
+            return areaSubsidiaryDao.findAreaAndSubsidiaryById(areaSubsidiaryId)
+        }catch (e: Exception){
+            logger.error("Error al obtener area y sucursal por id", e)
+            throw PersistenceException("Error al obtener area y sucursal por id", e)
+        }
     }
 
 
