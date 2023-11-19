@@ -102,7 +102,8 @@ interface TransactionDao {
             " WHERE t.company_id = #{companyId}" +
             " AND a.area_id = #{areaId}" +
             " AND s.subsidiary_id = #{subsidiaryId}" +
-            " AND t.transaction_type_id = #{transactionTypeId}")
+            " AND t.transaction_type_id = #{transactionTypeId}" +
+            " ORDER BY t.date DESC ")
     fun getListTransactions(companyId: Int, subsidiaryId: Int, areaId: Int, transactionTypeId: Int): List<TransactionViewPojo>
 
 

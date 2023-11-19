@@ -39,9 +39,10 @@ interface ExchangeRateDao {
             "WHERE exchange_rate_id = #{exchangeRateId}")
     fun getExchangeRate(exchangeRateId: Int): CurrencyVoucher
 
-    @Select("SELECT DISTINCT TO_CHAR(date, 'YYYY-MM-DD') " +
+    @Select("SELECT DISTINCT TO_CHAR(date, 'YYYY-MM-DD') as formatted_date " +
             "FROM exchange_rate " +
-            "WHERE company_id = #{companyId}")
+            "WHERE company_id = #{companyId} " +
+            "ORDER BY formatted_date DESC")
     fun getListDates(companyId: Int): List<String>
 
 
