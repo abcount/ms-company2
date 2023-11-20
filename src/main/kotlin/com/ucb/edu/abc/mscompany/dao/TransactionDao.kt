@@ -94,7 +94,7 @@ interface TransactionDao {
   )
   fun getAccountDetailsByTransactionId(transactionId: Long, exchangeMoneyIso: String): List<AccountDto>
 
-    @Select("SELECT t.transaction_id, t.transaction_number, t.exchange_rate_id, t.date, t.glosa_general" +
+    @Select("SELECT t.transaction_id, t.transaction_number, t.ajuste, t.exchange_rate_id, t.date, t.glosa_general" +
             " FROM transaction t" +
             " INNER JOIN area_subsidiary asub ON t.area_subsidiary_id = asub.area_subsidiary_id" +
             " INNER JOIN area a ON asub.area_id = a.area_id" +

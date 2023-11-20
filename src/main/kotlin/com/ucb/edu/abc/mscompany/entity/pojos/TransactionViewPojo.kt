@@ -6,6 +6,7 @@ import java.sql.Timestamp
 data class TransactionViewPojo(
     var transactionId: Int,
     var transactionNumber: Int,
+    var ajuste: Boolean,
     var exchangeRateId: Int,
     var date: Timestamp,
     var glosaGeneral: String,

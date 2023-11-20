@@ -86,7 +86,7 @@ class TransactionBl @Autowired constructor(
             transactionAccountEntity.transactionId = transactionEntity.transactionId
             transactionAccountEntity.companyId = companyId
             transactionAccountDao.create(transactionAccountEntity)
-            if(!transactionDto.ajuste){
+            if(transactionDto.ajuste){
                 val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId.toLong(), exchange.exchangeRateId)
                 debitCreditDao.create(debitCreditEntity)
             }else {
@@ -284,6 +284,7 @@ class TransactionBl @Autowired constructor(
                 ListTransactionDto(
                         it.transactionNumber,
                         it.transactionId,
+                        it.ajuste,
                         exchangeRateBl.getExchangeRate(it.exchangeRateId),
                         getStringDate(it.date.time),
                         it.glosaGeneral,
@@ -325,6 +326,7 @@ class TransactionBl @Autowired constructor(
         return ListTransactionDto(
                 transactionEntity.transactionNumber.toInt(),
                 transactionEntity.transactionId.toInt(),
+                transactionEntity.ajuste,
                 CurrencyVoucher(
                         exchangeRateEntity.exchangeRateId,
                         exchangeRateEntity.moneyName,
