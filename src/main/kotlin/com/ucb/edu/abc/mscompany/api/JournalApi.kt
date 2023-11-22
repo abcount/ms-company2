@@ -41,7 +41,7 @@ class JournalApi @Autowired constructor(
         @RequestBody journalRequestDto: JournalRequestDto,
         @RequestHeader headers: Map<String, String>): ResponseEntity<ResponseDto<String>>{
         logger.info("Journal Request: $journalRequestDto")
-        val journalResponseDto = journalBl.getJournalForPDF(companyId, journalRequestDto)
+        val journalResponseDto = journalBl.getJournalForPDF(companyId, journalRequestDto, headers)
 
         val footer = pdfTurtleBl.readHtmlToString("ReportPDF/libro-diario/footer.html")
         val header = pdfTurtleBl.readHtmlToString("ReportPDF/libro-diario/header.html")

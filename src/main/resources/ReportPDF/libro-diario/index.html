@@ -1,64 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<style>
-			.header-container {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				font-family: 'Roboto', sans-serif;
-				position: relative;
-			}
-			h1 {
-				font-size: 18px;
-				font-weight: 600;
-				color: #383838;
-				margin: 0;
-			}
-			h2 {
-				font-size: 15px;
-				font-weight: 500;
-				color: #757575;
-				margin: 0;
-			}
-			h3 {
-				font-size: 15px;
-				font-weight: 600;
-				color: #383838;
-				margin: 0;
-			}
-			h4 {
-				font-size: 13px;
-				font-weight: 600;
-				color: #757575;
-				margin: 2px 0 10px 0;
-			}
-			table {
-				margin-bottom: 15px;
-			}
-			td, th {
-				font-size: 12px;
-				font-weight: 500 !important;
-				color: #383838;
-				border: 1px solid #ededed !important;
-			}
-			.left {
-    		text-align: left;
-			}
-			.right {
-				text-align: right;
-			}
-			.bold {
-				font-weight: 600 !important;
-			}
-			img {
-				height: 50px;
-				position: absolute;
-				left: 0;
-				top: 0;
-			}
-		</style>
+				.header-container {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					font-family: 'Roboto', sans-serif;
+					position: relative;
+				}
+				h1 {
+					font-size: 18px;
+					font-weight: 600;
+					color: #383838;
+					margin: 0;
+				}
+				h2 {
+					font-size: 15px;
+					font-weight: 500;
+					color: #757575;
+					margin: 0;
+				}
+				h3 {
+					font-size: 15px;
+					font-weight: 600;
+					color: #383838;
+					margin: 0;
+				}
+				h4 {
+					font-size: 13px;
+					font-weight: 600;
+					color: #757575;
+					margin: 2px 0 10px 0;
+				}
+				td, th {
+					font-size: 12px;
+					font-weight: 500 !important;
+					color: #383838;
+					border: 1px solid #ededed !important;
+				}
+				.left {
+					text-align: left;
+				}
+				.right {
+					text-align: right;
+				}
+				.bold {
+					font-weight: 600 !important;
+				}
+				img {
+					height: 50px;
+					position: absolute;
+					left: 0;
+					top: 0;
+				}
+			</style>
 	</head>
 	<body class="pdf-turtle">
 		<div class="header-container">
@@ -67,27 +65,29 @@
 			<h2>Empresa {{ .companyName }}</h2>
 			<h2>Del {{ .dateFrom }} al {{ .dateTo }}</h2>
 			<h2>Expresado en {{ .currency }}</h2>
-			<h2>{{ .transactionType }}</h2>
+			<h2>Transacción de {{ .transactionType }}</h2>
 		</div>
 		{{  range .subsidiaries }}
 			<h3>{{ .subsidiaryName }}</h3>
 			{{ range .areas }}
 				<h4>{{ .areaName }}</h4>
 				{{ range .transactions }}
-					<table id="{{.accounts}}">
+					<table>
 						<tr>
-							<td>Número: {{ .transactionNumber }}</td>
-							<td>Fecha: {{ .registrationDate }}</td>
-							<td COLSPAN="2">Tipo de cambio: {{ .exchangeRate }}</td>
+							<td style="width: 34%;">Número: {{ .transactionNumber }}</td>
+							<td style="width: 33%;">Fecha: {{ .registrationDate }}</td>
+							<td style="width: 32%;" colspan="2">Tipo de cambio: {{ .exchangeRate }}</td>
 						</tr>
 						<tr>
-							<td COLSPAN="4">Concepto: {{ .glosaGeneral }}</td>
+							<td COLSPAN="3">Concepto: {{ .glosaGeneral }}</td>
 						</tr>
+					</table>
+					<table style="margin-bottom: 15px;">
 						<tr>
-							<th class="left">Código de Cuenta</th>
-							<th class="left">Nombre de la Cuenta / Descripción</th>
-							<th>Debe</th>
-							<th>Haber</th>
+							<th style="width: 15%;" class="left">Código</th>
+							<th class="left">Nombre / Descripción</th>
+							<th style="width: 16%;">Debe</th>
+							<th style="width: 16%;">Haber</th>
 						</tr>
 						{{ range .accounts }}
 							<tr>

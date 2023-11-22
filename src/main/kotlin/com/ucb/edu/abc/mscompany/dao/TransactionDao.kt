@@ -83,13 +83,11 @@ interface TransactionDao {
     JOIN 
         debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
     JOIN
-        exchange_rate er ON t.exchange_rate_id = er.exchange_rate_id
+        exchange_rate er ON dc.exchange_rate_id = er.exchange_rate_id
     WHERE 
         t.transaction_id = #{transactionId}
     AND 
         er.abbreviation_name = #{exchangeMoneyIso}
-    AND 
-        dc.exchange_rate_id = er.exchange_rate_id
     """
   )
   fun getAccountDetailsByTransactionId(transactionId: Long, exchangeMoneyIso: String): List<AccountDto>

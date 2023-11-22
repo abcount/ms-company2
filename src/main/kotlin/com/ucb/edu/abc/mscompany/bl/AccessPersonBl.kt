@@ -41,9 +41,11 @@ class AccessPersonBl @Autowired constructor(
     }
 
 
+
+
     fun getAccessPersonInformationById(id: Int): AccessPersonEntity?{
         try {
-            val accessPersonEntity = accessPersonDao.findById(id.toInt())
+            val accessPersonEntity = accessPersonDao.findById(id)
                 .orElseThrow{ UserNotFoundException ("access person with id $id dont found in local DB")}
             return accessPersonEntity;
         }catch (ex: Exception){

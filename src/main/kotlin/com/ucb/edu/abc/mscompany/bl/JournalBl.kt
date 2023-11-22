@@ -1,9 +1,11 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.config.FormatDataClass
 import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.JournalRequestDto
 import com.ucb.edu.abc.mscompany.dto.response.*
 import com.ucb.edu.abc.mscompany.entity.TransactionEntity
+import com.ucb.edu.abc.mscompany.enums.UserAbcCategory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +28,8 @@ class JournalBl @Autowired constructor(
         private val exchangeRateBl: ExchangeRateBl,
         private val companyBl: CompanyBl,
         private val transactionTypeBl: TransactionTypeBl,
+    private val formatDataClass: FormatDataClass,
+    private val accessPersonBl: AccessPersonBl
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
     fun getJournal(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDto {
@@ -100,7 +104,7 @@ class JournalBl @Autowired constructor(
         return transactionDtoList
     }
 
-    suspend fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto): JournalResponseDtoPdf{
+    suspend fun getJournalForPDF(companyId: Int, journalRequestDto: JournalRequestDto, header: Map<String,String>): JournalResponseDtoPdf{
         logger.info("Obteniendo libro diario de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
         val url = companyBl.getUrlImageByCompanyId(companyId)
@@ -114,20 +118,39 @@ class JournalBl @Autowired constructor(
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
                 val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
-                val transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
-                areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
+                var transactionDtoList = mutableListOf<TransactionDtoPDF>()
+                if(transactions.isNotEmpty()){
+                    transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
+                }
+                if(transactionDtoList.isNotEmpty()){
+                    areaDtoList.add(AreaDtoPDF(areaEntity.areaId, areaEntity.areaName, transactionDtoList))
+                }
             }
 
-            subsidiaryDtoList.add(SubsidiaryDtoPDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
+            if(areaDtoList.isNotEmpty()){
+                subsidiaryDtoList.add(SubsidiaryDtoPDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
+            }
+
         }
 
+        val date = LocalDateTime.now()
+        val userEntity = accessPersonBl.getAccessPersonInformationByToken(header["authorization"]!!.substring(7))
+        val userName = userEntity!!.firstName + " " + userEntity!!.lastName
+
         return JournalResponseDtoPdf(
-                companyEntity.companyName,convertDateToString(journalRequestDto.from),
-                url,type,
-                convertDateToString(journalRequestDto.to),exchangeMoney.moneyName,subsidiaryDtoList)
+            companyEntity.companyName,
+            formatDataClass.convertDateToString(journalRequestDto.from),
+            url,
+            userName,
+            formatDataClass.getDateFromLocalDateTime(date),
+            formatDataClass.getHourFromLocalDateTime(date),
+            type,
+            formatDataClass.convertDateToString(journalRequestDto.to),
+            exchangeMoney.moneyName,
+            subsidiaryDtoList)
     }
 
-    private fun transformToTransactionDtoListPDF(transactions: List<TransactionEntity>, exchangeMoneyIso: String): List<TransactionDtoPDF> {
+    private fun transformToTransactionDtoListPDF(transactions: List<TransactionEntity>, exchangeMoneyIso: String): MutableList<TransactionDtoPDF> {
         val transactionDtoList = mutableListOf<TransactionDtoPDF>()
         for (i in transactions) {
             val accountDto = transformToAccountDtoList(i.transactionId, exchangeMoneyIso)
@@ -139,19 +162,19 @@ class JournalBl @Autowired constructor(
                     it.codeAccount,
                     it.nameAccount,
                     it.glosaDetail,
-                    getNumber(it.debitAmount),
-                    getNumber(it.creditAmount)
+                    formatDataClass.getNumber(it.debitAmount),
+                    formatDataClass.getNumber(it.creditAmount)
                 )
             }
             transactionDtoList.add(TransactionDtoPDF(
                 i.transactionNumber,
                 transactionTypeDao.getTransactionTypeNameById(i.transactionTypeId.toInt()),
-                convertLocalDateTimeToString(i.date),
-                getNumber(exchangeRateEntity.currency),  // Exchange rate value
+                formatDataClass.convertLocalDateTimeToString(i.date),
+                formatDataClass.getNumber(exchangeRateEntity.currency),  // Exchange rate value
                 i.glosaGeneral,
                 accountDtoPDF,
-                getNumber(totalDebit),
-                getNumber(totalCredit)
+                formatDataClass.getNumber(totalDebit),
+                formatDataClass.getNumber(totalCredit)
             ))
         }
         return transactionDtoList
@@ -160,22 +183,11 @@ class JournalBl @Autowired constructor(
 
 
 
-    fun convertDateToString(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        return formatter.format(date)
-    }
 
-    fun convertLocalDateTimeToString(localDateTime: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        return localDateTime.format(formatter)
-    }
 
-    fun getNumber(number: BigDecimal): String{
-        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-        format.minimumFractionDigits = 2
-        format.maximumFractionDigits = 2
-        return format.format(number)
-    }
+
+
+
 
 
 }

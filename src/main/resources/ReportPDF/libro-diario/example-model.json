@@ -1,92 +1,118 @@
 {
+	"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GMMTV_Logo.svg/2560px-GMMTV_Logo.svg.png",
 	"companyName": "Company 1",
-	"dateFrom": "2023-02-23",
-	"dateTo": "2023-10-24",
+	"actualDate": "23/11/2023",
+	"actualHour": "10:06:18",
+	"userName": "Maria Lopez",
+	"dateFrom": "23/02/2023",
+	"dateTo": "24/10/2023",
 	"currency": "Bolivianos",
+	"transactionType": "Ingreso",
 	"subsidiaries": [
-    {
-			"subsidiaryId": 2,
-			"subsidiaryName": "LP",
-			"areas": [
-        {
-					"areaId": 2,
-					"areaName": "AREA1",
-					"transactions": [
-            {
-							"transactionNumber": 1,
-							"transactionType": "INGRESO",
-							"registrationDate": "2023-10-25",
-							"exchangeRate": 0,
-							"glosaGeneral": "Comprobante 1",
-							"accounts": [
-                				{
-									"codeAccount": "31",
-									"nameAccount": "Capital",
-									"glosaDetail": "glosa1",
-									"debitAmount": 100,
-									"creditAmount": 0
-								},
-								{
-									"codeAccount": "32",
-									"nameAccount": "Ajuste al Patrimonio",
-									"glosaDetail": "glosa2",
-									"debitAmount": 0,
-									"creditAmount": 100
-								}
-							],
-							"totalDebitAmount": 100,
-							"totalCreditAmount": 100
-						}
+			{
+					"subsidiaryId": 2,
+					"subsidiaryName": "LP",
+					"areas": [
+							{
+									"areaId": 2,
+									"areaName": "AREA1",
+									"transactions": [
+											{
+													"transactionNumber": 1,
+													"transactionType": "INGRESO",
+													"registrationDate": "2023-10-25",
+													"exchangeRate": 0,
+													"glosaGeneral": "Comprobante 1",
+													"accounts": [
+															{
+																	"codeAccount": "31",
+																	"nameAccount": "Capital",
+																	"glosaDetail": "glosa1",
+																	"debitAmount": "100.00",
+																	"creditAmount": "-"
+															},
+															{
+																	"codeAccount": "32",
+																	"nameAccount": "Ajuste al Patrimonio",
+																	"glosaDetail": "glosa2 gfjgjfj hgjghjgh hk hkh kh khkjh khj khjkhkhkhhjhhkhkhkhkjhj",
+																	"debitAmount": "-",
+																	"creditAmount": "100.00"
+															}
+													],
+													"totalDebitAmount": "100.00",
+													"totalCreditAmount": "100.00"
+											}
+									]
+							}
 					]
-				},
-				{
-					"areaId": 3,
-					"areaName": "AREA2",
-					"transactions": []
-				}
-			]
-		},
-		{
-			"subsidiaryId": 3,
-			"subsidiaryName": "CBBA",
-			"areas": [
-				{
-					"areaId": 2,
-					"areaName": "AREA1",
-					"transactions": []
-				},
-				{
-					"areaId": 3,
-					"areaName": "AREA2",
-					"transactions": [
-						{
-							"transactionNumber": 2,
-							"transactionType": "EGRESO",
-							"registrationDate": "2023-10-25",
-							"exchangeRate": 0,
-							"glosaGeneral": "glosa2",
-							"accounts": [
-								{
-									"codeAccount": "31",
-									"nameAccount": "Capital",
-									"glosaDetail": "glosa",
-									"debitAmount": 112,
-									"creditAmount": 0
-								},
-								{
-									"codeAccount": "32",
-									"nameAccount": "Ajuste al Patrimonio",
-									"glosaDetail": "glosa2",
-									"debitAmount": 0,
-									"creditAmount": 112
-								}
-							],
-							"totalDebitAmount": 112,
-							"totalCreditAmount": 112
-						}
+			},
+			{
+					"subsidiaryId": 3,
+					"subsidiaryName": "CBBA",
+					"areas": [
+							{
+									"areaId": 2,
+									"areaName": "AREA1",
+									"transactions": [
+										{
+												"transactionNumber": 2,
+												"transactionType": "EGRESO",
+												"registrationDate": "2023-10-25",
+												"exchangeRate": 0,
+												"glosaGeneral": "glosa2",
+												"accounts": [
+														{
+																"codeAccount": "31",
+																"nameAccount": "Capital",
+																"glosaDetail": "glosa",
+																"debitAmount": "1,000.25",
+																"creditAmount": "-"
+														},
+														{
+																"codeAccount": "32",
+																"nameAccount": "Ajuste al Patrimonio",
+																"glosaDetail": "glosa2",
+																"debitAmount": "-",
+																"creditAmount": "1,000.25"
+														}
+												],
+												"totalDebitAmount": "1,000.25",
+												"totalCreditAmount": "1,000.25"
+										}
+									]
+							},
+							{
+									"areaId": 3,
+									"areaName": "AREA2",
+									"transactions": [
+											{
+													"transactionNumber": 2,
+													"transactionType": "EGRESO",
+													"registrationDate": "2023-10-25",
+													"exchangeRate": 0,
+													"glosaGeneral": "glosa2",
+													"accounts": [
+															{
+																	"codeAccount": "31",
+																	"nameAccount": "Capital",
+																	"glosaDetail": "glosa",
+																	"debitAmount": "112.30",
+																	"creditAmount": "-"
+															},
+															{
+																	"codeAccount": "32",
+																	"nameAccount": "Ajuste al Patrimonio",
+																	"glosaDetail": "glosa2",
+																	"debitAmount": "-",
+																	"creditAmount": "112.30"
+															}
+													],
+													"totalDebitAmount": "112.30",
+													"totalCreditAmount": "112.30"
+											}
+									]
+							}
 					]
-				}
-			]
-		}
+			}
 	]
 }
