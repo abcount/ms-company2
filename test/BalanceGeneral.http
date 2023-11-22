@@ -9,12 +9,12 @@ Content-Type: application/json
   "responsible": ["Sebastian Belmonte", "Micaela Gordillo", "Juan Neves", "Alejandro Flores"]
 }
 ###
-POST http://localhost:8080/general/balance/11
+POST http://localhost:8080/general/balance/1
 Content-Type: application/json
 
 {
-  "subsidiaries": [23],
-  "areas": [27],
+  "subsidiaries": [1],
+  "areas": [1],
   "to": "2024-12-31",
   "currencies": "BOL",
   "responsible": ["Sebastian Belmonte", "Micaela Gordillo", "Juan Neves", "Alejandro Flores"]

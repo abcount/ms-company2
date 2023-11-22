@@ -54,13 +54,12 @@ interface AccountDao {
         JOIN 
             transaction AS t ON ta.transaction_id = t.transaction_id
         JOIN 
-            debit_credit AS dc ON ta.transaction_account_id = dc.debit_credit_id
+            debit_credit AS dc ON ta.transaction_account_id = dc.transaction_account_id
         JOIN 
             exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
         WHERE 
             ta.account_id = #{accountId} AND
             t.area_subsidiary_id = #{areaSubsidiaryId} AND
-            dc.exchange_rate_id = er.exchange_rate_id AND
             er.abbreviation_name = #{exchangeMoneyIso}
             
             AND t.date <= #{date}; 
@@ -68,24 +67,22 @@ interface AccountDao {
     fun getBalanceByAccount(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
 
     @Select("""
-                SELECT 
-             SUM(dc.amount_credit) - SUM(dc.amount_debit)  AS balance
-        FROM 
-            transaction_account AS ta
-        JOIN 
-            transaction AS t ON ta.transaction_id = t.transaction_id
-        JOIN 
-            debit_credit AS dc ON ta.transaction_account_id = dc.debit_credit_id
-        JOIN 
-            exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
-        WHERE 
-            ta.account_id = #{accountId} AND
-            t.area_subsidiary_id = #{areaSubsidiaryId} AND
-            er.abbreviation_name = #{exchangeMoneyIso} AND
-            dc.exchange_rate_id = er.exchange_rate_id 
-            
-            
-            AND t.date <= #{date}; 
+                    SELECT 
+                 SUM(dc.amount_credit) - SUM(dc.amount_debit)  AS balance
+            FROM 
+                transaction_account AS ta
+            JOIN 
+                transaction AS t ON ta.transaction_id = t.transaction_id
+            JOIN 
+                debit_credit AS dc ON ta.transaction_account_id = dc.transaction_account_id
+            JOIN 
+                exchange_rate AS er ON dc.exchange_rate_id = er.exchange_rate_id
+            WHERE 
+                ta.account_id = #{accountId} AND
+                t.area_subsidiary_id = #{areaSubsidiaryId} AND
+                er.abbreviation_name = #{exchangeMoneyIso}                 
+                
+                AND t.date <= #{date}; 
     """)
     fun getBalancePassive(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
 
