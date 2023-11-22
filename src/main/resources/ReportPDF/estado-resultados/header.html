@@ -1,5 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+	<meta charset="utf-8">
+	 <style>
+		.header-container {
+			padding-top: 5mm;
+			display: flex;
+			flex-direction: column;
+			text-align: right;
+		}
+		h2 {
+			font-size: 14px;
+			font-weight: 500;
+			color: #757575;
+			margin: 0;
+		}
+  </style>
 </head>
+<div class="header-container">
+	<h2>Fecha: {{ .actualDate }}</h2>
+	<h2>Hora: {{ .actualHour }}</h2>
+	<h2>Generado por: {{ .userName }}</h2>
+</div>
 </html>

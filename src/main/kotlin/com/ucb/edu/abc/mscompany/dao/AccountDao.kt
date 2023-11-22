@@ -52,7 +52,7 @@ interface AccountDao {
         FROM 
             transaction_account AS ta
         JOIN 
-            transaction AS t ON ta.transaction_id = t.transaction_id
+            transaction AS t ON ta.transaction_id = t.transaction_id 
         JOIN 
             debit_credit AS dc ON ta.transaction_account_id = dc.transaction_account_id
         JOIN 
@@ -61,7 +61,6 @@ interface AccountDao {
             ta.account_id = #{accountId} AND
             t.area_subsidiary_id = #{areaSubsidiaryId} AND
             er.abbreviation_name = #{exchangeMoneyIso}
-            
             AND t.date <= #{date}; 
     """)
     fun getBalanceByAccount(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
@@ -83,6 +82,7 @@ interface AccountDao {
                 er.abbreviation_name = #{exchangeMoneyIso}                 
                 
                 AND t.date <= #{date}; 
+
     """)
     fun getBalancePassive(accountId: Int, date: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal
 
@@ -145,9 +145,7 @@ interface AccountDao {
         WHERE 
             ta.account_id = #{accountId} AND
             t.area_subsidiary_id = #{areaSubsidiaryId} AND
-            er.abbreviation_name = #{exchangeMoneyIso} AND
-            dc.exchange_rate_id = er.exchange_rate_id  AND
-            
+            er.abbreviation_name = #{exchangeMoneyIso} AND            
             t.date BETWEEN #{from} AND #{to}
     """)
     fun getStatePassive(accountId: Int, from: Date, to: Date, areaSubsidiaryId: Int?, exchangeMoneyIso: String): BigDecimal

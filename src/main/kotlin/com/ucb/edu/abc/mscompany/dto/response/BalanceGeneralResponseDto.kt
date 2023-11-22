@@ -36,7 +36,7 @@ data class AreaBalance(
         var accounts: List<AccountBalance>,
         var totalActive: BigDecimal,
         var totalPassiveCapital: BigDecimal,
-        var totalResult:BigDecimal,
+        var totalResult: BigDecimal,
         var totalActiveFinal: BigDecimal,
         var totalResultFinal: BigDecimal
 
@@ -61,8 +61,11 @@ data class AccountBalance(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class BalanceGeneralResponseDtoPDF(
         var companyName: String,
-        var logo :String? = "",
+        var logo :String,
         var dateTo: String,
+        var actualDate: String,
+        var actualHour: String,
+        var userName: String,
         var currency: String,
         var responsible: List<String>,
         var subsidiaries: List<SubsidiaryBalancePDF>

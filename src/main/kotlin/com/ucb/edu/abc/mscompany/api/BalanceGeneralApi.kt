@@ -44,7 +44,7 @@ class BalanceGeneralApi @Autowired constructor(
             @RequestBody balanceGeneralRequestDto: BalanceGeneralRequestDto,
             @RequestHeader headers: Map<String, String>
     ): ResponseEntity<ResponseDto<String>> {
-        val balanceGeneralResponseDto = balanceGeneralBl.getBalanceGeneralPDF(companyId, balanceGeneralRequestDto)
+        val balanceGeneralResponseDto = balanceGeneralBl.getBalanceGeneralPDF(companyId, balanceGeneralRequestDto, headers)
         val footer = pdfTurtleBl.readHtmlToString("ReportPDF/balance-sheet-pdf/footer.html")
         val header = pdfTurtleBl.readHtmlToString("ReportPDF/balance-sheet-pdf/header.html")
         val body = pdfTurtleBl.readHtmlToString("ReportPDF/balance-sheet-pdf/index.html")

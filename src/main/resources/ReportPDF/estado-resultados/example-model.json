@@ -1,73 +1,155 @@
 {
-    "logo": "",
-    "title": "Balance General",
-    "companyName": "GMMTV",
-    "dateTo": "05/01/2023",
-    "currency": "Bolivianos",
-    "data": [
-      {
-        "accounts": [
-          {
-            "accountCode": "4",
-            "accountName": "Ingresos",
-            "amount": 200,
-            "children": [
-              {
-                "accountCode": "41",
-                "accountName": "Ingreso pasivo",
-                "amount": 80,
-                "children": [
-                  {
-                    "accountCode": "411",
-                    "accountName": "Ingreso agresivo",
-                    "amount": 80,
-                    "children": []
-                  }
-                ]
-              },
-              {
-                "accountCode": "42",
-                "accountName": "Ingreso xd",
-                "amount": 120,
-                "children": []
-              }
-            ]
-          },
-          {
-            "accountCode": "5",
-            "accountName": "Gastos",
-            "amount": 150,
-            "children": [
-              {
-                "accountCode": "51",
-                "accountName": "Gasto corriente",
-                "amount": 120,
-                "children": [
-                  {
-                    "accountCode": "511",
-                    "accountName": "Gasto corriente",
-                    "amount": 100,
-                    "children": []
-                  },
-                  {
-                    "accountCode": "512",
-                    "accountName": "Gasto f",
-                    "amount": 20,
-                    "children": []
-                  }
-                ]
-              },
-              {
-                "accountCode": "52",
-                "accountName": "Gasto no corriente",
-                "amount": 30,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "amountTotal": 80
-  }
-  
+	"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GMMTV_Logo.svg/2560px-GMMTV_Logo.svg.png",
+	"companyName": "Company 1",
+	"actualDate": "23/11/2023",
+	"actualHour": "10:06:18",
+	"userName": "Maria Lopez",
+	"dateFrom": "01/01/2023",
+	"dateTo": "24/10/2023",
+	"currency": "Bolivianos",
+	"subsidiaries": [
+		{
+			"subsidiaryId": 1,
+			"subsidiaryName": "Sucursal 1",
+			"areas": [
+				{
+					"subsidiaryId": 1,
+					"areaId": 1,
+					"areaName": "Area 1",
+					"accounts": [
+						{
+							"accountCode": "4",
+							"accountName": "Ingresos",
+							"amount": 200,
+							"children": [
+								{
+									"accountCode": "41",
+									"accountName": "Ingreso pasivo",
+									"amount": 80,
+									"children": [
+										{
+											"accountCode": "411",
+											"accountName": "Ingreso agresivo",
+											"amount": 80,
+											"children": []
+										}
+									]
+								},
+								{
+									"accountCode": "42",
+									"accountName": "Ingreso xd",
+									"amount": 120,
+									"children": []
+								}
+							]
+						},
+						{
+							"accountCode": "5",
+							"accountName": "Gastos",
+							"amount": 150,
+							"children": [
+								{
+									"accountCode": "51",
+									"accountName": "Gasto corriente",
+									"amount": 120,
+									"children": [
+										{
+											"accountCode": "511",
+											"accountName": "Gasto corriente",
+											"amount": 100,
+											"children": []
+										},
+										{
+											"accountCode": "512",
+											"accountName": "Gasto f",
+											"amount": 20,
+											"children": []
+										}
+									]
+								},
+								{
+									"accountCode": "52",
+									"accountName": "Gasto no corriente",
+									"amount": 30,
+									"children": []
+								}
+							]
+						}
+					],
+					"amountTotal": 50
+				},
+				{
+					"subsidiaryId": 1,
+					"areaId": 2,
+					"areaName": "Area 2",
+					"accounts": [
+						{
+							"accountCode": "4",
+							"accountName": "Ingresos",
+							"amount": 100,
+							"children": [
+								{
+									"accountCode": "41",
+									"accountName": "Ingreso pasivo",
+									"amount": 50,
+									"children": [
+										{
+											"accountCode": "411",
+											"accountName": "Ingreso agresivo",
+											"amount": 50,
+											"children": []
+										}
+									]
+								},
+								{
+									"accountCode": "42",
+									"accountName": "Ingreso xd",
+									"amount": 50,
+									"children": []
+								}
+							]
+						},
+						{
+							"accountCode": "5",
+							"accountName": "Gastos",
+							"amount": 150,
+							"children": [
+								{
+									"accountCode": "51",
+									"accountName": "Gasto corriente",
+									"amount": 120,
+									"children": [
+										{
+											"accountCode": "511",
+											"accountName": "Gasto corriente",
+											"amount": 100,
+											"children": []
+										},
+										{
+											"accountCode": "512",
+											"accountName": "Gasto f",
+											"amount": 20,
+											"children": []
+										}
+									]
+								},
+								{
+									"accountCode": "52",
+									"accountName": "Gasto no corriente",
+									"amount": 30,
+									"children": []
+								}
+							]
+						}
+					],
+					"amountTotal": "(50)"
+				}
+			]
+		}
+	],
+	"responsible": [
+		"Sebastian Belmonte",
+		"Micaela Gordillo",
+		"Emerson Chipana"
+	]
+}
