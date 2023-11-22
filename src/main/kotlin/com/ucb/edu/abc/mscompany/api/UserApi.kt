@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.api
 import com.ucb.edu.abc.mscompany.bl.AccessPersonBl
 import com.ucb.edu.abc.mscompany.bl.PermissionBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
+import com.ucb.edu.abc.mscompany.dto.request.UserUpdateInfoDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletRequest
 import kotlin.math.log
 
 @RestController
@@ -50,6 +53,20 @@ class UserApi @Autowired constructor(
                 HttpStatus.BAD_REQUEST
             )
         }
+
+    }
+
+    @RequestMapping(
+        value = [""],
+        method = [RequestMethod.PUT],
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun updateUserInfo(
+        @ModelAttribute updateInfo: UserUpdateInfoDto,
+        @RequestHeader headers: Map<String, String>,
+    ):String{
+        val userToken = headers["authorization"]!!.substring(7)
+        userBl.updateUserInfo(userToken, updateInfo)
+        return "oka";
 
     }
 

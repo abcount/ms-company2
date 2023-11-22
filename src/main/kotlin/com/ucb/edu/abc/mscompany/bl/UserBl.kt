@@ -1,6 +1,8 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.dao.FileDao
 import com.ucb.edu.abc.mscompany.dao.UserDao
+import com.ucb.edu.abc.mscompany.dto.request.UserUpdateInfoDto
 import com.ucb.edu.abc.mscompany.dto.response.Employee
 import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Service
 @AllArgsConstructor
@@ -261,5 +264,29 @@ class UserBl @Autowired constructor(
         }
         return invitation
 
+    }
+
+    fun updateUserInfo(userToken: String, updateInfo: UserUpdateInfoDto) {
+        val accessPerson = accessPersonService.getAccessPersonInformationByToken(userToken)
+            ?: throw Exception("User not found")
+
+        if(! updateInfo.dni.isNullOrBlank()) accessPerson.noIdentity = updateInfo.dni!!.trim()
+        if(! updateInfo.birthday.isNullOrBlank()) accessPerson.birthday = LocalDate.parse(updateInfo.birthday!!.trim(), DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        if(! updateInfo.names.isNullOrBlank()) accessPerson.firstName = updateInfo.names!!.trim()
+        if(! updateInfo.lastnames.isNullOrBlank()) accessPerson.lastName = updateInfo.lastnames!!.trim()
+        if( updateInfo.gender != null) accessPerson.genderPerson = updateInfo.gender!!
+        if(! updateInfo.address.isNullOrBlank()) accessPerson.address = updateInfo.address!!.trim()
+        if(! updateInfo.phoneNumber.isNullOrBlank()) accessPerson.noFono = updateInfo.phoneNumber!!.trim()
+        if(! updateInfo.domainNumber.isNullOrBlank()) accessPerson.extNoFono = updateInfo.domainNumber!!.trim()
+        if(! updateInfo.country.isNullOrBlank()) accessPerson.countryIdentity = updateInfo.country!!.trim()
+        if(! updateInfo.dniExtension.isNullOrBlank()) accessPerson.extNoIdentity = updateInfo.dniExtension!!.trim()
+
+        // now save data
+        accessPersonService.updateAccessPersonInformation(accessPerson)
+
+        if( updateInfo.imageProfile != null){
+            // save picture
+             imageService.updateUserProfilePicture(userId = accessPerson.accessPersonId.toInt(), image = updateInfo.imageProfile!!)
+        }
     }
 }

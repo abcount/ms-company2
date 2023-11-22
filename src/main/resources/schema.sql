@@ -1,5 +1,5 @@
 -- DROP TABLES
-/*
+
 DROP TABLE IF EXISTS abc_permission;
 DROP TABLE IF EXISTS abc_user;
 DROP TABLE IF EXISTS access_person;
@@ -40,7 +40,7 @@ DROP TABLE IF EXISTS role_kc;
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS debit_credit;
-*/
+
 
 
 

@@ -1,6 +1,7 @@
 package com.ucb.edu.abc.mscompany.dao
 
 import com.ucb.edu.abc.mscompany.entity.pojos.FileEntity
+import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
 import org.springframework.stereotype.Component
@@ -24,5 +25,14 @@ interface FileDao {
             " VALUES " +
             " (#{imageContent}, #{ownerId}, #{categoryOwner}, #{extensionFile}, #{uuidFile});")
     fun createImage(fileEntity: FileEntity)
+
+    @Delete(
+        """
+            DELETE FROM image_for_all
+            WHERE category_owner = #{categoryOwner} 
+            AND owner_id = #{ownerId}
+        """
+    )
+    fun deleteImageByOwnerAndCategory(ownerId: Int, categoryOwner: String)
 
 }

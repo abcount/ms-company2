@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 import kotlin.math.log
 
 @Service
@@ -61,5 +63,19 @@ class ImageService @Autowired constructor(
         logger.info("Founded url signed with uuid= ${fileEntity[0].uuidFile}")
 
         return minioBl.getPreSignedUrlV2(fileEntity[0].uuidFile)
+    }
+
+    fun updateUserProfilePicture(userId:Int, image: MultipartFile){
+        fileDao.deleteImageByOwnerAndCategory(categoryOwner ="USER-PROFILE-IMAGE", ownerId = userId)
+        fileDao.createImage(
+            FileEntity(
+                imageContent = image.bytes,
+                ownerId = userId,
+                categoryOwner = "USER-PROFILE-IMAGE",
+                extensionFile = "png",
+                uuidFile = UUID.randomUUID().toString() + "-" + userId + "-IU"
+
+            )
+        )
     }
 }
