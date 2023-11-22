@@ -4,6 +4,8 @@ import com.ucb.edu.abc.mscompany.bl.AccessPersonBl
 import com.ucb.edu.abc.mscompany.bl.PermissionBl
 import com.ucb.edu.abc.mscompany.bl.UserBl
 import com.ucb.edu.abc.mscompany.dto.request.UserUpdateInfoDto
+import com.ucb.edu.abc.mscompany.dto.response.AccessPersonWithImageDtoResponse
+import com.ucb.edu.abc.mscompany.dto.response.PersonInfoDto
 import com.ucb.edu.abc.mscompany.dto.response.ResponseDto
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,11 +67,34 @@ class UserApi @Autowired constructor(
     fun updateUserInfo(
         @ModelAttribute updateInfo: UserUpdateInfoDto,
         @RequestHeader headers: Map<String, String>,
-    ):String{
-        val userToken = headers["authorization"]!!.substring(7)
-        userBl.updateUserInfo(userToken, updateInfo)
-        return "oka";
+    ): ResponseEntity<ResponseDto<*>> {
 
+
+        try{
+            logger.info("Looking for user info going to update person")
+            val userToken = headers["authorization"]!!.substring(7)
+            userBl.updateUserInfo(userToken, updateInfo)
+            return ResponseEntity(
+                ResponseDto(
+                    data = userBl.getUserInformationForGeneralApi(userToken),
+                    message = null,
+                    success = true,
+                    errors = null
+                ),
+                HttpStatus.OK
+            )
+        }catch (ex: Exception){
+            logger.error("Something wron while looking for user info ${ex.message}")
+            return ResponseEntity(
+                ResponseDto(
+                    data = null,
+                    message = "Algo salio terriblemente mal XD",
+                    success = false,
+                    errors = ex.message
+                ),
+                HttpStatus.BAD_REQUEST
+            )
+        }
     }
 
     @RequestMapping(value = ["/info"], method = [RequestMethod.GET])
@@ -81,7 +106,7 @@ class UserApi @Autowired constructor(
             val tokenAuth =  headers["authorization"]!!.substring(7)
             return ResponseEntity(
                 ResponseDto(
-                    data = userBl.getUserInformationByToken(tokenAuth),
+                    data = userBl.getUserInformationForGeneralApi(tokenAuth),
                     message = null,
                     success = true,
                     errors = null

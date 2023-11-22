@@ -12,7 +12,7 @@ data class UserUpdateInfoDto(
     var  birthday: String?,
     var  names: String?,
     var  lastnames: String?,
-    var  gender: Int?,
+    var  gender: String?,
     var  address: String?,
     var  phoneNumber: String?,
     var  domainNumber: String?,

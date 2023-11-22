@@ -3,6 +3,7 @@ package com.ucb.edu.abc.mscompany.bl
 import com.ucb.edu.abc.mscompany.dao.FileDao
 import com.ucb.edu.abc.mscompany.dao.UserDao
 import com.ucb.edu.abc.mscompany.dto.request.UserUpdateInfoDto
+import com.ucb.edu.abc.mscompany.dto.response.AccessPersonWithImageDtoResponse
 import com.ucb.edu.abc.mscompany.dto.response.Employee
 import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
@@ -115,6 +116,33 @@ class UserBl @Autowired constructor(
         }catch (ex2: Exception){
             return null;
         }
+    }
+
+    fun getUserInformationForGeneralApi(token: String): AccessPersonWithImageDtoResponse {
+        val accessPersonEntity = getUserInformationByToken(token)
+            ?: throw Exception("Null object")
+        val accessPersonDto = AccessPersonWithImageDtoResponse()
+        accessPersonDto.apply {
+            accessPersonId = accessPersonEntity.accessPersonId
+            username = accessPersonEntity.username
+            email = accessPersonEntity.email
+            secret = accessPersonEntity.secret
+            address = accessPersonEntity.address
+            noFono = accessPersonEntity.noFono
+            extNoFono = accessPersonEntity.extNoFono
+            countryIdentity = accessPersonEntity.countryIdentity
+            noIdentity = accessPersonEntity.noIdentity
+            extNoIdentity = accessPersonEntity.extNoIdentity
+            firstName = accessPersonEntity.firstName
+            lastName = accessPersonEntity.lastName
+            genderPerson = accessPersonEntity.genderPerson
+            birthday = accessPersonEntity.birthday
+            diccCategory = accessPersonEntity.diccCategory
+            dateCreation = accessPersonEntity.dateCreation
+            userUuid = accessPersonEntity.userUuid
+            urlImage = imageService.getImageForUser(accessPersonEntity.accessPersonId.toInt())?:""
+        }
+        return accessPersonDto
     }
     fun getUserInformationByAccessPersonUuid(accessPersonUuid: String): AccessPersonEntity {
         val accessPersonEntity = accessPersonService.getAccessPersonInformationByUuid(accessPersonUuid)
@@ -274,7 +302,7 @@ class UserBl @Autowired constructor(
         if(! updateInfo.birthday.isNullOrBlank()) accessPerson.birthday = LocalDate.parse(updateInfo.birthday!!.trim(), DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         if(! updateInfo.names.isNullOrBlank()) accessPerson.firstName = updateInfo.names!!.trim()
         if(! updateInfo.lastnames.isNullOrBlank()) accessPerson.lastName = updateInfo.lastnames!!.trim()
-        if( updateInfo.gender != null) accessPerson.genderPerson = updateInfo.gender!!
+        if(! updateInfo.gender.isNullOrBlank()) accessPerson.genderPerson = updateInfo.gender!!.trim().toInt()
         if(! updateInfo.address.isNullOrBlank()) accessPerson.address = updateInfo.address!!.trim()
         if(! updateInfo.phoneNumber.isNullOrBlank()) accessPerson.noFono = updateInfo.phoneNumber!!.trim()
         if(! updateInfo.domainNumber.isNullOrBlank()) accessPerson.extNoFono = updateInfo.domainNumber!!.trim()

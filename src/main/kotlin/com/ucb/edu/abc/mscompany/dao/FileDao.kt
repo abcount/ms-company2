@@ -28,7 +28,7 @@ interface FileDao {
 
     @Delete(
         """
-            DELETE FROM image_for_all
+            DELETE FROM images_for_all
             WHERE category_owner = #{categoryOwner} 
             AND owner_id = #{ownerId}
         """
