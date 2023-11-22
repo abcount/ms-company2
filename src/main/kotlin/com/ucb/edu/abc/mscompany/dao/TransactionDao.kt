@@ -122,7 +122,7 @@ interface TransactionDao {
                 JOIN transaction_account ta ON t.transaction_id = ta.transaction_id
                 JOIN debit_credit dc ON ta.transaction_account_id = dc.transaction_account_id
                 JOIN transaction_type tt ON t.transaction_type_id = tt.transaction_type_id
-                JOIN exchange_rate er on t.exchange_rate_id = er.exchange_rate_id
+                JOIN exchange_rate er on dc.exchange_rate_id = er.exchange_rate_id
                 WHERE
                     ta.account_id = #{accountId}
                 AND	

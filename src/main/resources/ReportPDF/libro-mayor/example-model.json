@@ -1,7 +1,11 @@
 {
+	"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GMMTV_Logo.svg/2560px-GMMTV_Logo.svg.png",
 	"companyName": "Company 1",
-	"dateFrom": "2023-02-23",
-	"dateTo": "2023-10-24",
+	"actualDate": "23/11/2023",
+	"actualHour": "10:06:18",
+	"userName": "Maria Lopez",
+	"dateFrom": "23/02/2023",
+	"dateTo": "24/10/2023",
 	"currency": "Bolivianos",
 	"subsidiaries": [
 		{
@@ -22,7 +26,7 @@
 									"area": "Area 1",
 									"registrationDate": "23-01-15",
                                     "transactionType": "INGRESO",
-									"glosaDetail": "Detalle de Glosa",
+									"glosaDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor congue nunc a scelerisque. Maecenas et molestie quam. Nullam congue vitae dolor ut lacinia. Curabitur sit amet rhoncus erat, at porta risus.",
 									"documentNumber": "12939912",
 									"debitAmount": 500,
 									"creditAmount": 0,
@@ -34,7 +38,7 @@
 									"area": "Area 1",
 									"registrationDate": "23-01-15",
                                     "transactionType": "INGRESO",
-									"glosaDetail": "Detalle de Glosa",
+									"glosaDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor congue nunc a scelerisque. Maecenas et molestie quam. Nullam congue vitae dolor ut lacinia. Curabitur sit amet rhoncus erat, at porta risus.",
 									"documentNumber": "12939912",
 									"debitAmount": 100,
 									"creditAmount": 500,

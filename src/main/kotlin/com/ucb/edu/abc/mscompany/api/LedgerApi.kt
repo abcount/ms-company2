@@ -42,7 +42,7 @@ class LedgerApi @Autowired constructor(
         @PathVariable companyId: Int,
         @RequestBody ledgerRequestDto: LedgerRequestDto,
         @RequestHeader headers: Map<String,String>): ResponseEntity<ResponseDto<String>>{
-        val journalResponseDto = ledgerBl.getLedgerPdf(companyId, ledgerRequestDto)
+        val journalResponseDto = ledgerBl.getLedgerPdf(companyId, ledgerRequestDto, headers)
 
         val footer = pdfTurtleBl.readHtmlToString("ReportPDF/libro-mayor/footer.html")
         val header = pdfTurtleBl.readHtmlToString("ReportPDF/libro-mayor/header.html")
