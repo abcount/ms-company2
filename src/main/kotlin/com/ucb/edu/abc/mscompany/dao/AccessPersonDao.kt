@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Select
+import org.apache.ibatis.annotations.Update
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -39,4 +40,22 @@ interface AccessPersonDao {
          LIMIT #{limit}
     """)
     fun findUserByUsernameOrEmail(searched: String, limit:Int): List<AccessPersonEntity>?
+
+    @Update("""
+        UPDATE access_person
+        SET 
+        address = #{address},
+        birthday =  #{birthday},
+        first_name = #{firstName},
+        last_name = #{lastName},
+        gender_person = #{genderPerson},
+        no_fono = #{noFono},
+        ext_no_fono = #{extNoFono},
+        country_identity = #{countryIdentity},
+        no_identity = #{noIdentity},
+        ext_no_identity = #{extNoIdentity}
+        WHERE
+        access_person_id = #{accessPersonId}
+    """)
+    fun updateInformation(accessPersonEntity: AccessPersonEntity)
 }

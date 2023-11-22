@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 import kotlin.math.log
 
 @Service
@@ -14,6 +16,10 @@ class ImageService @Autowired constructor(
     private val minioBl: MinioBl
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Value("\${custom.this-uri}")
+    lateinit var uri: String
+
     @Value("\${server.port}")
     lateinit var port: String
 
@@ -22,7 +28,8 @@ class ImageService @Autowired constructor(
         if(fileEntity.isNullOrEmpty()){
             return null
         }
-        return "http://localhost:$port/image/company/${id}"
+        //return "http://localhost:$port/image/company/${id}"
+        return "$uri/image/company/${id}"
     }
 
     fun getImageForUser(id:Int):String?{
@@ -30,7 +37,7 @@ class ImageService @Autowired constructor(
         if(fileEntity.isNullOrEmpty()){
             return null
         }
-        return "http://localhost:$port/image/user/${id}"
+        return "$uri/image/user/${id}"
     }
 
     fun getImage(cate: String, id: Int): ByteArray? {
@@ -61,5 +68,19 @@ class ImageService @Autowired constructor(
         logger.info("Founded url signed with uuid= ${fileEntity[0].uuidFile}")
 
         return minioBl.getPreSignedUrlV2(fileEntity[0].uuidFile)
+    }
+
+    fun updateUserProfilePicture(userId:Int, image: MultipartFile){
+        fileDao.deleteImageByOwnerAndCategory(categoryOwner ="USER-PROFILE-IMAGE", ownerId = userId)
+        fileDao.createImage(
+            FileEntity(
+                imageContent = image.bytes,
+                ownerId = userId,
+                categoryOwner = "USER-PROFILE-IMAGE",
+                extensionFile = "png",
+                uuidFile = UUID.randomUUID().toString() + "-" + userId + "-IU"
+
+            )
+        )
     }
 }

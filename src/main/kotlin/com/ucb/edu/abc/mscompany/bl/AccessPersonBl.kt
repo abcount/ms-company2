@@ -125,4 +125,7 @@ class AccessPersonBl @Autowired constructor(
 
         return accessPersonEntity
     }
+    fun updateAccessPersonInformation(accessPersonEntity: AccessPersonEntity){
+        accessPersonDao.updateInformation(accessPersonEntity)
+    }
 }

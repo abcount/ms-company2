@@ -1,6 +1,9 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.dao.FileDao
 import com.ucb.edu.abc.mscompany.dao.UserDao
+import com.ucb.edu.abc.mscompany.dto.request.UserUpdateInfoDto
+import com.ucb.edu.abc.mscompany.dto.response.AccessPersonWithImageDtoResponse
 import com.ucb.edu.abc.mscompany.dto.response.Employee
 import com.ucb.edu.abc.mscompany.dto.response.UsersAndInvitation
 import com.ucb.edu.abc.mscompany.entity.AccessPersonEntity
@@ -15,6 +18,7 @@ import lombok.NoArgsConstructor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Service
 @AllArgsConstructor
@@ -113,6 +117,33 @@ class UserBl @Autowired constructor(
             return null;
         }
     }
+
+    fun getUserInformationForGeneralApi(token: String): AccessPersonWithImageDtoResponse {
+        val accessPersonEntity = getUserInformationByToken(token)
+            ?: throw Exception("Null object")
+        val accessPersonDto = AccessPersonWithImageDtoResponse()
+        accessPersonDto.apply {
+            accessPersonId = accessPersonEntity.accessPersonId
+            username = accessPersonEntity.username
+            email = accessPersonEntity.email
+            secret = accessPersonEntity.secret
+            address = accessPersonEntity.address
+            noFono = accessPersonEntity.noFono
+            extNoFono = accessPersonEntity.extNoFono
+            countryIdentity = accessPersonEntity.countryIdentity
+            noIdentity = accessPersonEntity.noIdentity
+            extNoIdentity = accessPersonEntity.extNoIdentity
+            firstName = accessPersonEntity.firstName
+            lastName = accessPersonEntity.lastName
+            genderPerson = accessPersonEntity.genderPerson
+            birthday = accessPersonEntity.birthday
+            diccCategory = accessPersonEntity.diccCategory
+            dateCreation = accessPersonEntity.dateCreation
+            userUuid = accessPersonEntity.userUuid
+            urlImage = imageService.getImageForUser(accessPersonEntity.accessPersonId.toInt())?:""
+        }
+        return accessPersonDto
+    }
     fun getUserInformationByAccessPersonUuid(accessPersonUuid: String): AccessPersonEntity {
         val accessPersonEntity = accessPersonService.getAccessPersonInformationByUuid(accessPersonUuid)
             ?: throw Exception("Couldn't")
@@ -189,7 +220,7 @@ class UserBl @Autowired constructor(
             Employee(employeeId = item.userId,
                 name = "${item.firstName} ${item.lastName}",
                 email = item.email,
-                urlProfilePicture = "")
+                urlProfilePicture = imageService.getImageForUser(item.accessPersonId!!))
         }
         val invitationList = invitationBl.getInvitationByCompanyAndState(companyId = companyId, invitationState = InvitationState.PENDING)
         invitationList.forEach { item ->
@@ -200,6 +231,7 @@ class UserBl @Autowired constructor(
                         accessPersonEntity = ap,
                         invitationEntity = item,
                         userId = getUserByAccessPersonEntityAndCompany(companyId = companyId, accessPerson = ap).userId
+
                     )
                 )
             }
@@ -261,5 +293,29 @@ class UserBl @Autowired constructor(
         }
         return invitation
 
+    }
+
+    fun updateUserInfo(userToken: String, updateInfo: UserUpdateInfoDto) {
+        val accessPerson = accessPersonService.getAccessPersonInformationByToken(userToken)
+            ?: throw Exception("User not found")
+
+        if(! updateInfo.dni.isNullOrBlank()) accessPerson.noIdentity = updateInfo.dni!!.trim()
+        if(! updateInfo.birthday.isNullOrBlank()) accessPerson.birthday = LocalDate.parse(updateInfo.birthday!!.trim(), DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        if(! updateInfo.names.isNullOrBlank()) accessPerson.firstName = updateInfo.names!!.trim()
+        if(! updateInfo.lastnames.isNullOrBlank()) accessPerson.lastName = updateInfo.lastnames!!.trim()
+        if(! updateInfo.gender.isNullOrBlank()) accessPerson.genderPerson = updateInfo.gender!!.trim().toInt()
+        if(! updateInfo.address.isNullOrBlank()) accessPerson.address = updateInfo.address!!.trim()
+        if(! updateInfo.phoneNumber.isNullOrBlank()) accessPerson.noFono = updateInfo.phoneNumber!!.trim()
+        if(! updateInfo.domainNumber.isNullOrBlank()) accessPerson.extNoFono = updateInfo.domainNumber!!.trim()
+        if(! updateInfo.country.isNullOrBlank()) accessPerson.countryIdentity = updateInfo.country!!.trim()
+        if(! updateInfo.dniExtension.isNullOrBlank()) accessPerson.extNoIdentity = updateInfo.dniExtension!!.trim()
+
+        // now save data
+        accessPersonService.updateAccessPersonInformation(accessPerson)
+
+        if( updateInfo.imageProfile != null){
+            // save picture
+             imageService.updateUserProfilePicture(userId = accessPerson.accessPersonId.toInt(), image = updateInfo.imageProfile!!)
+        }
     }
 }
