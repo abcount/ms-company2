@@ -16,6 +16,10 @@ class ImageService @Autowired constructor(
     private val minioBl: MinioBl
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Value("\${custom.this-uri}")
+    lateinit var uri: String
+
     @Value("\${server.port}")
     lateinit var port: String
 
@@ -24,7 +28,8 @@ class ImageService @Autowired constructor(
         if(fileEntity.isNullOrEmpty()){
             return null
         }
-        return "http://localhost:$port/image/company/${id}"
+        //return "http://localhost:$port/image/company/${id}"
+        return "$uri/image/company/${id}"
     }
 
     fun getImageForUser(id:Int):String?{
@@ -32,7 +37,7 @@ class ImageService @Autowired constructor(
         if(fileEntity.isNullOrEmpty()){
             return null
         }
-        return "http://localhost:$port/image/user/${id}"
+        return "$uri/image/user/${id}"
     }
 
     fun getImage(cate: String, id: Int): ByteArray? {

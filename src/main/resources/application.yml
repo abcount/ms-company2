@@ -1,6 +1,8 @@
 server:
   port: ${PORT_MS:8080}
 
+custom:
+  this-uri: http://localhost:8080
 
 spring:
   config:

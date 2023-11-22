@@ -220,7 +220,7 @@ class UserBl @Autowired constructor(
             Employee(employeeId = item.userId,
                 name = "${item.firstName} ${item.lastName}",
                 email = item.email,
-                urlProfilePicture = "")
+                urlProfilePicture = imageService.getImageForUser(item.accessPersonId!!))
         }
         val invitationList = invitationBl.getInvitationByCompanyAndState(companyId = companyId, invitationState = InvitationState.PENDING)
         invitationList.forEach { item ->
@@ -231,6 +231,7 @@ class UserBl @Autowired constructor(
                         accessPersonEntity = ap,
                         invitationEntity = item,
                         userId = getUserByAccessPersonEntityAndCompany(companyId = companyId, accessPerson = ap).userId
+
                     )
                 )
             }
