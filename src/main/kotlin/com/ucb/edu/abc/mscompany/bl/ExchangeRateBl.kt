@@ -12,6 +12,7 @@ import com.ucb.edu.abc.mscompany.exception.PostgresException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.Date
@@ -40,7 +41,7 @@ class ExchangeRateBl @Autowired constructor(
                 0,
                 exchange.moneyName,
                 companyId,
-                exchange.currency,
+                if(exchange.abbreviationName == "BOL") BigDecimal(1) else exchange.currency,
                 exchange.abbreviationName,
                 Timestamp.valueOf(date.atStartOfDay())
             )

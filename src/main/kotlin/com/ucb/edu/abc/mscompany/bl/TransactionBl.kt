@@ -53,12 +53,17 @@ class TransactionBl @Autowired constructor(
 
     fun saveTransaction(companyId: Int, transactionDto: TransactionDto, headers: Map<String, String>){
 
+        val fecha = transactionDto.date
+        logger.info("Fecha: $fecha")
+
         val exchange = exchangeRateDao.getExchangeByCompanyIdAndAbbreviationName(
                 companyId,
                 transactionDto.currencyId,
                 transactionDto.date)
 
         val exchangeList = exchangeRateDao.getExchangeList(companyId, transactionDto.date) // Pasar LocalDate
+
+        //Quitar exchange de
 
         val tokenAuth =  headers["authorization"]!!.substring(7)
         val userId = userBl.getUserIdByCompanyIdAndToken (tokenAuth,   companyId, UserAbcCategory.ACTIVE,null)
@@ -90,20 +95,19 @@ class TransactionBl @Autowired constructor(
                 val debitCreditEntity = factoryCreditDebit(it, transactionAccountEntity.transactionAccountId.toLong(), exchange.exchangeRateId)
                 debitCreditDao.create(debitCreditEntity)
             }else {
-                val isTransactionInBob = transactionDto.currencyId.equals("BOL", ignoreCase = true)
 
                 val amountInBobDebit: BigDecimal
                 val amountInBobCredit: BigDecimal
 
-                if (isTransactionInBob) {
+                if (transactionDto.currencyId == "BOL") {
                     amountInBobDebit = it.amountDebit
                     amountInBobCredit = it.amountCredit
                 } else {
-                    val amountDebit = it.amountDebit.toDouble()
-                    val amountCredit = it.amountCredit.toDouble()
-                    val transactionCurrencyToBobRate = exchange.currency.toDouble()
-                    amountInBobDebit = (amountDebit * transactionCurrencyToBobRate).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-                    amountInBobCredit = (amountCredit * transactionCurrencyToBobRate).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                    val amountDebit = it.amountDebit
+                    val amountCredit = it.amountCredit
+                    val transactionCurrencyToBobRate = exchange.currency
+                    amountInBobDebit = (amountDebit * transactionCurrencyToBobRate).setScale(2, RoundingMode.HALF_UP)
+                    amountInBobCredit = (amountCredit * transactionCurrencyToBobRate).setScale(2, RoundingMode.HALF_UP)
                 }
 
 
@@ -117,6 +121,7 @@ class TransactionBl @Autowired constructor(
                         val amountCredit = amountInBobCredit.toDouble()
                         val otherExchangeRate = otherExchange.currency.toDouble()
                         logger.info("******")
+                        logger.info("OtherExchangeRate: ${otherExchange.abbreviationName}")
                         logger.info("amountDebit: $amountDebit")
                         logger.info("amountCredit: $amountCredit")
                         logger.info("otherExchangeRate: $otherExchangeRate")
