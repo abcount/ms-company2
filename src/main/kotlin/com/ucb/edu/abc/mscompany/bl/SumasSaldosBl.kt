@@ -1,5 +1,6 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.config.FormatDataClass
 import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.SumasSaldosRequestDto
 import com.ucb.edu.abc.mscompany.dto.response.*
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -22,7 +24,9 @@ class SumasSaldosBl @Autowired constructor(
     private val areaDao: AreaDao,
     private val areaSubsidiaryDao: AreaSubsidiaryDao,
     private val exchangeMoneyBl: ExchangeMoneyBl,
-        private val companyBl: CompanyBl
+    private val companyBl: CompanyBl,
+    private val formatDataClass: FormatDataClass,
+    private val accessPersonBl: AccessPersonBl
 ) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -85,7 +89,7 @@ class SumasSaldosBl @Autowired constructor(
         return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
     }
 
-    suspend fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto): SumasSaldosResponseDtoPdf {
+    suspend fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto, header: Map<String, String>): SumasSaldosResponseDtoPdf {
         logger.info("Obteniendo sumas y saldos")
         val company = companyDao.getCompanyById(companyId)
         val url = companyBl.getUrlImageByCompanyId(companyId)
@@ -122,11 +126,13 @@ class SumasSaldosBl @Autowired constructor(
                             val totalCredit = transactions.sumOf { it.creditAmount }
                             val totalBalances = totalDebit.subtract(totalCredit)
                             if (totalBalances >= BigDecimal.ZERO){
-                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount, getNumber(totalDebit), getNumber(totalDebit), getNumber(totalDebit), getNumber(BigDecimal.ZERO)))
+                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount,
+                                    formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(BigDecimal.ZERO)))
                                 totalBalancesDebitAmount += totalBalances.abs()
                             }
                             else{
-                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount, getNumber(totalDebit), getNumber(totalDebit), getNumber(BigDecimal.ZERO), getNumber(totalBalances.abs())))
+                                accountSumas.add(AccountSumasPdf(accountEntity.codeAccount, accountEntity.nameAccount,
+                                    formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(BigDecimal.ZERO), formatDataClass.getNumber(totalBalances.abs())))
                                 totalBalancesCreditAmount += totalBalances.abs()
                             }
                             totalSumsDebitAmount += totalDebit
@@ -134,23 +140,29 @@ class SumasSaldosBl @Autowired constructor(
                         }
                     }
                 }
-                areaSumas.add(AreaSumasPdf(areaEntity.areaId, subsidiaryEntity.subsidiaryId, areaEntity.areaName, accountSumas, getNumber(totalSumsDebitAmount), getNumber(totalSumsCreditAmount), getNumber(totalBalancesDebitAmount), getNumber(totalBalancesCreditAmount)))
+                areaSumas.add(AreaSumasPdf(areaEntity.areaId, subsidiaryEntity.subsidiaryId, areaEntity.areaName, accountSumas,
+                    formatDataClass.getNumber(totalSumsDebitAmount), formatDataClass.getNumber(totalSumsCreditAmount), formatDataClass.getNumber(totalBalancesDebitAmount), formatDataClass.getNumber(totalBalancesCreditAmount)))
             }
             subsidiarySumas.add(SubsidiarySumasPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaSumas))
         }
-        return SumasSaldosResponseDtoPdf(company.companyName,url, convertDateToString(sumasSaldosRequestDto.from), convertDateToString(sumasSaldosRequestDto.to), currencyName.moneyName, subsidiarySumas)
+
+        val date = LocalDateTime.now()
+        val userEntity = accessPersonBl.getAccessPersonInformationByToken(header["authorization"]!!.substring(7))
+        val userName = userEntity!!.firstName + " " + userEntity!!.lastName
+        return SumasSaldosResponseDtoPdf(
+            company.companyName,
+            url,
+            formatDataClass.getDateFromLocalDateTime(date),
+            formatDataClass.getHourFromLocalDateTime(date),
+            userName,
+            formatDataClass.convertDateToString(sumasSaldosRequestDto.from),
+            formatDataClass.convertDateToString(sumasSaldosRequestDto.to),
+            currencyName.moneyName,
+            subsidiarySumas)
     }
 
-    fun convertDateToString(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        return formatter.format(date)
-    }
 
-    fun getNumber(number: BigDecimal): String{
-        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-        format.minimumFractionDigits = 2
-        format.maximumFractionDigits = 2
-        return format.format(number)
-    }
+
+
 
 }

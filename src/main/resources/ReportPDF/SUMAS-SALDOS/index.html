@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<style>
 			.header-container {
 				display: flex;
@@ -87,30 +88,30 @@
 				<h4>{{ .area }}</h4>
 					<table>
 						<tr>
-							<th class="left" COLSPAN="4"></th>
+							<th COLSPAN="2"></th>
 							<th class="center" COLSPAN="2">SUMAS</th>
 							<th class="center" COLSPAN="2">SALDOS</th>
 						</tr>
 						<tr>
-							<th class="left" COLSPAN="3">Código</th>
-							<th class="left" COLSPAN="1">Nombre</th>
-							<th>Debe</th>
-							<th>Haber</th>
-							<th>Debe</th>
-							<th>Haber</th>
+							<th class="left" style="width: 15%;">Código</th>
+							<th class="left">Nombre</th>
+							<th style="width: 15%;">Debe</th>
+							<th style="width: 15%;">Haber</th>
+							<th style="width: 15%;">Debe</th>
+							<th style="width: 15%;">Haber</th>
 						</tr>
 						{{ range .accounts }}
 							<tr>
-								<td COLSPAN="3">{{ .accountCode }}</td>
-								<td class="center">{{ .accountName }}</td>
-								<td class="center">{{ .sumsDebitAmount }}</td>
+								<td>{{ .accountCode }}</td>
+								<td class="left">{{ .accountName }}</td>
+								<td class="right">{{ .sumsDebitAmount }}</td>
 								<td class="right">{{ .sumsCreditAmount }}</td>
 								<td class="right">{{ .balancesDebitAmount }}</td>
 								<td class="right">{{ .balancesCreditAmount }}</td>
 							</tr>
 						{{end}}
 						<tr>
-							<td class="bold" COLSPAN="4">SUMAS IGUALES</td>
+							<td class="bold" colspan="2">SUMAS IGUALES</td>
 							<td class="right bold">{{ .totalSumsDebitAmount }}</td>
 							<td class="right bold">{{ .totalSumsCreditAmount }}</td>
 							<td class="right bold">{{ .totalBalancesDebitAmount }}</td>
