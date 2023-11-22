@@ -56,6 +56,9 @@ data class AccountState(
 data class EstadoResultadosResponseDtoPDF(
         var companyName: String,
         var logo: String,
+        var actualDate: String,
+        var actualHour: String,
+        var userName: String,
         var dateTo: String,
         var currency: String,
         var responsible: List<String>,

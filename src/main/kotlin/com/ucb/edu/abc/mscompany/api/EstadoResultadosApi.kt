@@ -41,7 +41,7 @@ class EstadoResultadosApi @Autowired constructor(
             @RequestBody estadoResultadosRequestDto: EstadoResultadosRequestDto,
             @RequestHeader headers: Map<String, String>
     ): ResponseEntity<ResponseDto<String>> {
-        val result = estadoResultadosBl.getEstadoResultadosPDF(companyId, estadoResultadosRequestDto)
+        val result = estadoResultadosBl.getEstadoResultadosPDF(companyId, estadoResultadosRequestDto, headers)
         val footer = pdfTurtleBl.readHtmlToString("ReportPDF/estado-resultados/footer.html")
         val header = pdfTurtleBl.readHtmlToString("ReportPDF/estado-resultados/header.html")
         val body = pdfTurtleBl.readHtmlToString("ReportPDF/estado-resultados/index.html")

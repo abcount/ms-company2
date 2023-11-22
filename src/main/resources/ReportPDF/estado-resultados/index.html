@@ -1,152 +1,161 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<style>
-		.header-container {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			font-family: 'Roboto', sans-serif;
-			position: relative;
-		}
-		h1 {
-			font-size: 18px;
-			font-weight: 600;
-			color: #383838;
-			margin: 0;
-		}
-		h2 {
-			font-size: 15px;
-			font-weight: 500;
-			color: #757575;
-			margin: 0;
-		}
-		img {
-			height: 50px;
-			position: absolute;
-			left: 0;
-			top: 0;
-		}
-		h3 {
-			font-size: 16px;
-			font-weight: 600;
-			color: #383838;
-			margin: 0;
-		}
-		h4 {
-			font-size: 15px;
-			font-weight: 600;
-			color: #757575;
-			margin: 0 0 8px 0;
-		}
-		table {
-			margin-bottom: 15px;
-		}
-		td, th {
-			font-size: 13px;
-			font-weight: 500;
-			color: #383838;
-			border: 1px solid #ededed !important;
-		}
-		.left {
-			text-align: left;
-		}
-		.right {
-			text-align: right;
-		}
-		.center {
-			text-align: center;
-		}
-		.bold {
-			font-weight: 600 !important;
-		}
-		#account-table td {
-			font-size: 13px;
-		}
-		.responsible {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			gap: 4%;
-			text-align: center;
-		}
-		.responsible h2 {
-			margin: 60px 20px 10px 20px;
-			border-top: #cdcdcd 1px solid !important;
-		}
-		img {
-			height: 50px;
-			position: absolute;
-			left: 0;
-			top: 0;
-		}
-	</style>
-</head>
-<body class="pdf-turtle">
-<div class="header-container">
-	<img alt="logo" src="{{ .logo }}"/>
-	<h1>Estado de resultados</h1>
-	<h2>Empresa {{ .companyName }}</h2>
-	<h2> Del {{.dateFrom }} Al {{ .dateTo }}</h2>
-	<h2>Expresado en {{ .currency }}</h2>
-</div>
-{{  range .subsidiaries }}
-<h3>{{ .subsidiary }}</h3>
-{{ range .areas }}
-<h4>{{ .area }}</h4>
-<table id="account-table-{{.subsidiaryId}}-{{.areaId}}">
-</table>
-<script>
-	function createAccountRow(account, level) {
-		const table = document.getElementById('account-table-{{.subsidiaryId}}-{{.areaId}}');
-		const row = table.insertRow(-1);
-		const cell = row.insertCell(0);
-		cell.colSpan = 10 ;
-		const large = 10 ;
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<style>
+			.header-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				font-family: 'Roboto', sans-serif;
+				position: relative;
+			}
+			h1 {
+				font-size: 18px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h2 {
+				font-size: 15px;
+				font-weight: 500;
+				color: #757575;
+				margin: 0;
+			}
+			img {
+				height: 50px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			h3 {
+				font-size: 16px;
+				font-weight: 600;
+				color: #383838;
+				margin: 0;
+			}
+			h4 {
+				font-size: 15px;
+				font-weight: 600;
+				color: #757575;
+				margin: 0 0 8px 0;
+			}
+			table {
+				margin-bottom: 15px;
+			}
+			td, th {
+				font-size: 13px;
+				font-weight: 500;
+				color: #383838;
+				border: 1px solid #ededed !important;
+			}
+			.left {
+				text-align: left;
+			}
+			.right {
+				text-align: right;
+			}
+			.center {
+				text-align: center;
+			}
+			.bold {
+				font-weight: 600 !important;
+			}
+			#account-table td {
+				font-size: 13px;
+			}
+			.responsible {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 4%;
+				text-align: center;
+			}
+			.responsible h2 {
+				margin: 60px 20px 10px 20px;
+				border-top: #cdcdcd 1px solid !important;
+			}
+			img {
+				height: 50px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+		</style>
+	</head>
+	<body class="pdf-turtle">
+		<div class="header-container">
+			<img alt="logo" src="{{ .logo }}"/>
+			<h1>Estado de resultados</h1>
+			<h2>Empresa {{ .companyName }}</h2>
+			<h2> Del {{.dateFrom }} Al {{ .dateTo }}</h2>
+			<h2>Expresado en {{ .currency }}</h2>
+		</div>
+		{{  range .subsidiaries }}
+		<h3>{{ .subsidiary }}</h3>
+		{{ range .areas }}
+		<h4>{{ .area }}</h4>
+		<table id="account-table-{{.subsidiaryId}}-{{.areaId}}">
+			<tr>
+				<td style="font-weight: bold; width: 17%;">CUENTA</td>
+				<td style="font-weight: bold;">NOMBRE DE CUENTA</td>
+				<td style="font-weight: bold; width: 15%;">SALDO</td>
+				<td style="font-weight: bold; width: 15%;">TOTAL</td>
+			</tr>
+		</table>
+		<script>
+			function createAccountRow(account, level) {
+				const table = document.getElementById('account-table-{{.subsidiaryId}}-{{.areaId}}');
+				const row = table.insertRow(-1);
+				const cell = row.insertCell(0);
+				cell.textContent = `${account.accountCode}`;
 
-		cell.textContent = `${account.accountCode} ${account.accountName}`;
+				const cellName = row.insertCell(1);
+				cellName.textContent = ''; 
+				cellName.style.whiteSpace = 'pre'; 
+				for (var i = 0; i < level; i++) {
+						cellName.textContent += '  '; 
+				}
+				cellName.textContent += `${account.accountName}`;
+				
+				if(level == 0 ){
+					const emptyCell = row.insertCell(2);
+					const amountCell = row.insertCell(3);
+					amountCell.textContent = account.amount;
+					amountCell.classList.add('right');
+					cell.style.fontWeight = 'bold';
+				} else {
+					const amountCell = row.insertCell(2);
+					amountCell.textContent = account.amount;
+					amountCell.classList.add('right');
+					const emptyCell = row.insertCell(3);
+				}
 
-		// Agrega el monto
-		const amountCell = row.insertCell(1);
-		amountCell.textContent = account.amount;
-		amountCell.classList.add('right');
-		if(level == 0 ){
-			cell.style.paddingLeft =  10 + 'px';
-			cell.style.fontWeight = 'bold';
-			amountCell.style.fontWeight = '600';
-		} else {
-			cell.style.paddingLeft =  level * 20 + 'px';
-		}
-		if(large != 10) {
-			const newCell = row.insertCell(2);
-			newCell.colSpan = 10 - large;
-		}
-
-		// Llama a la función recursivamente para las cuentas hijas
-		if (account.children) {
-			account.children.forEach(child => {
-				createAccountRow(child, level + 1);
+				// Llama a la función recursivamente para las cuentas hijas
+				if (account.children) {
+					account.children.forEach(child => {
+						createAccountRow(child, level + 1);
+					});
+				}
+			}
+			// Llama a la función para cada cuenta raíz en el JSON
+			var accounts = {{ .accounts }}; // Reemplaza "yourJson" con tu JSON real
+			accounts.forEach(account => {
+				createAccountRow(account, 0);
 			});
-		}
-	}
-	// Llama a la función para cada cuenta raíz en el JSON
-	var accounts = {{ .accounts }}; // Reemplaza "yourJson" con tu JSON real
-	accounts.forEach(account => {
-		createAccountRow(account, 0);
-	});
-</script>
-<table>
-	<tr>
-		<td class="bold" colspan="2">RESULTADOS</td>
-		<td class="right bold">{{ .amountTotal }}</td>
-	</tr>
-</table>
-{{ end }}
-{{ end }}
-<div class="responsible">
-	{{ range .responsible }}
-	<h2>{{ . }}</h2>
-	{{ end }}
-</div>
-</body>
+		</script>
+		<table>
+			<tr>
+				<td class="bold">RESULTADOS</td>
+				<td class="right bold" style="width: 30%;">{{ .amountTotal }}</td>
+			</tr>
+		</table>
+		{{ end }}
+		{{ end }}
+		<div class="responsible">
+			{{ range .responsible }}
+			<h2>{{ . }}</h2>
+			{{ end }}
+		</div>
+	</body>
 </html>

@@ -1,5 +1,6 @@
 package com.ucb.edu.abc.mscompany.bl
 
+import com.ucb.edu.abc.mscompany.config.FormatDataClass
 import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.EstadoResultadosRequestDto
 import com.ucb.edu.abc.mscompany.dto.response.*
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -21,7 +23,9 @@ class EstadoResultadosBl @Autowired constructor(
         private val accountDao: AccountDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
-        private val companyBl: CompanyBl
+        private val companyBl: CompanyBl,
+    private val formatDataClass: FormatDataClass,
+    private val accessPersonBl: AccessPersonBl
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -113,7 +117,7 @@ class EstadoResultadosBl @Autowired constructor(
     }
 
 
-    suspend fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto): EstadoResultadosResponseDtoPDF {
+    suspend fun getEstadoResultadosPDF(companyId: Int, estadoResultadosRequestDto: EstadoResultadosRequestDto, header: Map<String,String>): EstadoResultadosResponseDtoPDF {
         logger.info("Obteniendo el estado de reultados de la empresa: $companyId")
         val companyEntity = companyDao.getCompanyById(companyId)
         val url = companyBl.getUrlImageByCompanyId(companyId)
@@ -146,7 +150,7 @@ class EstadoResultadosBl @Autowired constructor(
                         areaEntity.areaId,
                         areaEntity.areaName,
                         listAccount,
-                        getNumber(totalResult)
+                        formatDataClass.getNumber(totalResult)
 
                 ))
             }
@@ -154,31 +158,36 @@ class EstadoResultadosBl @Autowired constructor(
             subsidiaryStateDtoList.add(SubsidiaryStatePDF(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
         }
 
-        return EstadoResultadosResponseDtoPDF(companyEntity.companyName, url,convertDateToString(estadoResultadosRequestDto.to), exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
+        val date = LocalDateTime.now()
+        val userEntity = accessPersonBl.getAccessPersonInformationByToken(header["authorization"]!!.substring(7))
+        val userName = userEntity!!.firstName + " " + userEntity!!.lastName
+
+        return EstadoResultadosResponseDtoPDF(
+            companyEntity.companyName,
+            url,
+            formatDataClass.getDateFromLocalDateTime(date),
+            formatDataClass.getHourFromLocalDateTime(date),
+            userName,
+            formatDataClass.convertDateToString(estadoResultadosRequestDto.to),
+            exchangeMoney.moneyName,
+            estadoResultadosRequestDto.responsible,
+            subsidiaryStateDtoList)
     }
 
     fun convertAccountStateToPdf(account: AccountState): AccountStatePDF{
         return AccountStatePDF(
                 account.accountCode,
                 account.accountName,
-                getNumber(account.amount),
+                formatDataClass.getNumber(account.amount),
                 account.children.map{
                     convertAccountStateToPdf(it)
                 }
         )
     }
 
-    fun convertDateToString(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        return formatter.format(date)
-    }
 
-    fun getNumber(number: BigDecimal): String{
-        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-        format.minimumFractionDigits = 2
-        format.maximumFractionDigits = 2
-        return format.format(number)
-    }
+
+
 
 
 
