@@ -99,9 +99,12 @@ class TransactionBl @Autowired constructor(
                 val amountInBobDebit: BigDecimal
                 val amountInBobCredit: BigDecimal
 
-                if (transactionDto.currencyId == "BOL") {
+                val transactionInBob = transactionDto.currencyId == "BOL"
+
+                if (transactionInBob) {
                     amountInBobDebit = it.amountDebit
                     amountInBobCredit = it.amountCredit
+
                 } else {
                     val amountDebit = it.amountDebit
                     val amountCredit = it.amountCredit
@@ -109,6 +112,17 @@ class TransactionBl @Autowired constructor(
                     amountInBobDebit = (amountDebit * transactionCurrencyToBobRate).setScale(2, RoundingMode.HALF_UP)
                     amountInBobCredit = (amountCredit * transactionCurrencyToBobRate).setScale(2, RoundingMode.HALF_UP)
                 }
+
+                debitCreditDao.create(
+                    DebitCreditEntity(
+                        0,
+                        transactionAccountEntity.transactionAccountId.toLong(),
+                        if(transactionDto.currencyId != "BOL") it.amountCredit else amountInBobCredit,
+                        if(transactionDto.currencyId != "BOL") it.amountDebit else amountInBobDebit,
+                        exchange.exchangeRateId
+                    ))
+
+
 
 
                 for (otherExchange in exchangeList) {
@@ -129,13 +143,6 @@ class TransactionBl @Autowired constructor(
                         debitCreditEntity.amountDebit = (amountDebit / otherExchangeRate).toBigDecimal()
                         debitCreditEntity.amountCredit = (amountCredit / otherExchangeRate).toBigDecimal()
 
-                        debitCreditDao.create(debitCreditEntity)
-                    }else{
-                        val debitCreditEntity = DebitCreditEntity()
-                        debitCreditEntity.transactionAccountId = transactionAccountEntity.transactionAccountId.toLong()
-                        debitCreditEntity.exchangeRateId = otherExchange.exchangeRateId
-                        debitCreditEntity.amountDebit = amountInBobDebit
-                        debitCreditEntity.amountCredit = amountInBobCredit
                         debitCreditDao.create(debitCreditEntity)
                     }
                 }
