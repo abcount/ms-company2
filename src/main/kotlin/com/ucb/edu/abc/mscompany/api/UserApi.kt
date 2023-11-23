@@ -58,19 +58,48 @@ class UserApi @Autowired constructor(
 
     }
 /*
+ Sorry for this XD
 
+ //@ModelAttribute updateInfo: UserUpdateInfoDto,  <---- this is the correct way but no hv idea y it doesn't work
+    //@RequestBody updateInfo: UserUpdateInfoDto,
+    //@RequestPart("country") country:String,
  */
     @RequestMapping(
         value = [""],
-        method = [RequestMethod.PUT],
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+        method = [RequestMethod.POST])
     fun updateUserInfo(
-        @ModelAttribute updateInfo: UserUpdateInfoDto,
-        @RequestHeader headers: Map<String, String>,
+
+    @RequestPart("imageProfile") imageProfileReq:MultipartFile?,
+    @RequestPart("birthday") birthdayReq:String?,
+    @RequestPart("names") namesReq:String?,
+    @RequestPart("lastnames") lastnamesReq: String?,
+    @RequestPart("gender") genderReq:String?,
+    @RequestPart("address") addressReq:String?,
+    @RequestPart("phoneNumber") phoneNumberReq:String?,
+    @RequestPart("domainNumber") domainNumberReq:String?,
+    @RequestPart("country") countryReq:String?,
+    @RequestPart("dni") dniReq:String?,
+    @RequestPart("dniExtension") dniExtensionReq:String?,
+    @RequestHeader headers: Map<String, String>,
     ): ResponseEntity<ResponseDto<*>> {
 
-
+        //logger.info("SOmething arrival $country")
         try{
+            var updateInfo = UserUpdateInfoDto()
+            updateInfo.apply {
+                imageProfile = imageProfileReq
+                birthday = birthdayReq
+                names = namesReq
+                lastnames =lastnamesReq
+                gender = genderReq
+                address = addressReq
+                phoneNumber = phoneNumberReq
+                domainNumber = domainNumberReq
+                country = countryReq
+                dni = dniReq
+                dniExtension = dniExtensionReq
+            }
+
             logger.info("Looking for user info going to update person")
             val userToken = headers["authorization"]!!.substring(7)
             userBl.updateUserInfo(userToken, updateInfo)

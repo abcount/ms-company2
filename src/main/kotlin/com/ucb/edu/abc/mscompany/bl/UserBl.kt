@@ -300,7 +300,7 @@ class UserBl @Autowired constructor(
             ?: throw Exception("User not found")
 
         if(! updateInfo.dni.isNullOrBlank()) accessPerson.noIdentity = updateInfo.dni!!.trim()
-        if(! updateInfo.birthday.isNullOrBlank()) accessPerson.birthday = LocalDate.parse(updateInfo.birthday!!.trim(), DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        if(! updateInfo.birthday.isNullOrBlank()) accessPerson.birthday = LocalDate.parse(updateInfo.birthday!!.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         if(! updateInfo.names.isNullOrBlank()) accessPerson.firstName = updateInfo.names!!.trim()
         if(! updateInfo.lastnames.isNullOrBlank()) accessPerson.lastName = updateInfo.lastnames!!.trim()
         if(! updateInfo.gender.isNullOrBlank()) accessPerson.genderPerson = updateInfo.gender!!.trim().toInt()
