@@ -109,7 +109,7 @@
             accountBalanceDtoList.add(ingresosAccountTree)
             accountBalanceDtoList.add(gastosAccountTree)
 
-            return accountBalanceDtoList
+            return accountBalanceDtoList.filter { it.amount != BigDecimal.ZERO }
 
 
         }
@@ -121,6 +121,7 @@
                 val children = allAccounts.values
                         .filter { it.accountAccountId == accountId }
                         .map { buildTree(it.accountId) }
+                        .filter { it.amount != BigDecimal.ZERO }
 
                 val amount = if (children.isEmpty()) {
                     //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
@@ -215,8 +216,14 @@
 
 
         fun convertToAccountBalancePDF(accountBalance: AccountBalance): AccountBalancePDF {
-            return AccountBalancePDF(accountBalance.accountCode, accountBalance.accountName, formatDataClass.getNumber(accountBalance.amount), accountBalance.children.map { convertToAccountBalancePDF(it) })
-        }
+            val filteredChildren = accountBalance.children.filter { it.amount != BigDecimal.ZERO }
+
+            return AccountBalancePDF(
+                    accountBalance.accountCode,
+                    accountBalance.accountName,
+                    formatDataClass.getNumber(accountBalance.amount),
+                    filteredChildren.map { convertToAccountBalancePDF(it) })
+            }
 
 
 
