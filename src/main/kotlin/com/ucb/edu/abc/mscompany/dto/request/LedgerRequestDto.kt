@@ -12,8 +12,8 @@ import java.util.*
 data class LedgerRequestDto(
         var subsidiaries: MutableList<Int>,
         var areas: MutableList<Int>,
-        var from: Date,
-        var to: Date,
+        var from: String,
+        var to: String,
         var accountsId: MutableList<Int>,
         var currencies: String
 ) {

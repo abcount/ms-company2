@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -16,9 +17,7 @@ class FormatDataClass {
 
     fun getNumber(number: BigDecimal): String{
         logger.info("Formateando numero")
-        if (number.compareTo(BigDecimal.ZERO) == 0) {
-            return " - "
-        }
+
         val format = NumberFormat.getNumberInstance(Locale("en", "EN"))
         format.minimumFractionDigits = 2
         format.maximumFractionDigits = 2
@@ -51,5 +50,37 @@ class FormatDataClass {
     fun convertLocalDateTimeToString(localDateTime: LocalDateTime): String {
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
         return localDateTime.format(formatter)
+    }
+
+    fun stringToDateAtBeginOfDay(date: String): Date {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val calendar = Calendar.getInstance()
+        calendar.time = formatter.parse(date)
+
+        // Establecer la hora al principio del día (00:00:00)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
+    }
+
+    fun stringToDateAtEndOfDay(date: String): Date {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val calendar = Calendar.getInstance()
+        calendar.time = formatter.parse(date)
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        return calendar.time
+    }
+
+    fun changeFormatStringDate(date: String): String {
+        val entryDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val fecha = LocalDate.parse(date, entryDate)
+        val outDate= DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        return fecha.format(outDate)
     }
 }

@@ -47,7 +47,9 @@ class JournalBl @Autowired constructor(
 
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
-                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
+                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,
+                    subsidiaryId,areaId, formatDataClass.stringToDateAtBeginOfDay(journalRequestDto.from),
+                    formatDataClass.stringToDateAtEndOfDay(journalRequestDto.to), journalRequestDto.transactionType)
                 val transactionDtoList= transformToTransactionDtoList(transactions,exchangeMoney.abbreviationName)
 
 
@@ -57,7 +59,10 @@ class JournalBl @Autowired constructor(
             subsidiaryDtoList.add(SubsidiaryDto(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaDtoList))
         }
 
-        return JournalResponseDto(companyEntity.companyName,journalRequestDto.from,journalRequestDto.to,exchangeMoney.moneyName,subsidiaryDtoList)
+        return JournalResponseDto(
+            companyEntity.companyName,
+            formatDataClass.stringToDateAtBeginOfDay(journalRequestDto.from),
+            formatDataClass.stringToDateAtEndOfDay(journalRequestDto.to),exchangeMoney.moneyName,subsidiaryDtoList)
     }
 
     private fun transformToAccountDtoList(transactionId: Long, exchangeMoneyIso: String): List<AccountDto> {
@@ -117,7 +122,8 @@ class JournalBl @Autowired constructor(
 
             for (areaId in journalRequestDto.areas) {
                 val areaEntity = areaDao.getAreaById(areaId)
-                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId, journalRequestDto.from, journalRequestDto.to, journalRequestDto.transactionType)
+                val transactions = transactionDao.getTransactionForAreaAndSubsidiary(companyId,  subsidiaryId,areaId,
+                    formatDataClass.stringToDateAtBeginOfDay(journalRequestDto.from), formatDataClass.stringToDateAtEndOfDay(journalRequestDto.to), journalRequestDto.transactionType)
                 var transactionDtoList = mutableListOf<TransactionDtoPDF>()
                 if(transactions.isNotEmpty()){
                     transactionDtoList= transformToTransactionDtoListPDF(transactions,exchangeMoney.abbreviationName)
@@ -139,13 +145,13 @@ class JournalBl @Autowired constructor(
 
         return JournalResponseDtoPdf(
             companyEntity.companyName,
-            formatDataClass.convertDateToString(journalRequestDto.from),
+            formatDataClass.changeFormatStringDate(journalRequestDto.from),
             url,
             userName,
             formatDataClass.getDateFromLocalDateTime(date),
             formatDataClass.getHourFromLocalDateTime(date),
             type,
-            formatDataClass.convertDateToString(journalRequestDto.to),
+            formatDataClass.changeFormatStringDate(journalRequestDto.to),
             exchangeMoney.moneyName,
             subsidiaryDtoList)
     }
