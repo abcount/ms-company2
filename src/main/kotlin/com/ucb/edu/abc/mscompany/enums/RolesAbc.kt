@@ -4,8 +4,8 @@ enum class RolesAbc(
     val descriptionDb: String,
 ) {
     CAN_DO_ANYTHING_WITH_REPORTS("Reportes"),
-    CAN_ADD_EXCHANGE("Agregar transacciones"),
-    CAN_VIEW_EXCHANGE("Visualizar las transacciones"),
+    CAN_ADD_EXCHANGE("Agregar comprobantes"),
+    CAN_VIEW_EXCHANGE("Visualizar los comprobantes"),
     CAN_ACCESS_CONFIGURATION("Acceder a la configuración de la empresa"),
     CAN_MANAGE_USERS("Invitar y eliminar usuarios"),
     CAN_CLOSE_ANY("Procesar cierre contable")
