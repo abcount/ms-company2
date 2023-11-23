@@ -22,7 +22,13 @@ class FormatDataClass {
         val format = NumberFormat.getNumberInstance(Locale("en", "EN"))
         format.minimumFractionDigits = 2
         format.maximumFractionDigits = 2
-        return format.format(number)
+        val formattedNumber = format.format(number.abs()) // Tomar el valor absoluto para quitar el signo
+        if (number.signum() == -1){
+            return "($formattedNumber)"
+        }else{
+            return formattedNumber
+        }
+
     }
 
     fun getDateFromLocalDateTime(date: LocalDateTime): String{

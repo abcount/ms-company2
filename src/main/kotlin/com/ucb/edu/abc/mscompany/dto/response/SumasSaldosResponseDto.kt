@@ -56,6 +56,9 @@ data class AccountSumas(
 data class SumasSaldosResponseDtoPdf (
         var companyName: String,
         var logo: String,
+        var actualDate: String,
+        var actualHour: String,
+        var userName: String,
         var dateFrom: String,
         var dateTo: String,
         var currency: String,

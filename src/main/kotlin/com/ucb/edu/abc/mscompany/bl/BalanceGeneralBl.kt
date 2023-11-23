@@ -1,5 +1,6 @@
     package com.ucb.edu.abc.mscompany.bl
 
+    import com.ucb.edu.abc.mscompany.config.FormatDataClass
     import com.ucb.edu.abc.mscompany.dao.*
     import com.ucb.edu.abc.mscompany.dto.request.BalanceGeneralRequestDto
     import com.ucb.edu.abc.mscompany.dto.request.JournalRequestDto
@@ -12,6 +13,7 @@
     import java.math.BigDecimal
     import java.text.NumberFormat
     import java.text.SimpleDateFormat
+    import java.time.LocalDateTime
     import java.util.*
 
     @Service
@@ -24,7 +26,9 @@
             private val accountDao: AccountDao,
             private val areaSubsidiaryDao: AreaSubsidiaryDao,
             private val imageService: ImageService,
-            private val companyBl: CompanyBl
+            private val companyBl: CompanyBl,
+        private val formatDataClass: FormatDataClass,
+        private val accessPersonBl: AccessPersonBl
     ) {
 
         private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -122,10 +126,10 @@
                     //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
                     /***/
                     if (currentAccount.codeAccount.startsWith("1") || currentAccount.codeAccount.startsWith("5")){
-                        accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                        accountDao.getBalanceByAccount(accountId, to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
 
                     } else {
-                        accountDao.getBalancePassive(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
+                        accountDao.getBalancePassive(accountId, to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
                     }
                     /***/
                 } else {
@@ -139,12 +143,9 @@
         }
 
 
-        suspend fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto): BalanceGeneralResponseDtoPDF {
+        suspend fun getBalanceGeneralPDF(companyId: Int, balanceGeneralRequestDto: BalanceGeneralRequestDto, header: Map<String, String>): BalanceGeneralResponseDtoPDF {
             logger.info("Obteniendo balance general de la empresa: $companyId")
 
-            // >>>>> get url signed
-            val urlSigned = imageService.getImageCompanySigned(companyId);
-            // <<<< get url signed
             val companyEntity = companyDao.getCompanyById(companyId)
             val url = companyBl.getUrlImageByCompanyId(companyId)
             val exchangeMoney = exchangeMoneyBl.getExchangeMoneyByCompanyIdAndISO(companyId, balanceGeneralRequestDto.currencies)
@@ -180,11 +181,11 @@
                             areaEntity.areaId,
                             areaEntity.areaName,
                             listAccount,
-                            getNumber(activeTotal),
-                            getNumber(totalPassiveCapital),
-                            getNumber(totalResult),
-                            getNumber(activeTotal),
-                            getNumber(totalResult+totalPassiveCapital)
+                            formatDataClass.getNumber(activeTotal),
+                            formatDataClass.getNumber(totalPassiveCapital),
+                            formatDataClass.getNumber(totalResult),
+                            formatDataClass.getNumber(activeTotal),
+                            formatDataClass.getNumber(totalResult+totalPassiveCapital)
                     ))
                 }
 
@@ -194,27 +195,31 @@
 
             //return BalanceGeneralResponseDtoPDF(companyEntity.companyName, logo = urlSigned,  convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
 
-            return BalanceGeneralResponseDtoPDF(companyEntity.companyName, url,convertDateToString(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            val date = LocalDateTime.now()
+            val userEntity = accessPersonBl.getAccessPersonInformationByToken(header["authorization"]!!.substring(7))
+            val userName = userEntity!!.firstName + " " + userEntity!!.lastName
+
+            return BalanceGeneralResponseDtoPDF(
+                companyEntity.companyName,
+                url,
+                formatDataClass.convertDateToString(balanceGeneralRequestDto.to),
+                formatDataClass.getDateFromLocalDateTime(date),
+                formatDataClass.getHourFromLocalDateTime(date),
+                userName,
+                exchangeMoney.moneyName,
+                balanceGeneralRequestDto.responsible,
+                subsidiaryBalanceDtoList)
 
         }
 
 
 
         fun convertToAccountBalancePDF(accountBalance: AccountBalance): AccountBalancePDF {
-            return AccountBalancePDF(accountBalance.accountCode, accountBalance.accountName, getNumber(accountBalance.amount), accountBalance.children.map { convertToAccountBalancePDF(it) })
+            return AccountBalancePDF(accountBalance.accountCode, accountBalance.accountName, formatDataClass.getNumber(accountBalance.amount), accountBalance.children.map { convertToAccountBalancePDF(it) })
         }
 
-        fun convertDateToString(date: Date): String {
-            val formatter = SimpleDateFormat("yyyy-MM-dd")
-            return formatter.format(date)
-        }
 
-        fun getNumber(number: BigDecimal): String{
-            val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-            format.minimumFractionDigits = 2
-            format.maximumFractionDigits = 2
-            return format.format(number)
-        }
+
 
 
     }

@@ -58,6 +58,9 @@ data class LedgerResponseDtoPdf(
         var companyName: String,
         var dateFrom: String,
         var logo: String,
+        var actualDate: String,
+        var actualHour: String,
+        var userName: String,
         var dateTo: String,
         var currency: String,
         var subsidiaries: List<SubsidiaryLedgerPdf>

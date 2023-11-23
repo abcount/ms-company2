@@ -36,7 +36,7 @@ class SumasSaldosApi @Autowired constructor(
             @RequestBody sumasSaldosRequestDto: SumasSaldosRequestDto,
             @RequestHeader headers: Map<String, String>
     ): ResponseEntity<ResponseDto<String>>{
-        val sumasSaldosResponseDto = sumasSaldosBl.getSumasSaldosPdf(companyId, sumasSaldosRequestDto)
+        val sumasSaldosResponseDto = sumasSaldosBl.getSumasSaldosPdf(companyId, sumasSaldosRequestDto, headers)
         val footer = pdfTurtleBl.readHtmlToString("ReportPDF/SUMAS-SALDOS/footer.html")
         val header = pdfTurtleBl.readHtmlToString("ReportPDF/SUMAS-SALDOS/header.html")
         val body = pdfTurtleBl.readHtmlToString("ReportPDF/SUMAS-SALDOS/index.html")

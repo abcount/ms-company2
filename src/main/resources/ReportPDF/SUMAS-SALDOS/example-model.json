@@ -1,124 +1,133 @@
 {
-    "companyName": "CapibaraCorps",
-    "dateFrom": "2023-02-23",
-    "dateTo": "2023-10-24",
-    "currency": "Bolivianos",
-    "subsidiaries": [
-        {
-            "subsidiaryId": 2,
-            "subsidiary": "Sucursal 1",
-            "areas": [
-                {
-                    "areaId": 1,
-                    "area": "Area 1",
-                    "accounts": [
-                        {
-                            "accountCode": "111",
-                            "accountName": "Activo",
-                            "sumsDebitAmount": 0,
-                            "sumsCreditAmount": 120,
-                            "balancesDebitAmount": 0,
-                            "balancesCreditAmount": 120
-                        },
-                        {
-                            "accountCode": "222",
-                            "accountName": "Pasivo",
-                            "sumsDebitAmount": 3000,
-                            "sumsCreditAmount": 2615,
-                            "balancesDebitAmount": 385,
-                            "balancesCreditAmount": 0
-                        }
-                    ],
-                    "totalSumsDebitAmount": 600,
-                    "totalSumsCreditAmount": 500,
-                    "totalBalancesDebitAmount": 100,
-                    "totalBalancesCreditAmount": 100
-                },
-                {
-                    "areaId": 2,
-                    "area": "Area 2",
-                    "accounts": [
-                        {
-                            "accountCode": "111",
-                            "accountName": "Activo",
-                            "sumsDebitAmount": 0,
-                            "sumsCreditAmount": 120,
-                            "balancesDebitAmount": 0,
-                            "balancesCreditAmount": 120
-                        },
-                        {
-                            "accountCode": "222",
-                            "accountName": "Pasivo",
-                            "sumsDebitAmount": 3000,
-                            "sumsCreditAmount": 2615,
-                            "balancesDebitAmount": 385,
-                            "balancesCreditAmount": 0
-                        }
-                    ],
-                    "totalSumsDebitAmount": 3000,
-                    "totalSumsCreditAmount": 2735,
-                    "totalBalancesDebitAmount": 385,
-                    "totalBalancesCreditAmount": 120
-                }
-            ]
-        },
-        {
-            "subsidiaryId": 2,
-            "subsidiary": "Sucursal 2",
-            "areas": [
-                {
-                    "areaId": 1,
-                    "area": "Area 1",
-                    "accounts": [
-                        {
-                            "accountCode": "111",
-                            "accountName": "Activo",
-                            "sumsDebitAmount": 0,
-                            "sumsCreditAmount": 120,
-                            "balancesDebitAmount": 0,
-                            "balancesCreditAmount": 120
-                        },
-                        {
-                            "accountCode": "222",
-                            "accountName": "Pasivo",
-                            "sumsDebitAmount": 3000,
-                            "sumsCreditAmount": 2615,
-                            "balancesDebitAmount": 385,
-                            "balancesCreditAmount": 0
-                        }
-                    ],
-                    "totalSumsDebitAmount": 600,
-                    "totalSumsCreditAmount": 500,
-                    "totalBalancesDebitAmount": 100,
-                    "totalBalancesCreditAmount": 100
-                },
-                {
-                    "areaId": 2,
-                    "area": "Area 2",
-                    "accounts": [
-                        {
-                            "accountCode": "111",
-                            "accountName": "Activo",
-                            "sumsDebitAmount": 0,
-                            "sumsCreditAmount": 120,
-                            "balancesDebitAmount": 0,
-                            "balancesCreditAmount": 120
-                        },
-                        {
-                            "accountCode": "222",
-                            "accountName": "Pasivo",
-                            "sumsDebitAmount": 3000,
-                            "sumsCreditAmount": 2615,
-                            "balancesDebitAmount": 385,
-                            "balancesCreditAmount": 0
-                        }
-                    ],
-                    "totalSumsDebitAmount": 3000,
-                    "totalSumsCreditAmount": 2735,
-                    "totalBalancesDebitAmount": 385,
-                    "totalBalancesCreditAmount": 120
-                }
-            ]
-        }
-    ]
+	"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GMMTV_Logo.svg/2560px-GMMTV_Logo.svg.png",
+	"companyName": "Company 1",
+	"actualDate": "23/11/2023",
+	"actualHour": "10:06:18",
+	"userName": "Maria Lopez",
+	"dateFrom": "01/01/2023",
+	"dateTo": "24/10/2023",
+	"currency": "Bolivianos",
+	"subsidiaries": [
+			{
+					"subsidiaryId": 2,
+					"subsidiary": "Sucursal 1",
+					"areas": [
+							{
+									"areaId": 1,
+									"area": "Area 1",
+									"accounts": [
+											{
+													"accountCode": "111010101",
+													"accountName": "Activo",
+													"sumsDebitAmount": 0,
+													"sumsCreditAmount": 120,
+													"balancesDebitAmount": 0,
+													"balancesCreditAmount": 120
+											},
+											{
+													"accountCode": "222",
+													"accountName": "Pasivo",
+													"sumsDebitAmount": 3000,
+													"sumsCreditAmount": 2615,
+													"balancesDebitAmount": 385,
+													"balancesCreditAmount": 0
+											}
+									],
+									"totalSumsDebitAmount": 600,
+									"totalSumsCreditAmount": 500,
+									"totalBalancesDebitAmount": 100,
+									"totalBalancesCreditAmount": 100
+							},
+							{
+									"areaId": 2,
+									"area": "Area 2",
+									"accounts": [
+											{
+													"accountCode": "111",
+													"accountName": "Activo",
+													"sumsDebitAmount": 0,
+													"sumsCreditAmount": 120,
+													"balancesDebitAmount": 0,
+													"balancesCreditAmount": 120
+											},
+											{
+													"accountCode": "222",
+													"accountName": "Pasivo",
+													"sumsDebitAmount": 3000,
+													"sumsCreditAmount": 2615,
+													"balancesDebitAmount": 385,
+													"balancesCreditAmount": 0
+											}
+									],
+									"totalSumsDebitAmount": 3000,
+									"totalSumsCreditAmount": 2735,
+									"totalBalancesDebitAmount": 385,
+									"totalBalancesCreditAmount": 120
+							}
+					]
+			},
+			{
+					"subsidiaryId": 2,
+					"subsidiary": "Sucursal 2",
+					"areas": [
+							{
+									"areaId": 1,
+									"area": "Area 1",
+									"accounts": [
+											{
+													"accountCode": "111",
+													"accountName": "Activo",
+													"sumsDebitAmount": 0,
+													"sumsCreditAmount": 120,
+													"balancesDebitAmount": 0,
+													"balancesCreditAmount": 120
+											},
+											{
+													"accountCode": "222",
+													"accountName": "Pasivo",
+													"sumsDebitAmount": 3000,
+													"sumsCreditAmount": 2615,
+													"balancesDebitAmount": 385,
+													"balancesCreditAmount": 0
+											}
+									],
+									"totalSumsDebitAmount": 600,
+									"totalSumsCreditAmount": 500,
+									"totalBalancesDebitAmount": 100,
+									"totalBalancesCreditAmount": 100
+							},
+							{
+									"areaId": 2,
+									"area": "Area 2",
+									"accounts": [
+											{
+													"accountCode": "111",
+													"accountName": "Activo",
+													"sumsDebitAmount": 0,
+													"sumsCreditAmount": 120,
+													"balancesDebitAmount": 0,
+													"balancesCreditAmount": 120
+											},
+											{
+													"accountCode": "222",
+													"accountName": "Pasivo",
+													"sumsDebitAmount": 3000,
+													"sumsCreditAmount": 2615,
+													"balancesDebitAmount": 385,
+													"balancesCreditAmount": 0
+											}
+									],
+									"totalSumsDebitAmount": 3000,
+									"totalSumsCreditAmount": 2735,
+									"totalBalancesDebitAmount": 385,
+									"totalBalancesCreditAmount": 120
+							}
+					]
+			}
+	],
+	"responsible": [
+		"Sebastian Belmonte",
+		"Micaela Gordillo",
+		"Emerson Chipana"
+	]
 }

@@ -8,10 +8,10 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: ${DB_URL:jdbc:postgresql://abcount.c1v0paixfk4r.us-west-2.rds.amazonaws.com/abcount}
+    url: jdbc:postgresql://localhost:5432/abcount
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:sucha1234}
+    password: ${DB_PASSWORD:1234}
   sql:
     init:
       mode: always

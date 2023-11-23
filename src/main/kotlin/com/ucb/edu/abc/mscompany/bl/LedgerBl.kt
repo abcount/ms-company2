@@ -1,4 +1,5 @@
 package com.ucb.edu.abc.mscompany.bl
+import com.ucb.edu.abc.mscompany.config.FormatDataClass
 import com.ucb.edu.abc.mscompany.dao.*
 import com.ucb.edu.abc.mscompany.dto.request.LedgerRequestDto
 import com.ucb.edu.abc.mscompany.dto.response.*
@@ -23,7 +24,9 @@ class LedgerBl @Autowired constructor(
         private val areaDao: AreaDao,
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
-        private val companyBl: CompanyBl
+        private val companyBl: CompanyBl,
+    private val formatDataClass: FormatDataClass,
+    private val accessPersonBl: AccessPersonBl
 
 ){
     private val logger: Logger = LoggerFactory.getLogger(CompanyBl::class.java)
@@ -91,7 +94,7 @@ class LedgerBl @Autowired constructor(
         return LedgerResponseDto(company.companyName, ledgerRequestDto.from, ledgerRequestDto.to, currencyName.moneyName, subsidiaryLedger)
     }
 
-    suspend fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto): LedgerResponseDtoPdf {
+    suspend fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto, header: Map<String, String>): LedgerResponseDtoPdf {
         logger.info("Obteniendo libro mayor")
         val company = companyDao.getCompanyById(companyId)
         val url = companyBl.getUrlImageByCompanyId(companyId)
@@ -120,11 +123,14 @@ class LedgerBl @Autowired constructor(
                     val totalBalances = totalDebit.subtract(totalCredit)
 
                     val transactionPdf = transactions.map {
-                        TransactionLedgerPdf(it.voucherCode, convertDateToString(it.registrationDate), it.transactionType, it.glosaDetail, it.documentNumber, getNumber(it.debitAmount), getNumber(it.creditAmount), getNumber(it.balances))
+                        TransactionLedgerPdf(it.voucherCode, formatDataClass.convertDateToString(it.registrationDate),
+                            it.transactionType, it.glosaDetail, it.documentNumber,
+                            formatDataClass.getNumber(it.debitAmount), formatDataClass.getNumber(it.creditAmount), formatDataClass.getNumber(it.balances))
                     }
 
                     if(transactions.isNotEmpty()){
-                        accountLedger.add(AccountLedgerPdf(accountEntity.codeAccount, accountEntity.nameAccount, transactionPdf, getNumber(totalDebit), getNumber(totalCredit), getNumber(totalCredit)))
+                        accountLedger.add(AccountLedgerPdf(accountEntity.codeAccount, accountEntity.nameAccount, transactionPdf,
+                            formatDataClass.getNumber(totalDebit), formatDataClass.getNumber(totalCredit), formatDataClass.getNumber(totalCredit)))
                     }
 
                 }
@@ -136,26 +142,23 @@ class LedgerBl @Autowired constructor(
 
             subsidiaryLedger.add(SubsidiaryLedgerPdf(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaLedger))
         }
+        val date = LocalDateTime.now()
+        val userEntity = accessPersonBl.getAccessPersonInformationByToken(header["authorization"]!!.substring(7))
+        val userName = userEntity!!.firstName + " " + userEntity!!.lastName
 
-        return LedgerResponseDtoPdf(company.companyName, convertDateToString(ledgerRequestDto.from),url, convertDateToString(ledgerRequestDto.to), currencyName.moneyName, subsidiaryLedger)
+        return LedgerResponseDtoPdf(
+            company.companyName,
+            formatDataClass.convertDateToString(ledgerRequestDto.from),
+            url,
+            formatDataClass.getDateFromLocalDateTime(date),
+            formatDataClass.getHourFromLocalDateTime(date),
+            userName,
+            formatDataClass.convertDateToString(ledgerRequestDto.to),
+            currencyName.moneyName,
+            subsidiaryLedger)
     }
 
-    fun convertDateToString(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        return formatter.format(date)
-    }
 
-    fun convertDateToStringWithTime(date: Date): String {
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        return formatter.format(date)
-    }
-
-    fun getNumber(number: BigDecimal): String{
-        val format = NumberFormat.getNumberInstance(Locale("es", "ES"))
-        format.minimumFractionDigits = 2
-        format.maximumFractionDigits = 2
-        return format.format(number)
-    }
 
 
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<style>
 			.header-container {
 				display: flex;
@@ -72,20 +73,20 @@
 			<h2>Expresado en {{ .currency }}</h2>
 		</div>
 		{{  range .subsidiaries }}
-			<h3>{{ .subsidiary }}</h3>
+			<h3>{{ .subsidiaryName }}</h3>
 			{{ range .areas }}
 				<h4>{{ .area }}</h4>
 				{{ range .accounts }}
 					<h4 style="margin-bottom: 8px;">{{ .accountName }}</h4>
 					<table>
 						<tr>
-							<th class="left">Fecha</th>
-							<th>Nro comp</th>
+							<th style="width: 12%;" class="left">Fecha</th>
+							<th style="width: 10%;">Nro cbte</th>
 							<th class="left">Glosa</th>
-							<th>Nro doc</th>
-							<th>Debe</th>
-							<th>Haber</th>
-							<th>Saldos</th>
+							<th style="width: 10%;">Nro doc</th>
+							<th style="width: 10%;">Debe</th>
+							<th style="width: 10%;">Haber</th>
+							<th style="width: 10%;">Saldos</th>
 						</tr>
 						{{ range .transactions }}
 							<tr>
