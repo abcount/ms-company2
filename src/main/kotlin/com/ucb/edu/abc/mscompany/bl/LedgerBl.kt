@@ -75,7 +75,9 @@ class LedgerBl @Autowired constructor(
                     val accountEntity = accountDao.getAccountById(account)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                    val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies)
+                    val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId,
+                        formatDataClass.stringToDateAtBeginOfDay(ledgerRequestDto.from),
+                        formatDataClass.stringToDateAtEndOfDay(ledgerRequestDto.to), ledgerRequestDto.currencies)
 
 
                     val totalDebit = transactions.sumOf { it.debitAmount }
@@ -91,7 +93,8 @@ class LedgerBl @Autowired constructor(
             subsidiaryLedger.add(SubsidiaryLedger(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaLedger))
         }
 
-        return LedgerResponseDto(company.companyName, ledgerRequestDto.from, ledgerRequestDto.to, currencyName.moneyName, subsidiaryLedger)
+        return LedgerResponseDto(company.companyName, formatDataClass.stringToDateAtBeginOfDay(ledgerRequestDto.from),
+            formatDataClass.stringToDateAtEndOfDay(ledgerRequestDto.to), currencyName.moneyName, subsidiaryLedger)
     }
 
     suspend fun getLedgerPdf(companyId: Int, ledgerRequestDto: LedgerRequestDto, header: Map<String, String>): LedgerResponseDtoPdf {
@@ -114,7 +117,9 @@ class LedgerBl @Autowired constructor(
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
 
-                    val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId, ledgerRequestDto.from, ledgerRequestDto.to, ledgerRequestDto.currencies).map{
+                    val transactions = transactionDao.getLedgerTransactions(companyId, account, areaSubsidiaryId,
+                        formatDataClass.stringToDateAtBeginOfDay(ledgerRequestDto.from),
+                        formatDataClass.stringToDateAtEndOfDay(ledgerRequestDto.to), ledgerRequestDto.currencies).map{
                         TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                     }
 
@@ -148,12 +153,12 @@ class LedgerBl @Autowired constructor(
 
         return LedgerResponseDtoPdf(
             company.companyName,
-            formatDataClass.convertDateToString(ledgerRequestDto.from),
+            formatDataClass.changeFormatStringDate(ledgerRequestDto.from),
             url,
             formatDataClass.getDateFromLocalDateTime(date),
             formatDataClass.getHourFromLocalDateTime(date),
             userName,
-            formatDataClass.convertDateToString(ledgerRequestDto.to),
+            formatDataClass.changeFormatStringDate(ledgerRequestDto.to),
             currencyName.moneyName,
             subsidiaryLedger)
     }
