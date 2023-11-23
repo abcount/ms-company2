@@ -24,8 +24,8 @@ class EstadoResultadosBl @Autowired constructor(
         private val areaSubsidiaryDao: AreaSubsidiaryDao,
         private val exchangeMoneyBl: ExchangeMoneyBl,
         private val companyBl: CompanyBl,
-    private val formatDataClass: FormatDataClass,
-    private val accessPersonBl: AccessPersonBl
+        private val formatDataClass: FormatDataClass,
+        private val accessPersonBl: AccessPersonBl
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -74,14 +74,14 @@ class EstadoResultadosBl @Autowired constructor(
         var ingresos = accountDao.getAccountIdBYCode("4", companyId)
         var gastos = accountDao.getAccountIdBYCode("5", companyId)
 
-        
+
         val ingresosAccountTree = buildAccountTree(ingresos, companyId,from,to, areaSubsidiaryId, exchangeRateId)
         val gastosAccountTree = buildAccountTree(gastos, companyId,from,to, areaSubsidiaryId, exchangeRateId)
-        
+
         accountStateDtoList.add(ingresosAccountTree)
         accountStateDtoList.add(gastosAccountTree)
 
-        return accountStateDtoList
+        return accountStateDtoList.filter { it.amount != BigDecimal.ZERO }
 
     }
 
@@ -95,6 +95,7 @@ class EstadoResultadosBl @Autowired constructor(
             val children = allAccounts.values
                     .filter { it.accountAccountId == accountId }
                     .map { buildTree(it.accountId) }
+                    .filter{ it.amount != BigDecimal.ZERO }
 
             val amount = if (children.isEmpty()) {
                 //accountDao.getBalanceByAccount(accountId,to, areaSubsidiaryId, exchangeId) ?: BigDecimal.ZERO
@@ -163,25 +164,26 @@ class EstadoResultadosBl @Autowired constructor(
         val userName = userEntity!!.firstName + " " + userEntity!!.lastName
 
         return EstadoResultadosResponseDtoPDF(
-            companyEntity.companyName,
-            url,
-            formatDataClass.getDateFromLocalDateTime(date),
-            formatDataClass.getHourFromLocalDateTime(date),
-            userName,
-            formatDataClass.convertDateToString(estadoResultadosRequestDto.to),
-            exchangeMoney.moneyName,
-            estadoResultadosRequestDto.responsible,
-            subsidiaryStateDtoList)
+                companyEntity.companyName,
+                url,
+                formatDataClass.getDateFromLocalDateTime(date),
+                formatDataClass.getHourFromLocalDateTime(date),
+                userName,
+                formatDataClass.convertDateToString(estadoResultadosRequestDto.to),
+                exchangeMoney.moneyName,
+                estadoResultadosRequestDto.responsible,
+                subsidiaryStateDtoList)
     }
 
     fun convertAccountStateToPdf(account: AccountState): AccountStatePDF{
+        val filteredChildren = account.children.filter { it.amount != BigDecimal.ZERO }
+
         return AccountStatePDF(
                 account.accountCode,
                 account.accountName,
                 formatDataClass.getNumber(account.amount),
-                account.children.map{
-                    convertAccountStateToPdf(it)
-                }
+                filteredChildren.map { convertAccountStateToPdf(it) }
+
         )
     }
 
