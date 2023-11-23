@@ -40,11 +40,10 @@ DROP TABLE IF EXISTS role_kc;
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS transaction_account;
 DROP TABLE IF EXISTS debit_credit;
+
+
+
 */
-
-
-
-
 -- tables
 -- Table: abc_permission
 CREATE TABLE IF NOT EXISTS role_kc(
