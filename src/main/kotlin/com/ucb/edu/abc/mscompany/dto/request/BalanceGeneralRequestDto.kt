@@ -13,7 +13,7 @@ import java.util.*
 data class BalanceGeneralRequestDto(
         var subsidiaries: MutableList<Int>,
         var areas: MutableList<Int>,
-        var to: Date,
+        var to: String,
         var currencies: String,
         var responsible: MutableList<String>
 ) {

@@ -44,7 +44,9 @@ class EstadoResultadosBl @Autowired constructor(
                 val areaEntity = areaDao.getAreaById(areaId)
                 val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.from,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                var listAccountState= getAccountBalance(
+                    companyId,formatDataClass.stringToDateAtBeginOfDay(estadoResultadosRequestDto.from),
+                    formatDataClass.stringToDateAtEndOfDay(estadoResultadosRequestDto.to), areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
                 val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
@@ -66,7 +68,8 @@ class EstadoResultadosBl @Autowired constructor(
             subsidiaryStateDtoList.add(SubsidiaryState(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaStateDtoList))
         }
 
-        return EstadoResultadosResponseDto(companyEntity.companyName, estadoResultadosRequestDto.to, exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
+        return EstadoResultadosResponseDto(companyEntity.companyName, formatDataClass.stringToDateAtEndOfDay( estadoResultadosRequestDto.to),
+            exchangeMoney.moneyName, estadoResultadosRequestDto.responsible ,subsidiaryStateDtoList)
     }
 
     fun getAccountBalance(companyId: Int, from:Date ,to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountState>{
@@ -133,7 +136,9 @@ class EstadoResultadosBl @Autowired constructor(
                 val areaEntity = areaDao.getAreaById(areaId)
                 val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                var listAccountState= getAccountBalance(companyId,estadoResultadosRequestDto.from,estadoResultadosRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                var listAccountState= getAccountBalance(
+                    companyId,formatDataClass.stringToDateAtBeginOfDay(estadoResultadosRequestDto.from),
+                    formatDataClass.stringToDateAtEndOfDay(estadoResultadosRequestDto.from), areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
                 val ingresosTotal = listAccountState.filter { it.accountCode.startsWith("4") }.sumOf { it.amount }
@@ -169,7 +174,7 @@ class EstadoResultadosBl @Autowired constructor(
                 formatDataClass.getDateFromLocalDateTime(date),
                 formatDataClass.getHourFromLocalDateTime(date),
                 userName,
-                formatDataClass.convertDateToString(estadoResultadosRequestDto.to),
+                formatDataClass.changeFormatStringDate(estadoResultadosRequestDto.from),
                 exchangeMoney.moneyName,
                 estadoResultadosRequestDto.responsible,
                 subsidiaryStateDtoList)

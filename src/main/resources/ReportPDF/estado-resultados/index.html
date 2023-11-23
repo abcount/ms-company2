@@ -92,7 +92,7 @@
 			<h2>Expresado en {{ .currency }}</h2>
 		</div>
 		{{  range .subsidiaries }}
-		<h3>{{ .subsidiary }}</h3>
+		<h3>{{ .subsidiaryName }}</h3>
 		{{ range .areas }}
 		<h4>{{ .area }}</h4>
 		<table id="account-table-{{.subsidiaryId}}-{{.areaId}}">

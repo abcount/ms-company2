@@ -57,7 +57,9 @@ class SumasSaldosBl @Autowired constructor(
                             val accountEntity = accountDao.getAccountById(accountId)
                             logger.info("Obteniendo transacciones de la cuenta ${accountEntity.accountId}")
                             val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
-                            val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId, areaSubsidiaryId, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, sumasSaldosRequestDto.currencies).map{
+                            val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId,
+                                areaSubsidiaryId, formatDataClass.stringToDateAtBeginOfDay(sumasSaldosRequestDto.from),
+                                formatDataClass.stringToDateAtEndOfDay(sumasSaldosRequestDto.to), sumasSaldosRequestDto.currencies).map{
                                 TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                             }
                             logger.info("Transactions: $transactions")
@@ -86,7 +88,9 @@ class SumasSaldosBl @Autowired constructor(
             }
             subsidiarySumas.add(SubsidiarySumas(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaSumas))
         }
-        return SumasSaldosResponseDto(company.companyName, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, currencyName.moneyName, subsidiarySumas)
+        return SumasSaldosResponseDto(
+            company.companyName, formatDataClass.stringToDateAtBeginOfDay(sumasSaldosRequestDto.from),
+            formatDataClass.stringToDateAtEndOfDay(sumasSaldosRequestDto.to), currencyName.moneyName, subsidiarySumas)
     }
 
     suspend fun getSumasSaldosPdf(companyId: Int, sumasSaldosRequestDto: SumasSaldosRequestDto, header: Map<String, String>): SumasSaldosResponseDtoPdf {
@@ -117,7 +121,9 @@ class SumasSaldosBl @Autowired constructor(
                             val accountEntity = accountDao.getAccountById(accountId)
                             logger.info("Obteniendo transacciones de la cuenta ${accountEntity.accountId}")
                             val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
-                            val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId, areaSubsidiaryId, sumasSaldosRequestDto.from, sumasSaldosRequestDto.to, sumasSaldosRequestDto.currencies).map{
+                            val transactions = transactionDao.getLedgerTransactions(companyId, accountEntity.accountId,
+                                areaSubsidiaryId, formatDataClass.stringToDateAtBeginOfDay(sumasSaldosRequestDto.from),
+                                formatDataClass.stringToDateAtEndOfDay(sumasSaldosRequestDto.to), sumasSaldosRequestDto.currencies).map{
                                 TransactionLedger(it.voucherCode, it.registrationDate, it.transactionType, it.glosaDetail, it.documentNumber, it.debitAmount, it.creditAmount, it.balances)
                             }
                             logger.info("Transactions: $transactions")
@@ -155,8 +161,8 @@ class SumasSaldosBl @Autowired constructor(
             formatDataClass.getDateFromLocalDateTime(date),
             formatDataClass.getHourFromLocalDateTime(date),
             userName,
-            formatDataClass.convertDateToString(sumasSaldosRequestDto.from),
-            formatDataClass.convertDateToString(sumasSaldosRequestDto.to),
+            formatDataClass.changeFormatStringDate(sumasSaldosRequestDto.from),
+            formatDataClass.changeFormatStringDate(sumasSaldosRequestDto.to),
             currencyName.moneyName,
             subsidiarySumas)
     }

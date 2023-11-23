@@ -47,7 +47,8 @@
                     val areaEntity = areaDao.getAreaById(areaId)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
 
-                    var listAccountBalanced= getAccountBalance(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                    var listAccountBalanced= getAccountBalance(
+                        companyId,formatDataClass.stringToDateAtEndOfDay(balanceGeneralRequestDto.to), areaSubsidiaryId, exchangeMoney.abbreviationName)
 
 
 
@@ -82,7 +83,8 @@
                 subsidiaryBalanceDtoList.add(SubsidiaryBalance(subsidiaryEntity.subsidiaryId, subsidiaryEntity.subsidiaryName, areaBalanceDtoList))
             }
 
-            return BalanceGeneralResponseDto(companyEntity.companyName, balanceGeneralRequestDto.to, exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
+            return BalanceGeneralResponseDto(
+                companyEntity.companyName, formatDataClass.stringToDateAtEndOfDay(balanceGeneralRequestDto.to), exchangeMoney.moneyName, balanceGeneralRequestDto.responsible, subsidiaryBalanceDtoList)
         }
 
         fun getAccountBalance(companyId: Int, to: Date, areaSubsidiaryId: Int?, exchangeRateId: String ): List<AccountBalance>{
@@ -157,7 +159,8 @@
                 for (areaId in balanceGeneralRequestDto.areas) {
                     val areaEntity = areaDao.getAreaById(areaId)
                     val areaSubsidiaryId= areaSubsidiaryDao.findAreaSubsidiaryId(subsidiaryEntity.subsidiaryId, areaEntity.areaId)
-                    var listAccountBalanced= getAccountBalance(companyId,balanceGeneralRequestDto.to, areaSubsidiaryId, exchangeMoney.abbreviationName)
+                    var listAccountBalanced= getAccountBalance(companyId,
+                        formatDataClass.stringToDateAtBeginOfDay(balanceGeneralRequestDto.to), areaSubsidiaryId, exchangeMoney.abbreviationName)
                     //BALANCE GENERAL
                     val activeTotal = listAccountBalanced.filter { it.accountCode.startsWith("1") }.sumOf { it.amount }
                     val passiveTotal = listAccountBalanced.filter { it.accountCode.startsWith("2") }.sumOf { it.amount }
@@ -203,7 +206,7 @@
             return BalanceGeneralResponseDtoPDF(
                 companyEntity.companyName,
                 url,
-                formatDataClass.convertDateToString(balanceGeneralRequestDto.to),
+                formatDataClass.changeFormatStringDate(balanceGeneralRequestDto.to),
                 formatDataClass.getDateFromLocalDateTime(date),
                 formatDataClass.getHourFromLocalDateTime(date),
                 userName,
